@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono,Onest } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/lib/providers/theme-provider";
+import NextTopLoader from 'nextjs-toploader';
+
+const onest = Onest({ subsets: ['latin'] });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +27,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en"
+    className={`${onest.className} antialiased`}
+    suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+         <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NextTopLoader />
+            {children}
+          </ThemeProvider>
+        
       </body>
     </html>
   );

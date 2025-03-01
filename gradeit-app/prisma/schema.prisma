@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,17 +7,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  FACULTY
+  STUDENT
+}
+
+enum Status {
+  PASSED
+  FAILED
+  PENDING
+  PARTIAL
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
   image         String?
-  Role          Roles     @default(STUDENT)
+  Role          Role     @default(STUDENT)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   onboarded     Boolean @default(false) 
   accounts      Account[]
+
+  classrooms     Classroom[] @relation("FacultyClassrooms")  // Faculty-created classrooms
+  enrolledClasses Classroom[] @relation("StudentClasses")  // Student-joined classrooms
+
+  submissions    Submission[]
  
   @@map("users")
 }
@@ -47,10 +58,60 @@ model Account {
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
- 
 
+model Classroom {
+  id          String    @id @default(uuid())
+  name        String
+  code        String    @unique  // Unique class join code
+  facultyId   String
+  faculty     User      @relation("FacultyClassrooms", fields: [facultyId], references: [id])
+  students    User[]    @relation("StudentClasses")
+  assignments Assignment[]
+  createdAt   DateTime  @default(now())
+}
 
-enum Roles {
-  FACULTY
-  STUDENT
+model Assignment {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  questions   Question[]
+  DueDate     DateTime? //recheck
+  createdAt   DateTime  @default(now())
+}
+
+model Question {
+  id           String    @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  title        String
+  description  String
+  language     String
+  testCases    TestCase[]
+  createdAt    DateTime  @default(now())
+  Submission Submission[]
+}
+
+model TestCase {
+  id          String  @id @default(uuid())
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id])
+  input       String
+  expectedOutput String
+  hidden      Boolean @default(false) // Some test cases are hidden
+}
+
+model Submission {
+  id            String   @id @default(uuid())
+  studentId     String
+  student       User     @relation(fields: [studentId], references: [id])
+  questionId    String
+  question      Question @relation(fields: [questionId], references: [id])
+  code          String
+  language      String
+  status        Status  @default(PENDING) 
+  score         Int?    // Faculty can assign a score
+  plagiarismScore Float? // Store plagiarism detection results
+  createdAt     DateTime @default(now())
 }
