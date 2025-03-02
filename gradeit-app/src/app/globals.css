@@ -57,96 +57,68 @@
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
+    /* Main background - rich dark blue for coding environment */
+    --background: 222 18% 12%;
+    --foreground: 210 20% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Muted elements - enhanced contrast for readability */
+    --muted: 223 14% 20%;
+    --muted-foreground: 215 16% 75%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    /* Popover and card styles - slightly lighter than background */
+    --popover: 222 16% 16%;
+    --popover-foreground: 210 20% 98%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 222 16% 16%;
+    --card-foreground: 210 20% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --border-secondary: 226 60% 60%;
-    --input: 240 3.7% 15.9%;
+    /* Borders - subtle but visible */
+    --border: 220 13% 23%;
+    --border-secondary: 216 60% 60%;
+    --input: 220 13% 23%;
 
-    --neutral: 0 0% 98%;
-    --neutral-foreground: 217 14% 47%;
+    /* Neutral tones */
+    --neutral: 210 20% 98%;
+    --neutral-foreground: 215 14% 45%;
 
-    --primary: 226 60% 60%;;
+    /* Primary brand color - vibrant blue that stands out in dark mode */
+    --primary: 216 60% 55%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    /* Secondary elements - subdued but complementary */
+    --secondary: 217 19% 27%;
+    --secondary-foreground: 210 20% 98%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    /* Accents - for highlights and focus states */
+    --accent: 215 25% 27%;
+    --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    /* Destructive actions - clear error indicators */
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 210 20% 98%;
 
-    --ring: 240 4.9% 83.9%;
+    --ring: 215 20% 65%;
 
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 10% 3.9%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 240 5% 96%;
-    --sidebar-primary-foreground: 0 0% 70%;
-    --sidebar-secondary: 226 60% 60%;
+    /* Chart colors - optimized for dark theme visibility */
+    --chart-1: 210 100% 60%;
+    --chart-2: 170 70% 55%;
+    --chart-3: 30 90% 65%;
+    --chart-4: 280 75% 65%;
+    --chart-5: 330 80% 60%;
+
+    /* Sidebar specific colors - slightly darker than main content */
+    --sidebar-background: 225 22% 10%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 213 20% 90%;
+    --sidebar-primary-foreground: 215 10% 70%;
+    --sidebar-secondary: 216 60% 55%;
     --sidebar-secondary-foreground: 0 0% 98%;
-    --sidebar-accent: 219 29% 18%;
+    --sidebar-accent: 219 29% 20%;
     --sidebar-accent-foreground: 216 24% 96%;
-    --sidebar-border: 240 4% 16%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-border: 222 18% 20%;
+    --sidebar-ring: 216 60% 55%;
   }
 }
-
-/* @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-@layer utilities {
-  .font-odin-rounded {
-    font-family: var(--font-odin-rounded);
-  }
-}
-
-@keyframes spin-y {
-  0% {
-    transform: rotateY(0deg);
-  }
-  100% {
-    transform: rotateY(360deg);
-  }
-}
-
-@keyframes spin-x {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-x {
-  animation: spin-x 2s linear infinite;
-}
-.animate-spin-y {
-  animation: spin-y 2s linear infinite;
-} */
 
 @layer base {
   * {
@@ -157,6 +129,7 @@
   }
 }
 
+/* Improved dark mode sidebar gradient */
 .sidebar-gradient {
   background: linear-gradient(
     180deg,
@@ -169,8 +142,43 @@
 .dark .sidebar-gradient {
   background: linear-gradient(
     180deg,
-    rgba(24, 24, 27, 0.98) 0%,
-    rgba(24, 24, 27, 0.96) 100%
+    rgba(23, 30, 42, 0.98) 0%,
+    rgba(21, 28, 40, 0.96) 100%
   );
   backdrop-filter: blur(8px);
+}
+
+/* Code syntax highlight enhancement for dark mode */
+.dark pre {
+  background-color: hsl(222, 20%, 8%);
+  border: 1px solid hsl(220, 13%, 18%);
+}
+
+.dark code {
+  color: hsl(210, 80%, 80%);
+}
+
+/* Improved focus states for dark mode accessibility */
+.dark *:focus-visible {
+  outline-color: hsl(216, 60%, 60%);
+  outline-offset: 2px;
+}
+
+/* Improved scrollbar for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: hsl(222, 16%, 15%);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(220, 13%, 25%);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(216, 60%, 50%);
 }
