@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/app/_components/ui/dialog-modified';
 import { cn } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DotPattern from '../ui/dot-pattern';
 import AuthWrapper from './auth-wrapper';
 
@@ -21,7 +21,7 @@ export default function AuthPopup() {
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
       <DialogContent
-        className="w-[calc(100%-1rem)] sm:w-auto sm:min-w-[420px] max-w-[95vw] sm:max-w-fit rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-lg p-4 sm:py-6 sm:px-0"
+        className="w-[calc(100%-1rem)] sm:w-auto sm:min-w-[420px] max-w-[95vw] sm:max-w-fit rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-lg sm:py-6 sm:px-0"
         onInteractOutside={(e) => e.preventDefault()}
         hideCloseButton={true}
       >

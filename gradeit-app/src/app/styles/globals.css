@@ -4,108 +4,102 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
-    --border: 240 5.9% 90%;
-    --border-secondary: 226 60% 60%;
-    --input: 240 5.9% 90%;
-
-    --neutral: 222.2 47.4% 11.2%;
-    --neutral-foreground: 0 0% 98%;
-
-    --primary: 226 60% 60%;
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --ring: 240 10% 3.9%;
-
-    --radius: 0.5rem;
-
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 10% 25%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 217 14% 47%;
-    --sidebar-secondary: 226 60% 60%;
-    --sidebar-secondary-foreground: 0 0% 98%;
-    --sidebar-accent: 214 100% 98%;
-    --sidebar-accent-foreground: 217 14% 47%;
-    --sidebar-border: 240 6% 90%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Core backgrounds */
+    --background: 60 33% 98%;        /* #FAFAF8 - Clean, off-white background */
+    --foreground: 40 3% 8%;          /* #141413 - Near-black text for clarity */
+    
+    /* Cards and containers */
+    --card: 0 0% 100%;               /* #FFFFFF - Pure white for content areas */
+    --card-foreground: 40 3% 8%;     /* #141413 - Consistent text color */
+    
+    /* Popover elements */
+    --popover: 0 0% 100%;            /* #FFFFFF - Clean white for dropdowns */
+    --popover-foreground: 40 3% 8%;  /* #141413 - Clear text */
+    
+    /* Primary action colors */
+    --primary: 40 3% 8%;             /* #141413 - Bold black for primary actions */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF - White text on dark backgrounds */
+    
+    /* Secondary elements */
+    --secondary: 43 54% 84%;         /* #F1E6D0 - Warm beige for secondary elements */
+    --secondary-foreground: 40 3% 8%; /* #141413 - Dark text on light backgrounds */
+    
+    /* Muted areas */
+    --muted: 60 20% 94%;             /* #F0EFEA - Subtle background for less important areas */
+    --muted-foreground: 40 2% 36%;   /* #605F5B - Subdued text for captions */
+    
+    /* Accent highlights */
+    --accent: 43 54% 84%;            /* #F1E6D0 - Warm highlight for focus areas */
+    --accent-foreground: 40 3% 8%;   /* #141413 - Clear text on accents */
+    
+    /* Destructive actions */
+    --destructive: 10 50% 63%;       /* #D2886F - Soft red for warnings/errors */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF - White text on destructive */
+    
+    /* Borders and inputs */
+    --border: 60 15% 88%;            /* #E6E4DD - Subtle borders */
+    --border-secondary: 60 10% 75%;  /* #C4C3BB - Stronger borders where needed */
+    --input: 60 15% 88%;             /* #E6E4DD - Form input borders */
+    --ring: 40 2% 36%;               /* #605F5B - Focus rings */
+    
+    /* Chart colors - for data visualization */
+    --chart-1: 210 80% 66%;          /* #61AAF2 - Blue */
+    --chart-2: 120 30% 65%;          /* #7EBF8E - Green */
+    --chart-3: 10 50% 63%;           /* #D2886F - Coral */
+    --chart-4: 43 54% 84%;           /* #F1E6D0 - Beige */
+    --chart-5: 30 60% 70%;           /* #D4A27F - Tan */
+    
+    /* Radius for rounded corners */
+    --radius: 0.75rem;
   }
 
-  .dark {
-    /* Main background - rich dark blue for coding environment */
-    --background: 222 18% 12%;
-    --foreground: 210 20% 98%;
+  .dark { /* Main background - rich dark blue for coding environment */ --background: 222 18% 12%; --foreground: 210 20% 98%;
 
     /* Muted elements - enhanced contrast for readability */
     --muted: 223 14% 20%;
     --muted-foreground: 215 16% 75%;
-
+    
     /* Popover and card styles - slightly lighter than background */
     --popover: 222 16% 16%;
     --popover-foreground: 210 20% 98%;
-
+    
     --card: 222 16% 16%;
     --card-foreground: 210 20% 98%;
-
+    
     /* Borders - subtle but visible */
     --border: 220 13% 23%;
     --border-secondary: 216 60% 60%;
     --input: 220 13% 23%;
-
+    
     /* Neutral tones */
     --neutral: 210 20% 98%;
     --neutral-foreground: 215 14% 45%;
-
+    
     /* Primary brand color - vibrant blue that stands out in dark mode */
     --primary: 216 60% 55%;
     --primary-foreground: 0 0% 98%;
-
+    
     /* Secondary elements - subdued but complementary */
     --secondary: 217 19% 27%;
     --secondary-foreground: 210 20% 98%;
-
+    
     /* Accents - for highlights and focus states */
     --accent: 215 25% 27%;
     --accent-foreground: 210 20% 98%;
-
+    
     /* Destructive actions - clear error indicators */
     --destructive: 0 70% 50%;
     --destructive-foreground: 210 20% 98%;
-
+    
     --ring: 215 20% 65%;
-
+    
     /* Chart colors - optimized for dark theme visibility */
     --chart-1: 210 100% 60%;
     --chart-2: 170 70% 55%;
     --chart-3: 30 90% 65%;
     --chart-4: 280 75% 65%;
     --chart-5: 330 80% 60%;
-
+    
     /* Sidebar specific colors - slightly darker than main content */
     --sidebar-background: 225 22% 10%;
     --sidebar-foreground: 210 20% 98%;
@@ -117,7 +111,7 @@
     --sidebar-accent-foreground: 216 24% 96%;
     --sidebar-border: 222 18% 20%;
     --sidebar-ring: 216 60% 55%;
-  }
+    }
 }
 
 @layer base {

@@ -15,11 +15,21 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    async session({ session, user }) {
-      if (user) {
-        session.user.id = user.id;
+    async jwt({ token, user }) {
+      if (user && user.id) {
+        token.id = user.id;
         //@ts-ignore
-        session.user.role = user.role;
+        token.role = user.role;
+        //@ts-ignore
+        token.onboarded = user.onboarded;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.onboarded = token.onboarded;
       }
       return session;
     },

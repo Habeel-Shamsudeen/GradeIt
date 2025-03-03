@@ -25,7 +25,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
   image         String?
-  Role          Role     @default(STUDENT)
+  role          Role     @default(STUDENT)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   onboarded     Boolean @default(false) 
@@ -63,6 +63,7 @@ model Classroom {
   id          String    @id @default(uuid())
   name        String
   code        String    @unique  // Unique class join code
+  inviteLink  String    @unique
   facultyId   String
   faculty     User      @relation("FacultyClassrooms", fields: [facultyId], references: [id])
   students    User[]    @relation("StudentClasses")
