@@ -554,14 +554,10 @@ export default function Home() {
 
                 <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                   <Button size="lg" className="h-12 px-8 bg-white text-[#141413] hover:bg-[#F0EFEA] transition-all">
-                    Start Free Trial
+                    Get Started
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
-
-                <p className="mt-8 text-sm text-[#A3A299]">
-                  No credit card required. Free plan includes up to 30 students and basic features.
-                </p>
               </div>
             </AnimatedSection>
           </div>

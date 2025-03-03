@@ -1,3 +1,6 @@
+'use client'
+import { UserClassroom } from "@/lib/types/class-types";
+import { getUserClasses } from "@/server/actions/class-actions";
 import {
   BrushIcon,
   Home02Icon,
@@ -6,46 +9,45 @@ import {
   TestTube01Icon,
   UserAccountIcon,
 } from "hugeicons-react";
+import { useEffect, useState } from "react";
 
-export const  getNavigationConfig = () => ({
-  navGroup2: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: Home02Icon as HugeiconsIcon,
-      isActive: true,
-      items: [],
-    },
-    {
-      title: "Leads",
-      url: "/leads",
-      icon: UserAccountIcon as HugeiconsIcon,
-      isActive: true,
-      items: [],
-    },
-    {
-      title: "Campaign",
-      url: "/campaign",
-      icon: TestTube01Icon as HugeiconsIcon,
+export const  getNavigationConfig = () => {
+  const [userClasses, setUserClasses] = useState<UserClassroom[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const response = await getUserClasses();
+        if (response.status === "success") {
+          setUserClasses(response.classes || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch classes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClasses();
+  }, []);
+  return ({
+    loading,
+    navGroup2: userClasses.map((classroom) => ({
+      title: classroom.name,
+      url: `/classes/${classroom.code}`,
+      icon: UserAccountIcon as HugeiconsIcon, // Change icon if needed
+      isActive: false,
       items: [
-        // ...campaigns.map((campaign: SidebarCampaign) => ({
-        //   title: campaign.campaignName,
-        //   url: `/campaign/${campaign.id}`,
-        //   isCampaignActive:campaign.isCampaignActive || false
-        // })),
+        {
+          title: 'assignments',
+          url: `/classes/${classroom.code}/story`,
+        },
         // {
-        //   title: "Create Campaign",
-        //   url: "/",
+        //   title: 'Moodboard',
+        //   url: `/classes/${classroom.code}/moodboard`,
         // },
       ],
-    },
-    {
-      title: "Linkedin Accounts",
-      url: "/linkedin",
-      icon: BrushIcon as HugeiconsIcon,
-      items: [],
-    },
-  ],
+    })),
   navGroup3: [
     {
       title: "Setting & Billing",
@@ -54,4 +56,4 @@ export const  getNavigationConfig = () => ({
       items: [],
     },
   ],
-});
+})};

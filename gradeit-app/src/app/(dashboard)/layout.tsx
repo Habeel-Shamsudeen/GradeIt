@@ -8,7 +8,7 @@ import {
 import { auth } from "@/lib/auth";
 import AuthPopup from "../_components/auth/auth-popup";
 import { SessionProvider } from "next-auth/react";
-// import { AppBreadcrumbs } from '../_components/navigation/breadcrumbs';
+import { AppBreadcrumbs } from '../_components/navigation/breadcrumbs';
 import OnboardingCheck from './(features)/onboarding/onboarding-check';
 
 export default async function DashboardLayout({
@@ -30,7 +30,7 @@ export default async function DashboardLayout({
               <div className="flex items-center gap-2 px-4">
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
-                {/* <AppBreadcrumbs /> */}
+                <AppBreadcrumbs />
               </div>
             </header>
             <div className="container p-4">{children}</div>

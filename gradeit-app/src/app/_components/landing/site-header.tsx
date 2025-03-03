@@ -56,10 +56,10 @@ export function SiteHeader() {
               asChild
               className="border-[#E6E4DD] text-[#3A3935] hover:bg-[#F0EFEA] hover:text-[#141413]"
             >
-              <Link href="/login">Log in</Link>
+              <Link href="/classes">Log in</Link>
             </Button>
             <Button size="sm" asChild className="bg-[#141413] text-white hover:bg-[#23241F]">
-              <Link href="/signup">Sign up</Link>
+              <Link href="/classes">Sign up</Link>
             </Button>
           </div>
           <Button variant="outline" size="icon" className="md:hidden border-[#E6E4DD]">

@@ -21,7 +21,7 @@ enum Status {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
+  name          String
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
   image         String?
@@ -62,9 +62,11 @@ model Account {
 model Classroom {
   id          String    @id @default(uuid())
   name        String
-  code        String    @unique  // Unique class join code
+  section     String
+  code        String    @unique
   inviteLink  String    @unique
   facultyId   String
+  facultyName String
   faculty     User      @relation("FacultyClassrooms", fields: [facultyId], references: [id])
   students    User[]    @relation("StudentClasses")
   assignments Assignment[]

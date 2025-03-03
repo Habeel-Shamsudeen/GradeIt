@@ -11,17 +11,24 @@ export const updateUserName = async (name: string) => {
     throw new Error("Unauthorized");
   }
   try {
-    const user = await prisma.user.update({
+    const user = await prisma.user.findUnique({
       where: {
         id: session.user.id,
       },
-      data: {
-        name: name,
-      },
+    });
+    if (!user) {
+      throw new Error("No user found");
+    }
+    if (user.name === name) {
+      return { status: "success", message: "No changes detected" };
+    }
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { name },
     });
     return { success: true };
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error updating name:", error);
     return { success: false };
   }
 };
@@ -33,18 +40,25 @@ export const updateOnboardingStatus = async (onboarded: boolean) => {
     throw new Error("Unauthorized");
   }
   try {
-    const user = await prisma.user.update({
+    const user = await prisma.user.findUnique({
       where: {
         id: session.user.id,
       },
-      data: {
-        onboarded: onboarded,
-      },
     });
-    return { success: true };
+    if (!user) {
+      throw new Error("No user found");
+    }
+    if (user.onboarded === onboarded) {
+      return { status: "success", message: "No changes detected" };
+    }
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { onboarded },
+    });
+    return { status: "success" };
   } catch (error) {
-    console.error("Error:", error);
-    return { success: false };
+    console.error("Error updating onboarding status:", error);
+    return { status: "failed" };
   }
 };
 
@@ -55,17 +69,49 @@ export const updateUserRole = async (role: Role) => {
     throw new Error("Unauthorized");
   }
   try {
-    const user = await prisma.user.update({
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session.user.id,
+      }
+    });
+    if(!user){
+      throw new Error("No user found");
+    }
+    if(user.role === role){
+      return { status: "success", message: "No changes detected" };
+    }
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { role },
+    });
+    return { status: "success" };
+  } catch (error) {
+    console.error("Error updating role:", error);
+    return { status: "failed" };
+  }
+};
+
+export const getUserRole = async () => {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  try {
+    const user = await prisma.user.findFirst({
       where: {
         id: session.user.id,
       },
-      data: {
-        role: role,
-      },
+      select:{
+        role:true
+      }
     });
-    return { success: true };
+    if (!user) {
+      throw new Error("No user found");
+    }
+    return { role: user.role, status: "success" };
   } catch (error) {
     console.error("Error:", error);
-    return { success: false };
+    return { status: "failed"};
   }
 };

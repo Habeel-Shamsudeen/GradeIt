@@ -25,7 +25,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { resolvedTheme } = useTheme();
   const { open, isMobile } = useSidebar();
   const { user: sessionUser } = useClientSession();
-  const navigationConfig = getNavigationConfig();
+  const {loading,navGroup2,navGroup3} = getNavigationConfig();
 
   const userProfile = sessionUser
     ? {
@@ -51,7 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {isMobile || open ? (
               <>
                 {resolvedTheme === "light" ? (
-                  <img src={LOGO_LIGHT} alt="Logo" className="h-10 ml-2" />
+                  <img src={'./'} alt="Logo" className="h-10 ml-2" />
                 ) : (
                   <img src={LOGO_DARK} alt="Logo" className="h-10 ml-2" />
                 )}
@@ -65,8 +65,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          <NavMain items={navigationConfig.navGroup2} label="Overview" />
-          <NavMain items={navigationConfig.navGroup3} label="Settings" />
+        {loading ? (
+            <p className="text-center text-gray-500">Loading classes...</p>
+          ) : (
+            <NavMain items={navGroup2} label="Classes" />
+          )}
         </SidebarContent>
         <SidebarFooter className="flex flex-col gap-2">
 

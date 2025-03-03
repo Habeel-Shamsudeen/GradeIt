@@ -1,4 +1,6 @@
+import { darkCardColors, lightCardColors } from '@/config/constants';
 import { type ClassValue, clsx } from 'clsx';
+import { randomUUID } from 'crypto';
 import { env } from 'process';
 import { twMerge } from 'tailwind-merge';
 
@@ -79,3 +81,12 @@ export function formatNumberShort(num: number | string): string {
 export const absoluteUrl = (path: string) => {
   return new URL(path, process.env.NEXT_PUBLIC_APP_URL).toString();
 };
+
+export const getCardBgColor = (theme:string|undefined) => {
+  const palette = theme === "dark" ? darkCardColors : lightCardColors
+  return palette[Math.floor(Math.random() * palette.length)]
+}
+
+export const generateClassroomCode = ()=>{
+  return randomUUID().slice(0,6);
+}

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { updateOnboardingStatus, updateUserRole } from '@/server/actions/user-actions';
 import { Role } from '@prisma/client';
 import { useClientSession } from '@/hooks/use-auth-session';
+import { useRouter } from 'next/navigation';
 
 interface OnboardingInitiatorProps {
   onClose: () => void;
@@ -17,6 +18,7 @@ export default function OnboardingInitiator({ onClose }: OnboardingInitiatorProp
   const [isOnboardingComplete,setIsOnboardingComplete] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {refreshSession} = useClientSession();
+  const router = useRouter();
 
   const handleSubmit = async () => {
     if (!role) {
@@ -27,9 +29,10 @@ export default function OnboardingInitiator({ onClose }: OnboardingInitiatorProp
     const roleUpdate = await updateUserRole(role);
     const onboardingUpdate = await updateOnboardingStatus(true);
     await refreshSession();
-    if (roleUpdate.success && onboardingUpdate.success) {
+    if (roleUpdate.status === 'success' && onboardingUpdate.status === 'success') {
       toast.success('Onboarding complete!');
       setIsOnboardingComplete(true);
+      router.refresh();
       onClose();
     } else {
       toast.error('Something went wrong. Please try again.');
