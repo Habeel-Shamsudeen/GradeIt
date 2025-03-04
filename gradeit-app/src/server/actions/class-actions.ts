@@ -104,6 +104,40 @@ export const getUserClasses = async () => {
   }
 };
 
+export const getClassbyCode = async (code: string) => {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const classroom = await prisma.classroom.findFirst({
+      where: {
+        code,
+        OR: [
+          {
+            students: {
+              some: {
+                id: session.user.id
+              }
+            }
+          },
+          {
+            facultyId: session.user.id
+          }
+        ]
+      }
+    });
+
+    return { status: "success", classroom };
+  } catch (error) {
+    console.error("Error fetching class by code:", error);
+    return { status: "failed" };
+  }
+};
+
+
 export const joinClassUsingCode = async (code: string) => {
   const session = await auth();
 
