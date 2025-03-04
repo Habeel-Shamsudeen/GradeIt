@@ -9,21 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/app/_components/ui/checkbox"
 import { Card, CardContent } from "@/app/_components/ui/card"
 import { Separator } from "@/app/_components/ui/separator"
-
-interface TestCase {
-  id: string
-  input: string
-  expectedOutput: string
-  hidden: boolean
-}
-
-interface Question {
-  id: string
-  title: string
-  description: string
-  language: string
-  testCases: TestCase[]
-}
+import { Question, TestCase } from "@/lib/types/assignment-tyes"
 
 interface QuestionFormProps {
   question: Question

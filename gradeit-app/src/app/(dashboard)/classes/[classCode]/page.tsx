@@ -8,6 +8,7 @@ import { GradesTab } from "@/app/_components/classes/grades-tab"
 import { ClassSettingsTab } from "@/app/_components/classes/settings-tab"
 import { getClassbyCode } from "@/server/actions/class-actions"
 import { getUserRole } from "@/server/actions/user-actions"
+import { getAssignments } from "@/server/actions/assignment-actions"
 
 export const metadata: Metadata = {
   title: "Class Details | gradeIT",
@@ -15,9 +16,10 @@ export const metadata: Metadata = {
 }
 
 export default async function ClassPage({ params }: any ) {
-  const {classid} = await params;
-  const {classroom} = await getClassbyCode(classid);
+  const {classCode} = await params;
+  const {classroom} = await getClassbyCode(classCode);
   const {role} = await getUserRole();
+  const {assignments} = await getAssignments(classroom?.id || "");
   //const { students } = await getStudentsByClassId(classroom?.id);
 
   if(!classroom){
@@ -37,19 +39,19 @@ export default async function ClassPage({ params }: any ) {
           </TabsList>
 
           <TabsContent value="assignments">
-            <AssignmentList classId={classid} role={role || "STUDENT"}/>
+            <AssignmentList classCode={classCode} role={role || "STUDENT"} assignments={assignments}/>
           </TabsContent>
 
           <TabsContent value="people">
-            <PeopleTab classId={classid}/>
+            <PeopleTab classCode={classCode}/>
           </TabsContent>
 
           <TabsContent value="grades">
-            <GradesTab classId={classid} />
+            <GradesTab />
           </TabsContent>
 
           <TabsContent value="settings">
-            <ClassSettingsTab classId={classid} classData={classroom} />
+            <ClassSettingsTab classData={classroom} />
           </TabsContent>
         </Tabs>
       </div>

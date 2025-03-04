@@ -3,6 +3,7 @@ import { Geist, Geist_Mono,Onest } from "next/font/google";
 import "@/app/styles/globals.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import NextTopLoader from 'nextjs-toploader';
+import { Toaster } from "sonner";
 
 const onest = Onest({ subsets: ['latin'] });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
           >
             <NextTopLoader />
             {children}
+            <Toaster />
           </ThemeProvider>
         
       </body>

@@ -5,6 +5,7 @@ import { Plus } from "lucide-react"
 import { AssignmentCard } from "./assignment-card"
 import { Button } from "@/app/_components/ui/button"
 import { Role } from "@prisma/client"
+import { Assignment } from "@/lib/types/assignment-tyes"
 
 // Mock data for demonstration
 const assignments = [
@@ -38,15 +39,15 @@ const assignments = [
 ]
 
 interface AssignmentListProps {
-  classId: string
+  classCode: string
   role:Role
+  assignments: Assignment[]
 }
 
-export function AssignmentList({ classId, role }: AssignmentListProps) {
+export function AssignmentList({ classCode, role, assignments }: AssignmentListProps) {
   const router = useRouter()
-
   const handleCreateAssignment = () => {
-    router.push(`/classes/${classId}/create`)
+    router.push(`/classes/${classCode}/create`)
   }
 
   return (
@@ -80,7 +81,7 @@ export function AssignmentList({ classId, role }: AssignmentListProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: index * 0.05 }}
             >
-              <AssignmentCard assignment={assignment} classId={classId} />
+              <AssignmentCard assignment={assignment} classCode={classCode} />
             </motion.div>
           ))
         )}

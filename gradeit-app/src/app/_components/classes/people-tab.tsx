@@ -65,10 +65,10 @@ const students = [
 ]
 
 interface PeopleTabProps {
-  classId: string
+  classCode: string
 }
 
-export function PeopleTab({ classId }: PeopleTabProps) {
+export function PeopleTab({ classCode }: PeopleTabProps) {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   
@@ -193,7 +193,7 @@ export function PeopleTab({ classId }: PeopleTabProps) {
         </div>
       </div>
       
-      <InvitePeopleDialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen} classId={classId} />
+      <InvitePeopleDialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen} classCode={classCode} />
     </div>
   )
 }
@@ -201,10 +201,10 @@ export function PeopleTab({ classId }: PeopleTabProps) {
 interface InvitePeopleDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  classId: string
+  classCode: string
 }
 
-function InvitePeopleDialog({ open, onOpenChange, classId }: InvitePeopleDialogProps) {
+function InvitePeopleDialog({ open, onOpenChange, classCode }: InvitePeopleDialogProps) {
   const [activeTab, setActiveTab] = useState("email")
   const [emails, setEmails] = useState("")
   const [loading, setLoading] = useState(false)
@@ -289,7 +289,7 @@ function InvitePeopleDialog({ open, onOpenChange, classId }: InvitePeopleDialogP
                 <div className="flex">
                   <Input
                     readOnly
-                    value={`https://gradeit.app/join?code=ABC123&class=${classId}`}
+                    value={`https://gradeit.app/join?code=${classCode}`}
                     className="rounded-r-none border-[#E6E4DD]"
                   />
                   <Button className="rounded-l-none">Copy</Button>
@@ -302,7 +302,7 @@ function InvitePeopleDialog({ open, onOpenChange, classId }: InvitePeopleDialogP
               <div className="grid gap-2">
                 <label className="text-sm font-medium">Class Code</label>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl font-medium tracking-wider">ABC123</span>
+                  <span className="text-xl font-medium tracking-wider">{classCode}</span>
                   <Button variant="outline" size="sm" className="h-7 border-[#E6E4DD]">
                     Copy
                   </Button>

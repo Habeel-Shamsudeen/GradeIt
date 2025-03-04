@@ -90,3 +90,7 @@ export const getCardBgColor = (theme:string|undefined) => {
 export const generateClassroomCode = ()=>{
   return randomUUID().slice(0,6);
 }
+
+export const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+}

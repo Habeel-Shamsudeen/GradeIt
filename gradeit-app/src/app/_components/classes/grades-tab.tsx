@@ -75,11 +75,7 @@ const students = [
   },
 ]
 
-interface GradesTabProps {
-  classId: string
-}
-
-export function GradesTab({ classId }: GradesTabProps) {
+export function GradesTab() {
   const [searchQuery, setSearchQuery] = useState("")
   
   const filteredStudents = students.filter(

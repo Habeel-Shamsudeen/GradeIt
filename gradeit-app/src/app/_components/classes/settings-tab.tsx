@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Copy, RefreshCw, Trash2, Save, Link, Key } from 'lucide-react'
-import { Button } from "@/app/_components/ui/button"
-import { Input } from "@/app/_components/ui/input"
-import { Label } from "@/app/_components/ui/label"
-import { Textarea } from "@/app/_components/ui/textarea"
-import { Switch } from "@/app/_components/ui/switch"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Copy, RefreshCw, Trash2, Save, Link, Key } from "lucide-react";
+import { Button } from "@/app/_components/ui/button";
+import { Input } from "@/app/_components/ui/input";
+import { Label } from "@/app/_components/ui/label";
+import { Textarea } from "@/app/_components/ui/textarea";
+import { Switch } from "@/app/_components/ui/switch";
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/app/_components/ui/card"
+} from "@/app/_components/ui/card";
 
 import {
   AlertDialog,
@@ -27,36 +27,44 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/app/_components/ui/alert-dialog"
-import { UserClassroom } from "@/lib/types/class-types"
+} from "@/app/_components/ui/alert-dialog";
+import { UserClassroom } from "@/lib/types/class-types";
+import { copyToClipboard } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ClassSettingsTabProps {
-  classId: string
-  classData: UserClassroom
+  classData: UserClassroom;
 }
 
-export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) {
-  const [name, setName] = useState(classData.name)
-  const [section, setSection] = useState(classData.section)
+export function ClassSettingsTab({ classData }: ClassSettingsTabProps) {
+  const [name, setName] = useState(classData.name);
+  const [section, setSection] = useState(classData.section);
   // const [backgroundColor, setBackgroundColor] = useState(classData.backgroundColor)
-  const [isLoading, setIsLoading] = useState(false)
-  
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleCopy = (text: string) => {
+    copyToClipboard(text);
+    toast.success("Copied to clipboard");
+  };
+
   const handleSave = async () => {
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false)
+      setIsLoading(false);
       // Show success message or redirect
-    }, 1000)
-  }
-  
+    }, 1000);
+  };
+
   return (
     <div className="space-y-8">
       <Card className="rounded-2xl border-[#E6E4DD]">
         <CardHeader>
           <CardTitle>Class Information</CardTitle>
-          <CardDescription>Update your class details and settings</CardDescription>
+          <CardDescription>
+            Update your class details and settings
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-2">
@@ -68,7 +76,7 @@ export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) 
               className="border-[#E6E4DD]"
             />
           </div>
-          
+
           <div className="grid gap-2">
             <Label htmlFor="section">Section</Label>
             <Input
@@ -78,7 +86,7 @@ export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) 
               className="border-[#E6E4DD]"
             />
           </div>
-          
+
           {/* <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -88,7 +96,7 @@ export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) 
               className="min-h-[100px] resize-y border-[#E6E4DD]"
             />
           </div> */}
-          
+
           {/* <div className="grid gap-2">
             <Label htmlFor="color">Theme Color</Label>
             <div className="flex gap-3">
@@ -116,45 +124,62 @@ export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) 
           </Button>
         </CardFooter>
       </Card>
-      
+
       <Card className="rounded-2xl border-[#E6E4DD]">
         <CardHeader>
           <CardTitle>Class Access</CardTitle>
-          <CardDescription>Manage how students can join your class</CardDescription>
+          <CardDescription>
+            Manage how students can join your class
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-4">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-sm font-medium">Class Code</h4>
-                <p className="text-xs text-[#605F5B]">Students can use this code to join your class</p>
+                <p className="text-xs text-[#605F5B]">
+                  Students can use this code to join your class
+                </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xl font-medium tracking-wider">{classData.code}</span>
-                <Button variant="outline" size="icon" className="h-8 w-8 border-[#E6E4DD]">
+                <span className="text-xl font-medium tracking-wider">
+                  {classData.code}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 border-[#E6E4DD]"
+                  onClick={() => handleCopy(classData.code)}
+                >
                   <Copy className="h-4 w-4" />
                   <span className="sr-only">Copy class code</span>
                 </Button>
-                <Button variant="outline" size="icon" className="h-8 w-8 border-[#E6E4DD]">
+                {/* <Button variant="outline" size="icon" className="h-8 w-8 border-[#E6E4DD]">
                   <RefreshCw className="h-4 w-4" />
                   <span className="sr-only">Reset class code</span>
-                </Button>
+                </Button> */}
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-sm font-medium">Invite Link</h4>
-                <p className="text-xs text-[#605F5B]">Share this link to invite people to your class</p>
+                <p className="text-xs text-[#605F5B]">
+                  Share this link to invite people to your class
+                </p>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="outline" className="gap-1 border-[#E6E4DD]">
+                <Button
+                  variant="outline"
+                  className="gap-1 border-[#E6E4DD]"
+                  onClick={() => handleCopy(classData.inviteLink)}
+                >
                   <Link className="h-4 w-4" />
                   <span>Copy Link</span>
                 </Button>
               </div>
             </div>
-            
+
             {/* <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-sm font-medium">Allow Join Requests</h4>
@@ -165,7 +190,7 @@ export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) 
           </div>
         </CardContent>
       </Card>
-      
+
       <Card className="rounded-2xl border-[#E6E4DD]">
         <CardHeader>
           <CardTitle>Danger Zone</CardTitle>
@@ -175,17 +200,23 @@ export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) 
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-sm font-medium">Archive Class</h4>
-              <p className="text-xs text-[#605F5B]">Hide this class from active view</p>
+              <p className="text-xs text-[#605F5B]">
+                Hide this class from active view
+              </p>
             </div>
             <Button variant="outline" className="border-[#E6E4DD]">
               Archive
             </Button>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-sm font-medium text-destructive">Delete Class</h4>
-              <p className="text-xs text-[#605F5B]">Permanently delete this class and all its data</p>
+              <h4 className="text-sm font-medium text-destructive">
+                Delete Class
+              </h4>
+              <p className="text-xs text-[#605F5B]">
+                Permanently delete this class and all its data
+              </p>
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -195,12 +226,15 @@ export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) 
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the class and all associated assignments, 
-                    questions, and student submissions.
+                    This action cannot be undone. This will permanently delete
+                    the class and all associated assignments, questions, and
+                    student submissions.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="border-[#E6E4DD]">Cancel</AlertDialogCancel>
+                  <AlertDialogCancel className="border-[#E6E4DD]">
+                    Cancel
+                  </AlertDialogCancel>
                   <AlertDialogAction>Delete</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -209,5 +243,5 @@ export function ClassSettingsTab({ classId, classData }: ClassSettingsTabProps) 
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

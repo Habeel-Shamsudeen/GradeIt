@@ -30,3 +30,12 @@ export async function isCodeUnique(code: string) {
   });
   return !codeExist;
 }
+
+export async function getClassIdFromCode(code: string) {
+  const classroom = await prisma.classroom.findUnique({
+    where: {
+      code: code,
+    },
+  });
+  return classroom?.id;
+}

@@ -11,7 +11,8 @@ export const metadata: Metadata = {
 }
 
 export default async function CreateAssignmentPage({ params }: any) {
-  const { classId } = await params;
+  const { classCode } = await params;
+  console.log("classCode", classCode);
   const session = await auth();
   if(!session?.user){
     return <Loading/>
@@ -25,7 +26,7 @@ export default async function CreateAssignmentPage({ params }: any) {
     <div className="container mx-auto max-w-4xl p-6">
       <PageHeader heading="Create Assignment" text="Create a new coding assignment for your students." />
       <div className="mt-8">
-        <CreateAssignmentForm classId={classId} />
+        <CreateAssignmentForm classCode={classCode} />
       </div>
     </div>
   )
