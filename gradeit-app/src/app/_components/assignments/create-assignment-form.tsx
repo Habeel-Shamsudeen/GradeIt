@@ -36,7 +36,7 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
       id: "1",
       title: "",
       description: "",
-      language: "python",
+      language: "Python",
       testCases: [
         {
           id: "1",

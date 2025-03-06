@@ -73,7 +73,6 @@ export default async function AssignmentPage({
   const {assignment} = await getAssignmentById(assignmentId);
   const {role} = await getUserRole()
 
-  console.log(assignment);
 
   if (!assignment) {
     notFound()

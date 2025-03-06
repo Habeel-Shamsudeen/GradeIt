@@ -2,13 +2,17 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronRight, Maximize2, Minimize2 } from "lucide-react"
+import { ChevronRight, Maximize2, Minimize2, FileText } from "lucide-react"
 import { Button } from "@/app/_components/ui/button"
 import { QuestionDescription } from "./question-description"
 import { CodeEditor } from "./code-editor"
 import { TestCases } from "./test-cases"
 import { QuestionNav } from "./question-nav"
 import { AssignmentById } from "@/lib/types/assignment-tyes"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/_components/ui/tabs"
+import { CustomTestInput } from "./custom-test-input"
+import { LANGUAGE_ID_MAP } from "@/config/constants"
+
 
 interface AssignmentLayoutProps {
   assignment: AssignmentById
@@ -20,7 +24,11 @@ export function AssignmentLayout({ assignment, classId }: AssignmentLayoutProps)
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
   const [code, setCode] = useState("")
   const [isRunning, setIsRunning] = useState(false)
+
   const [testResults, setTestResults] = useState<any[]>([])
+  const [customInput, setCustomInput] = useState("")
+  const [customOutput, setCustomOutput] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<"testcases" | "custom">("testcases")
 
   const currentQuestion = assignment.questions[currentQuestionIndex]
 
@@ -39,9 +47,9 @@ export function AssignmentLayout({ assignment, classId }: AssignmentLayoutProps)
           'x-rapidapi-host': 'judge0-ce.p.rapidapi.com',
         },
         body: JSON.stringify({
-          language_id: 71, // Adjust language_id as needed
+          language_id: LANGUAGE_ID_MAP[currentQuestion.language as keyof typeof LANGUAGE_ID_MAP],
           source_code: btoa(code), // Convert code to Base64
-          stdin: btoa(""), // Provide input if needed
+          stdin: btoa(customInput), // Provide input if needed
         }),
       });
   
@@ -102,7 +110,7 @@ export function AssignmentLayout({ assignment, classId }: AssignmentLayoutProps)
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+<div className="flex h-[calc(100vh-4rem)] overflow-hidden">
       {/* Left Panel */}
       <motion.div
         initial={false}
@@ -118,14 +126,25 @@ export function AssignmentLayout({ assignment, classId }: AssignmentLayoutProps)
             currentIndex={currentQuestionIndex}
             onSelect={setCurrentQuestionIndex}
           />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-            className="h-8 w-8 rounded-full"
-          >
-            {isDescriptionExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 border-[#E6E4DD]"
+              onClick={() => (window.location.href = `/classes/${classId}/${assignment.id}/submissions`)}
+            >
+              <FileText className="h-4 w-4" />
+              <span>Submissions</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+              className="h-8 w-8 rounded-full"
+            >
+              {isDescriptionExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
@@ -166,12 +185,49 @@ export function AssignmentLayout({ assignment, classId }: AssignmentLayoutProps)
             <CodeEditor
               code={code}
               onChange={setCode}
-              language="python"
-              onRun={handleRunTests}
+              language={currentQuestion.language}
+              onRun={activeTab === "testcases" ? handleRunTests : handleRunTests}
               onSubmit={handleSubmit}
               isRunning={isRunning}
             />
-            <TestCases results={testResults} testCases={currentQuestion.testCases} />
+
+            <div className="border-t border-[#2D2D2D]">
+              <Tabs
+                value={activeTab}
+                onValueChange={(value) => setActiveTab(value as "testcases" | "custom")}
+                className="w-full"
+              >
+                <div className="border-b border-[#2D2D2D] px-4">
+                  <TabsList className="bg-transparent">
+                    <TabsTrigger
+                      value="testcases"
+                      className="data-[state=active]:bg-[#2D2D2D] data-[state=active]:text-white text-[#A1A1A1]"
+                    >
+                      Test Cases
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="custom"
+                      className="data-[state=active]:bg-[#2D2D2D] data-[state=active]:text-white text-[#A1A1A1]"
+                    >
+                      Custom Input
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <TabsContent value="testcases" className="mt-0">
+                  <TestCases results={testResults} testCases={currentQuestion.testCases} />
+                </TabsContent>
+
+                <TabsContent value="custom" className="mt-0">
+                  <CustomTestInput
+                    input={customInput}
+                    onInputChange={setCustomInput}
+                    output={customOutput}
+                    isRunning={isRunning}
+                  />
+                </TabsContent>
+              </Tabs>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,22 +1,36 @@
-"use client"
+"use client";
 
-import { useEffect, useRef } from "react"
-import { Editor, loader } from "@monaco-editor/react"
-import type * as monaco from "monaco-editor"
-import { Play, Send } from "lucide-react"
-import { Button } from "@/app/_components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select"
+import { useEffect, useRef } from "react";
+import { Editor, loader } from "@monaco-editor/react";
+import type * as monaco from "monaco-editor";
+import { Play, Send } from "lucide-react";
+import { Button } from "@/app/_components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/_components/ui/select";
+import { LANGUAGE_ID_MAP } from "@/config/constants";
 
 interface CodeEditorProps {
-  code: string
-  onChange: (value: string) => void
-  language: string
-  onRun: () => void
-  onSubmit: () => void
-  isRunning: boolean
+  code: string;
+  onChange: (value: string) => void;
+  language: string;
+  onRun: () => void;
+  onSubmit: () => void;
+  isRunning: boolean;
 }
 
-export function CodeEditor({ code, onChange, language, onRun, onSubmit, isRunning }: CodeEditorProps) {
+export function CodeEditor({
+  code,
+  onChange,
+  language,
+  onRun,
+  onSubmit,
+  isRunning,
+}: CodeEditorProps) {
   // const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>()
   // const monacoEl = useRef(null)
 
@@ -51,10 +65,11 @@ export function CodeEditor({ code, onChange, language, onRun, onSubmit, isRunnin
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="python">Python</SelectItem>
-            <SelectItem value="javascript">JavaScript</SelectItem>
-            <SelectItem value="java">Java</SelectItem>
-            <SelectItem value="cpp">C++</SelectItem>
+            {Object.keys(LANGUAGE_ID_MAP).map((language) => (
+              <SelectItem key={language} value={language}>
+                {language}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -79,21 +94,21 @@ export function CodeEditor({ code, onChange, language, onRun, onSubmit, isRunnin
         </div>
       </div>
 
-            <Editor
-  height="100%"
-  defaultLanguage="python"
-  defaultValue=""
-  onChange={(value) => onChange(value ?? "")} // Ensure value is never undefined
-  className="flex-1"
-  value={code}
-  theme="vs-dark"
-  options={{
-    fontSize: 14,
-    fontFamily: "JetBrains Mono, monospace",
-    automaticLayout: true,
-  }}
-/>
+      <Editor
+        height="100%"
+        defaultLanguage={language.toLowerCase()}
+        defaultValue=""
+        onChange={(value) => onChange(value ?? "")} // Ensure value is never undefined
+        className="flex-1"
+        value={code}
+        language={language.toLowerCase()}
+        theme="vs-dark"
+        options={{
+          fontSize: 14,
+          fontFamily: "JetBrains Mono, monospace",
+          automaticLayout: true,
+        }}
+      />
     </div>
-  )
+  );
 }
-

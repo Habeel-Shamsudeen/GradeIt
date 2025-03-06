@@ -10,6 +10,7 @@ import { Checkbox } from "@/app/_components/ui/checkbox"
 import { Card, CardContent } from "@/app/_components/ui/card"
 import { Separator } from "@/app/_components/ui/separator"
 import { Question, TestCase } from "@/lib/types/assignment-tyes"
+import { LANGUAGE_ID_MAP } from "@/config/constants"
 
 interface QuestionFormProps {
   question: Question
@@ -88,11 +89,9 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
               <SelectValue placeholder="Select a language" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="python">Python</SelectItem>
-              <SelectItem value="javascript">JavaScript</SelectItem>
-              <SelectItem value="java">Java</SelectItem>
-              <SelectItem value="cpp">C++</SelectItem>
-              <SelectItem value="c">C</SelectItem>
+              {Object.keys(LANGUAGE_ID_MAP).map((language) => (
+                <SelectItem key={language} value={language}>{language}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
