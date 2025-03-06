@@ -1,29 +1,29 @@
 const { Parser, Language } = require('web-tree-sitter');
 
-// Initialize tree-sitter
+
 async function initParser() {
   await Parser.init();
   const parser = new Parser();
 
-  // Load tree-sitter grammars
+  
   const Python = await Language.load("./node_modules/tree-sitter-python/tree-sitter-python.wasm");
   const JavaScript = await Language.load("./node_modules/tree-sitter-javascript/tree-sitter-javascript.wasm");
 
-  // Function to normalize variables
+ 
   async function normalizeVariables(code, lang) {
       let varMap = new Map();
       let funcCount = 1, varCount = 1;
 
-      // Select the right parser
+      
       parser.setLanguage(lang === "python" ? Python : JavaScript);
       const tree = parser.parse(code);
       function traverse(node) {
           for (let i = 0; i < node.childCount; i++) {
               let child = node.child(i);
 
-              // Rename function names
+              
               if (child.type === "function_definition" || child.type === "function_declaration") {
-                  let funcNameNode = child.child(1); // First child is usually "def" or "function"
+                  let funcNameNode = child.child(1);
                   if (funcNameNode) {
                       let oldName = funcNameNode.text;
                       if (!varMap.has(oldName)) {
@@ -47,7 +47,7 @@ async function initParser() {
 
       traverse(tree.rootNode);
 
-      // Apply renaming
+
       let newCode = code;
       for (let [oldName, newName] of varMap.entries()) {
           newCode = newCode.replace(new RegExp(`\\b${oldName}\\b`, "g"), newName);
@@ -56,7 +56,6 @@ async function initParser() {
       return newCode;
   }
 
-  // Example Usage
   const pythonCode = `
   from sklearn.datasets import load_iris
 import matplotlib.pyplot as plt

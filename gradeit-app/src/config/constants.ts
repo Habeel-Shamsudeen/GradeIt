@@ -1,6 +1,6 @@
-export const APP_TITLE = 'GradeIT - Turn ideas into reality, in no time!';
+export const APP_TITLE = 'GradeIT - Revolutionize Coding Education';
 export const APP_DESCRIPTION =
-  'ZeroSetup by JoblessCEO lets you build production grade apps in a days. Bring your idea and kickstart your project!';
+  'GradeIT provides educators with an intuitive platform to create, manage, and monitor coding assignments, while offering students a dynamic environment for writing, testing, and submitting code with built-in plagiarism detection.';
 
 // Logo
 export const LOGO_DARK = '/images/logo/zs-logo-dark.svg';

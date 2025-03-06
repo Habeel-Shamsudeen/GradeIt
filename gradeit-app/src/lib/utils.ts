@@ -1,4 +1,5 @@
 import { darkCardColors, lightCardColors } from '@/config/constants';
+import { getAssigmentTitleFromId, getClassNameFromCode } from '@/server/utils';
 import { type ClassValue, clsx } from 'clsx';
 import { randomUUID } from 'crypto';
 import { env } from 'process';
@@ -8,14 +9,29 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function generateBreadcrumbs(pathname: string) {
+export async function generateBreadcrumbs(pathname: string) {
   const paths = pathname.split('/').filter(Boolean);
-  return paths.map((path, index) => {
-    const href = `/${paths.slice(0, index + 1).join('/')}`;
-    const label = path.charAt(0).toUpperCase() + path.slice(1);
-    const isLast = index === paths.length - 1;
-    return { href, label, isLast };
-  });
+  let breadcrumbs = [];
+
+  for (let i = 0; i < paths.length; i++) {
+    let label = paths[i];
+    let href = `/${paths.slice(0, i + 1).join('/')}`;
+    let isLast = i === paths.length - 1;
+
+    if (i === 1) {
+      const className = await getClassNameFromCode(paths[i]);
+      if (className) label = className;
+    }
+
+    if (i === 2) {
+      const assignmentTitle = await getAssigmentTitleFromId(paths[i]);
+      if (assignmentTitle) label = assignmentTitle;
+    }
+
+    breadcrumbs.push({ href, label, isLast });
+  }
+
+  return breadcrumbs;
 }
 
 export function capitalizeFirstLetter(string: string) {

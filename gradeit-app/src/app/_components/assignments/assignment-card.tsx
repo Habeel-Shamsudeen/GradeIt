@@ -18,7 +18,7 @@ export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
 
   return (
     <Card className="overflow-hidden rounded-2xl border-[#E6E4DD] bg-white transition-all hover:shadow-md">
-      <Link href={`/classes/${classCode}/assignments/${assignment.id}`} className="block">
+      <Link href={`/classes/${classCode}/${assignment.id}`} className="block">
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between gap-4">
             <h3 className="text-lg font-medium text-[#141413]">{assignment.title}</h3>

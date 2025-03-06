@@ -41,12 +41,6 @@ export const createAssignment = async (formData: AssignmentSchema) => {
       return { status: "error", message: "Classroom not found" };
     }
 
-    console.log("classroomId", classroomId);
-    console.log("title", title);
-    console.log("description", description);
-    console.log("dueDate", dueDate);
-    console.log("questions", questions);
-
     
     const assignment = await prisma.assignment.create({
       data: {
@@ -112,3 +106,41 @@ export const getAssignments = async (classroomId: string) => {
     return { status: "failed", assignments: [] };
   }
 };
+
+export const getAssignmentById = async (assignmentId: string) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  try {
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: {
+        questions: {
+          include: {
+            testCases:true,
+            Submission:true,
+          },
+        },
+      },
+    });
+
+    if (!assignment) {
+      return { status: "error", message: "Assignment not found" };
+    }
+
+    const formattedAssignment = {
+      id: assignment.id,
+      title: assignment.title,
+      description: assignment.description,
+      dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
+      questionCount: assignment.questions.length,
+      submissionCount: assignment.questions.reduce((acc, question) => acc + question.Submission.length, 0),
+      createdAt: new Date(assignment.createdAt),
+      questions: assignment.questions,
+    };
+    return { status: "success", assignment: formattedAssignment };
+  } catch (error) {
+    throw new Error("Failed to get assignment");
+  }
+}

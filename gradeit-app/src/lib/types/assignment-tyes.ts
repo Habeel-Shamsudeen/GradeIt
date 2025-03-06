@@ -22,3 +22,8 @@ export interface Assignment {
     questionCount: number
     submissionCount: number
 }
+
+
+export interface AssignmentById extends Assignment {
+    questions: Question[]
+}
