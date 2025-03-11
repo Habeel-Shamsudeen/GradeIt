@@ -17,10 +17,10 @@ GradeIT is an automated online coding platform designed for college-level progra
 ## 🛠️ Tech Stack
 
 - **Frontend:** Next.js, Tailwind CSS
-- **Backend:** Node.js, Express, Prisma ORM
+- **Backend:** Next.js, Node.js, Prisma ORM
 - **Database:** PostgreSQL
 - **Execution Engine:** Judge0 + Custom Execution Server
-- **Security:** Docker for isolation, API authentication
+- **Security:** OAuth
 
 ---
 
@@ -28,15 +28,15 @@ GradeIT is an automated online coding platform designed for college-level progra
 
 ### 1️⃣ Clone the Repository
 
-    ```sh
-    git clone https://github.com/habeel-shamsudeen/CodeGrade.git
-    cd CodeGrade
-    ```
+```sh
+git clone https://github.com/habeel-shamsudeen/CodeGrade.git
+cd CodeGrade
+```
 
 ### 2️⃣ Install Dependencies
-    ```sh
-    npm install
-    ```
+```sh
+npm install
+```
 
 ### 3️⃣ Set Up Environment Variables
 
@@ -44,7 +44,7 @@ Create a `.env` file in the root directory and configure the necessary environme
 
 ### 4️⃣ Start the Development Server
 ```sh
-    npm run dev
+npm run dev
 ```
 ---
 
@@ -133,4 +133,4 @@ Contributions are welcome! If you find any bugs or want to enhance the project, 
 
 ## 📧 Contact
 
-For any inquiries or support, please reach out to \[your email or contact link\].
+For any inquiries or support, please reach out to [me](habeelshamsudeen9895@gmail.com).

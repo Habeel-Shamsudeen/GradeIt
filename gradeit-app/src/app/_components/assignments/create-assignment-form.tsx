@@ -21,6 +21,7 @@ import { QuestionForm } from "./question-form";
 import { createAssignment } from "@/server/actions/assignment-actions";
 import { Question } from "@/lib/types/assignment-tyes";
 import { toast } from "sonner";
+import { Switch } from "../ui/switch";
 
 interface CreateAssignmentFormProps {
   classCode: string;
@@ -31,6 +32,7 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [copyPastePrevention,setCopypasteprevention] = useState<boolean>(false);
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: "1",
@@ -91,6 +93,7 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
         dueDate,
         classCode,
         questions,
+        copyPastePrevention
       });
 
       if (response.status === "success") {
@@ -148,6 +151,9 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
                 required
               />
             </div>
+            <Label htmlFor="copyPastePrevention">Disable copy paste</Label>
+            <Switch checked={copyPastePrevention} onCheckedChange={(e)=> setCopypasteprevention((c)=>!c)}/>
+
           </div>
         </CardContent>
       </Card>

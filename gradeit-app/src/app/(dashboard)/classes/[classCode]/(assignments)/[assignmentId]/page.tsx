@@ -10,60 +10,6 @@ export const metadata: Metadata = {
   description: "Complete your coding assignment",
 }
 
-// This would come from your database TODO: write a server action to fetch assignments
-const getAssignment = async (assignmentId: string) => {
-  const assignments = [
-    {
-      id: "1",
-      title: "Binary Search Trees Implementation",
-      description: "Implement a binary search tree with insertion, deletion, and traversal operations.",
-      dueDate: new Date("2025-04-15T23:59:59"),
-      questions: [
-        {
-          id: "1",
-          title: "BST Insertion",
-          description: "Implement a function to insert a node into a Binary Search Tree",
-          difficulty: "Easy",
-          timeLimit: 1000, 
-          memoryLimit: 16, 
-          testCases: [
-            {
-              id: "1",
-              input: "[5,3,7,2,4,6,8]",
-              expectedOutput: "true",
-              isHidden: false,
-            },
-            {
-              id: "2",
-              input: "[1]",
-              expectedOutput: "true",
-              isHidden: true,
-            },
-          ],
-        },
-        {
-          id: "2",
-          title: "BST Deletion",
-          description: "Implement a function to delete a node from a Binary Search Tree",
-          difficulty: "Medium",
-          timeLimit: 1000,
-          memoryLimit: 16,
-          testCases: [
-            {
-              id: "1",
-              input: "[5,3,7,2,4,6,8]",
-              expectedOutput: "true",
-              isHidden: false,
-            },
-          ],
-        },
-      ],
-    },
-  ]
-
-  return assignments.find((a) => a.id === assignmentId)
-}
-
 export default async function AssignmentPage({
   params,
 }: {

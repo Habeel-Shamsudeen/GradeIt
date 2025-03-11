@@ -51,7 +51,7 @@ export default async function ClassPage({ params }: any ) {
           </TabsContent>
 
           <TabsContent value="settings">
-            <ClassSettingsTab classData={classroom} />
+            <ClassSettingsTab classData={classroom} role={role}/>
           </TabsContent>
         </Tabs>
       </div>

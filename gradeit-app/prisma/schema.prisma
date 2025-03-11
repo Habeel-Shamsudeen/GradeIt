@@ -82,6 +82,8 @@ model Assignment {
   questions   Question[]
   DueDate     DateTime? //recheck
   createdAt   DateTime  @default(now())
+
+  copyPastePrevention   Boolean @default(false)
 }
 
 model Question {

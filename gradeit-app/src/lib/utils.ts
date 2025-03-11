@@ -2,7 +2,6 @@ import { darkCardColors, lightCardColors } from '@/config/constants';
 import { getAssigmentTitleFromId, getClassNameFromCode } from '@/server/utils';
 import { type ClassValue, clsx } from 'clsx';
 import { randomUUID } from 'crypto';
-import { env } from 'process';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {

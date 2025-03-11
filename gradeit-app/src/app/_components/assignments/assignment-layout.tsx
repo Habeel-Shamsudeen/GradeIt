@@ -189,6 +189,7 @@ export function AssignmentLayout({ assignment, classId }: AssignmentLayoutProps)
               onRun={activeTab === "testcases" ? handleRunTests : handleRunTests}
               onSubmit={handleSubmit}
               isRunning={isRunning}
+              disableCopyPaste={assignment.copyPastePrevention}
             />
 
             <div className="border-t border-[#2D2D2D]">

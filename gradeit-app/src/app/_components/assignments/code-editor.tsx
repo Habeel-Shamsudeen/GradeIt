@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Editor, loader } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import { useRef, useState } from "react";
+import { Editor } from "@monaco-editor/react";
+import type * as monaco from "monaco-editor"; // Import Monaco types
 import { Play, Send } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -21,6 +21,7 @@ interface CodeEditorProps {
   onRun: () => void;
   onSubmit: () => void;
   isRunning: boolean;
+  disableCopyPaste: boolean;
 }
 
 export function CodeEditor({
@@ -30,37 +31,34 @@ export function CodeEditor({
   onRun,
   onSubmit,
   isRunning,
+  disableCopyPaste,
 }: CodeEditorProps) {
-  // const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>()
-  // const monacoEl = useRef(null)
+  const [activity, setActivity] = useState("");
+  const [open, setOpen] = useState(false);
 
-  // useEffect(() => {
-  //   if (monacoEl.current) {
-  //     loader.init().then((monaco) => {
-  //       editorRef.current = monaco.editor.create(monacoEl.current!, {
-  //         value: code,
-  //         language,
-  //         theme: "vs-dark",
-  //         minimap: { enabled: false },
-  //         fontSize: 14,
-  //         fontFamily: "JetBrains Mono, monospace",
-  //         automaticLayout: true,
-  //         padding: { top: 16 },
-  //       })
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  //       editorRef.current.onDidChangeModelContent(() => {
-  //         onChange(editorRef.current!.getValue())
-  //       })
-  //     })
+  const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: typeof import("monaco-editor")) => {
+    editorRef.current = editor;
+    editor.focus();
 
-  //     return () => editorRef.current?.dispose()
-  //   }
-  // }, [code, language, onChange])
+
+    if (disableCopyPaste) {
+      editor.onKeyDown((event) => {
+        const { keyCode, ctrlKey, metaKey } = event;
+        if ((keyCode === 52 || keyCode === 33 || keyCode === 88) && (metaKey || ctrlKey)) {
+          event.preventDefault();
+          setActivity("copypaste");
+          setOpen(true);
+        }
+      });
+    }
+  };
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-[#2D2D2D] px-4 py-2">
-        <Select defaultValue={language}>
+        <Select defaultValue={language} disabled>
           <SelectTrigger className="w-32 border-[#2D2D2D] bg-transparent text-white">
             <SelectValue />
           </SelectTrigger>
@@ -98,7 +96,7 @@ export function CodeEditor({
         height="100%"
         defaultLanguage={language.toLowerCase()}
         defaultValue=""
-        onChange={(value) => onChange(value ?? "")} // Ensure value is never undefined
+        onChange={(value) => onChange(value ?? "")}
         className="flex-1"
         value={code}
         language={language.toLowerCase()}
@@ -107,7 +105,9 @@ export function CodeEditor({
           fontSize: 14,
           fontFamily: "JetBrains Mono, monospace",
           automaticLayout: true,
+          contextmenu:!disableCopyPaste
         }}
+        onMount={onMount}
       />
     </div>
   );

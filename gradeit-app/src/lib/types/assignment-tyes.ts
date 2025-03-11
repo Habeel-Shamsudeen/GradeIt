@@ -21,6 +21,7 @@ export interface Assignment {
     createdAt: Date
     questionCount: number
     submissionCount: number
+    copyPastePrevention: boolean
 }
 
 

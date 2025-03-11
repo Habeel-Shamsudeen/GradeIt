@@ -5,6 +5,7 @@ export const assignmentSchema = z.object({
   description: z.string().min(1, "Description is required"),
   dueDate: z.string().optional(),
   classCode: z.string().min(1, "Classroom ID is required"),
+  copyPastePrevention: z.boolean(),
   questions: z.array(
     z.object({
       title: z.string().min(1, "Question title is required"),

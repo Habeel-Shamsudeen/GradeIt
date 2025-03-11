@@ -33,7 +33,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
     }
       
 
-    const { title, description, dueDate, classCode, questions } =
+    const { title, description, dueDate, classCode, questions, copyPastePrevention } =
       validation.data;
 
     const classroomId = await getClassIdFromCode(classCode);
@@ -48,6 +48,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         description,
         DueDate: dueDate ? new Date(dueDate) : null,
         classroomId,
+        copyPastePrevention,
         questions: {
           create: questions.map((question) => ({
             title: question.title,
@@ -68,7 +69,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
     revalidatePath(`/classes/${classCode}`); // Refresh cache for updated data
     return { status: "success", assignment };
   } catch (error) {
-    throw new Error("Failed to create assignment");
+    throw new Error("Failed to create assignment"+ error);
   }
 };
 
@@ -99,11 +100,12 @@ export const getAssignments = async (classroomId: string) => {
       questionCount: assignment.questions.length,
       submissionCount: assignment.questions.reduce((acc, question) => acc + question.Submission.length, 0),
       createdAt: new Date(assignment.createdAt),
+      copyPastePrevention: assignment.copyPastePrevention
     }));
 
     return { status: "success", assignments: formattedAssignments };
   } catch (error) {
-    return { status: "failed", assignments: [] };
+    return { status: "failed", assignments: [], message:error };
   }
 };
 
@@ -138,9 +140,10 @@ export const getAssignmentById = async (assignmentId: string) => {
       submissionCount: assignment.questions.reduce((acc, question) => acc + question.Submission.length, 0),
       createdAt: new Date(assignment.createdAt),
       questions: assignment.questions,
+      copyPastePrevention: assignment.copyPastePrevention
     };
     return { status: "success", assignment: formattedAssignment };
   } catch (error) {
-    throw new Error("Failed to get assignment");
+    throw new Error("Failed to get assignment "+ error);
   }
 }

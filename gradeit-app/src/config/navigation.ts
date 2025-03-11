@@ -2,11 +2,8 @@
 import { UserClassroom } from "@/lib/types/class-types";
 import { getUserClasses } from "@/server/actions/class-actions";
 import {
-  BrushIcon,
-  Home02Icon,
   HugeiconsIcon,
   Settings02Icon,
-  TestTube01Icon,
   UserAccountIcon,
 } from "hugeicons-react";
 import { useEffect, useState } from "react";
@@ -40,12 +37,8 @@ export const  getNavigationConfig = () => {
       items: [
         {
           title: 'assignments',
-          url: `/classes/${classroom.code}/story`,
+          url: `/classes/${classroom.code}`,
         },
-        // {
-        //   title: 'Moodboard',
-        //   url: `/classes/${classroom.code}/moodboard`,
-        // },
       ],
     })),
   navGroup3: [

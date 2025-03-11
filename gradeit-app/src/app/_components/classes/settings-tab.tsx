@@ -31,12 +31,14 @@ import {
 import { UserClassroom } from "@/lib/types/class-types";
 import { copyToClipboard } from "@/lib/utils";
 import { toast } from "sonner";
+import { Role } from "@prisma/client";
 
 interface ClassSettingsTabProps {
   classData: UserClassroom;
+  role?: Role;
 }
 
-export function ClassSettingsTab({ classData }: ClassSettingsTabProps) {
+export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
   const [name, setName] = useState(classData.name);
   const [section, setSection] = useState(classData.section);
   // const [backgroundColor, setBackgroundColor] = useState(classData.backgroundColor)
@@ -191,7 +193,7 @@ export function ClassSettingsTab({ classData }: ClassSettingsTabProps) {
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl border-[#E6E4DD]">
+      { role=="FACULTY" && <Card className="rounded-2xl border-[#E6E4DD]">
         <CardHeader>
           <CardTitle>Danger Zone</CardTitle>
           <CardDescription>Irreversible actions for this class</CardDescription>
@@ -241,7 +243,7 @@ export function ClassSettingsTab({ classData }: ClassSettingsTabProps) {
             </AlertDialog>
           </div>
         </CardContent>
-      </Card>
+      </Card>}
     </div>
   );
 }
