@@ -33,7 +33,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
     }
       
 
-    const { title, description, dueDate, classCode, questions, copyPastePrevention } =
+    const { title, description, dueDate, classCode, questions, copyPastePrevention, fullScreenEnforcement } =
       validation.data;
 
     const classroomId = await getClassIdFromCode(classCode);
@@ -49,6 +49,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         DueDate: dueDate ? new Date(dueDate) : null,
         classroomId,
         copyPastePrevention,
+        fullScreenEnforcement,
         questions: {
           create: questions.map((question) => ({
             title: question.title,
@@ -140,7 +141,8 @@ export const getAssignmentById = async (assignmentId: string) => {
       submissionCount: assignment.questions.reduce((acc, question) => acc + question.Submission.length, 0),
       createdAt: new Date(assignment.createdAt),
       questions: assignment.questions,
-      copyPastePrevention: assignment.copyPastePrevention
+      copyPastePrevention: assignment.copyPastePrevention,
+      fullScreenEnforcement: assignment.fullScreenEnforcement
     };
     return { status: "success", assignment: formattedAssignment };
   } catch (error) {

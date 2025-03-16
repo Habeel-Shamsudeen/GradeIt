@@ -21,65 +21,26 @@ import {
   DialogTitle,
 } from "@/app/_components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/_components/ui/tabs"
-
-// Mock data for demonstration
-const teachers = [
-  {
-    id: "1",
-    name: "Dr. Sarah Johnson",
-    email: "sarah.johnson@university.edu",
-    role: "Teacher",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-]
-
-const students = [
-  {
-    id: "1",
-    name: "Alex Chen",
-    email: "alex.chen@university.edu",
-    role: "Student",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: "2",
-    name: "Jamie Smith",
-    email: "jamie.smith@university.edu",
-    role: "Student",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: "3",
-    name: "Taylor Johnson",
-    email: "taylor.johnson@university.edu",
-    role: "Student",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: "4",
-    name: "Morgan Williams",
-    email: "morgan.williams@university.edu",
-    role: "Student",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-]
+import { Members } from "@/lib/types/class-types"
 
 interface PeopleTabProps {
   classCode: string
+  teachers: Members[]
+  students: Members[]
 }
 
-export function PeopleTab({ classCode }: PeopleTabProps) {
+export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   
   const filteredTeachers = teachers.filter(
     teacher => teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    teacher.email.toLowerCase().includes(searchQuery.toLowerCase())
+    teacher.email?.toLowerCase().includes(searchQuery.toLowerCase())
   )
   
   const filteredStudents = students.filter(
     student => student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchQuery.toLowerCase())
+    student.email?.toLowerCase().includes(searchQuery.toLowerCase())
   )
   
   return (
@@ -112,7 +73,7 @@ export function PeopleTab({ classCode }: PeopleTabProps) {
               <div key={teacher.id} className="flex items-center justify-between p-4 hover:bg-[#FAFAF8]">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-[#E6E4DD]">
-                    <AvatarImage src={teacher.avatar} alt={teacher.name} />
+                    <AvatarImage src={teacher.image || ""} alt={teacher.name} />
                     <AvatarFallback>{teacher.name.charAt(0)}{teacher.name.split(' ')[1]?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
@@ -159,7 +120,7 @@ export function PeopleTab({ classCode }: PeopleTabProps) {
               <div key={student.id} className="flex items-center justify-between p-4 hover:bg-[#FAFAF8]">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-[#E6E4DD]">
-                    <AvatarImage src={student.avatar} alt={student.name} />
+                    <AvatarImage src={student.image || ""} alt={student.name} />
                     <AvatarFallback>{student.name.charAt(0)}{student.name.split(' ')[1]?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>

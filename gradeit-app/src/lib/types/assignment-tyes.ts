@@ -22,6 +22,7 @@ export interface Assignment {
     questionCount: number
     submissionCount: number
     copyPastePrevention: boolean
+    fullScreenEnforcement: boolean
 }
 
 

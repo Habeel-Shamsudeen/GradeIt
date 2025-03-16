@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Editor } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor"; // Import Monaco types
+import type * as monaco from "monaco-editor";
 import { Play, Send } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {

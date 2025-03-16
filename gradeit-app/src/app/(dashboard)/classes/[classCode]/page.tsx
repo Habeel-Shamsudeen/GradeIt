@@ -6,7 +6,7 @@ import { ClassHeader } from "@/app/_components/classes/class-header"
 import { PeopleTab } from "@/app/_components/classes/people-tab"
 import { GradesTab } from "@/app/_components/classes/grades-tab"
 import { ClassSettingsTab } from "@/app/_components/classes/settings-tab"
-import { getClassbyCode } from "@/server/actions/class-actions"
+import { getClassbyCode, getMembersByClassId } from "@/server/actions/class-actions"
 import { getUserRole } from "@/server/actions/user-actions"
 import { getAssignments } from "@/server/actions/assignment-actions"
 
@@ -20,7 +20,8 @@ export default async function ClassPage({ params }: any ) {
   const {classroom} = await getClassbyCode(classCode);
   const {role} = await getUserRole();
   const {assignments} = await getAssignments(classroom?.id || "");
-  //const { students } = await getStudentsByClassId(classroom?.id);
+  console.log(classCode);
+  const { teachers, students } = await getMembersByClassId(classCode);
 
   if(!classroom){
     return notFound()
@@ -43,7 +44,7 @@ export default async function ClassPage({ params }: any ) {
           </TabsContent>
 
           <TabsContent value="people">
-            <PeopleTab classCode={classCode}/>
+            <PeopleTab classCode={classCode} teachers={teachers || []} students={students || []}/>
           </TabsContent>
 
           <TabsContent value="grades">

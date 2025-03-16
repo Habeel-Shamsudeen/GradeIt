@@ -13,10 +13,18 @@ enum Role {
 }
 
 enum Status {
-  PASSED
+  COMPLETED
   FAILED
   PENDING
   PARTIAL
+}
+
+enum TestCaseStatus {
+  PASSED
+  FAILED
+  ERROR // For runtime errors, compilation errors, etc.
+  TIMEOUT // For test cases that exceed time limit
+  PENDING
 }
 
 model User {
@@ -84,6 +92,7 @@ model Assignment {
   createdAt   DateTime  @default(now())
 
   copyPastePrevention   Boolean @default(false)
+  fullScreenEnforcement Boolean @default(false)
 }
 
 model Question {
@@ -118,5 +127,20 @@ model Submission {
   status        Status  @default(PENDING) 
   score         Int?    // Faculty can assign a score
   plagiarismScore Float? // Store plagiarism detection results
+  testCaseResults TestCaseResult[]
   createdAt     DateTime @default(now())
+}
+
+model TestCaseResult {
+  id            String        @id @default(uuid())
+  submissionId  String
+  submission    Submission    @relation(fields: [submissionId], references: [id])
+  testCaseId    String
+  status        TestCaseStatus @default(PENDING)
+  actualOutput  String?       // The actual output from running the test case
+  executionTime Int?          // Time taken to execute in milliseconds
+  errorMessage  String?       // If there was an error, store the message
+  createdAt     DateTime      @default(now())
+
+  @@unique([submissionId, testCaseId]) // One result per test case per submission
 }

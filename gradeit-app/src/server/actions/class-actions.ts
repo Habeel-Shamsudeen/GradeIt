@@ -119,15 +119,15 @@ export const getClassbyCode = async (code: string) => {
           {
             students: {
               some: {
-                id: session.user.id
-              }
-            }
+                id: session.user.id,
+              },
+            },
           },
           {
-            facultyId: session.user.id
-          }
-        ]
-      }
+            facultyId: session.user.id,
+          },
+        ],
+      },
     });
 
     return { status: "success", classroom };
@@ -136,7 +136,6 @@ export const getClassbyCode = async (code: string) => {
     return { status: "failed" };
   }
 };
-
 
 export const joinClassUsingCode = async (code: string) => {
   const session = await auth();
@@ -185,6 +184,71 @@ export const joinClassUsingCode = async (code: string) => {
     });
 
     return { status: "success", message: "Joined class successfully" };
+  } catch (error) {
+    console.error("Error while joining class:", error);
+    return { status: "failed" };
+  }
+};
+
+export const getMembersByClassId = async (code: string) => {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  try {
+    const classroom = await prisma.classroom.findFirst({
+      where: {
+        code,
+        OR: [
+          {
+            students: {
+              some: {
+                id: session.user.id,
+              },
+            },
+          },
+          {
+            facultyId: session.user.id,
+          },
+        ],
+      },
+      include: {
+        students: true,
+        faculty: true,
+      },
+    });
+
+    if(!classroom){
+      return({
+        status:"failed",
+        message:"No class with the given code found"
+      })
+    }
+
+    const teachers = [
+      {
+        id: classroom.faculty.id,
+        name: classroom.faculty.name,
+        email: classroom.faculty.email || "",
+        role: classroom.faculty.role,
+        image: classroom.faculty.image || "",
+      },
+    ];
+
+    const students = classroom?.students.map((student) => ({
+      id: student.id,
+      name: student.name,
+      email: student.email || "",
+      role: student.role,
+      image: student.image || "",
+    }));
+
+    return {
+      status: "success",
+      teachers,
+      students,
+    };
   } catch (error) {
     console.error("Error while joining class:", error);
     return { status: "failed" };
