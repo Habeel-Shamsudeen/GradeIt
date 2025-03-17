@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { mapStatus } from "@/lib/utils";
 
 export async function GET(
   req: NextRequest,
@@ -14,7 +15,8 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const submissionId = params.id;
+    const {id} = await params;
+    const submissionId = id;
     const userId = session.user.id;
 
     // Get the submission with test case results
@@ -83,17 +85,5 @@ export async function GET(
       { error: error.message || "Internal server error" },
       { status: 500 }
     );
-  }
-}
-
-// Helper function to map database status to frontend status
-function mapStatus(status: string): "passed" | "failed" | "running" {
-  switch (status) {
-    case "PASSED":
-      return "passed";
-    case "PENDING":
-      return "running";
-    default:
-      return "failed";
   }
 }

@@ -23,6 +23,8 @@ export async function POST(req: NextRequest) {
     const payload: WebhookPayload = JSON.parse(
       Buffer.from(payloadParam, "base64").toString()
     );
+
+    console.log("webhook payload",payload)
     
     // Get the Judge0 submission result from the request body
     const judgeResult = await req.json();

@@ -33,9 +33,6 @@ export function CodeEditor({
   isRunning,
   disableCopyPaste,
 }: CodeEditorProps) {
-  const [activity, setActivity] = useState("");
-  const [open, setOpen] = useState(false);
-
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: typeof import("monaco-editor")) => {
@@ -48,8 +45,6 @@ export function CodeEditor({
         const { keyCode, ctrlKey, metaKey } = event;
         if ((keyCode === 52 || keyCode === 33 || keyCode === 88) && (metaKey || ctrlKey)) {
           event.preventDefault();
-          setActivity("copypaste");
-          setOpen(true);
         }
       });
     }

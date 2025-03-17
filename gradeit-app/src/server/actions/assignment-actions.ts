@@ -40,8 +40,6 @@ export const createAssignment = async (formData: AssignmentSchema) => {
     if (!classroomId) {
       return { status: "error", message: "Classroom not found" };
     }
-
-    
     const assignment = await prisma.assignment.create({
       data: {
         title,

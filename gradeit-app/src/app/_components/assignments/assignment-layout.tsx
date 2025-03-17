@@ -6,19 +6,13 @@ import { ChevronRight, Maximize2, Minimize2, FileText } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { QuestionDescription } from "./question-description";
 import { CodeEditor } from "./code-editor";
-import { TestCases } from "./test-cases";
 import { QuestionNav } from "./question-nav";
 import { AssignmentById } from "@/lib/types/assignment-tyes";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/app/_components/ui/tabs";
-import { CustomTestInput } from "./custom-test-input";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
 import { FullscreenAlert } from "./fullscreen-alert";
 import { CombinedTesting } from "./combined-testing-component";
+import { toast } from "sonner";
+import { pollJudge0Submissions } from "@/server/actions/submission-actions";
 
 interface AssignmentLayoutProps {
   assignment: AssignmentById;
@@ -35,10 +29,12 @@ export function AssignmentLayout({
   const [isRunning, setIsRunning] = useState(false);
   const [testResults, setTestResults] = useState<any[]>([]);
   const [customInput, setCustomInput] = useState("");
-  const [customOutput, setCustomOutput] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"testcases" | "custom">(
-    "testcases"
-  );
+  const [submissionStatus, setSubmissionStatus] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  // const [customOutput, setCustomOutput] = useState<string | null>(null);
+  // const [activeTab, setActiveTab] = useState<"testcases" | "custom">(
+  //   "testcases"
+  // );
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -79,7 +75,7 @@ export function AssignmentLayout({
           headers: {
             "Content-Type": "application/json",
             "x-rapidapi-key":
-              "56f2a4b8damsh8b3e0adffcf7f4cp1e1e1djsnb985a953e3d3",
+              process.env.NEXT_PUBLIC_JUDGE0_API_KEY || "",
             "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
           },
           body: JSON.stringify({
@@ -114,7 +110,7 @@ export function AssignmentLayout({
             method: "GET",
             headers: {
               "x-rapidapi-key":
-                "56f2a4b8damsh8b3e0adffcf7f4cp1e1e1djsnb985a953e3d3",
+              process.env.NEXT_PUBLIC_JUDGE0_API_KEY || "",
               "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
             },
           }
@@ -184,12 +180,111 @@ export function AssignmentLayout({
     }
   };
 
-  const handleSubmit = async () => {
-    setIsRunning(true);
-    // Simulate submission
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsRunning(false);
-  };
+const handleSubmit = async () => {
+  if (isRunning) return;
+  
+  setIsSubmitting(true);
+  setSubmissionStatus("Submitting your solution...");
+  
+  try {
+    // Call your backend API endpoint
+    const response = await fetch("/api/submissions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code,
+        questionId: currentQuestion.id,
+        language: currentQuestion.language,
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to submit solution");
+    }
+    
+    const data = await response.json();
+    const submissionId = data.submissionId;
+    
+    // Start polling for submission status
+    setSubmissionStatus("Running test cases...");
+    await pollSubmissionStatus(submissionId);
+    
+  } catch (error: any) {
+    console.error("Submission error:", error);
+    setSubmissionStatus(`Submission failed: ${error.message}`);
+    toast.error(error.message || "An error occurred while submitting your solution");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+const pollSubmissionStatus = async (submissionId: string) => {
+  let completed = false;
+  let attempts = 0;
+  const maxAttempts = 30; // Poll for maximum of 30 attempts (30 seconds with 1s interval)
+  
+  while (!completed && attempts < maxAttempts) {
+    attempts++;
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for 2 second
+    
+    try {
+      const response = await fetch(`/api/submissions/${submissionId}`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch submission status");
+      }
+      
+      const submissionData = await response.json();
+      
+      // Update test results in UI
+      const mappedResults = submissionData.results.map((result: any) => ({
+        id: result.id,
+        status: result.status,
+        runtime: result.runtime,
+        memory: result.memory,
+        output: result.output,
+        error: result.error,
+      }));
+      
+      setTestResults(mappedResults);
+      
+      // Check if submission is completed
+      if (submissionData.status === "COMPLETED" || 
+          submissionData.status === "PASSED" || 
+          submissionData.status === "FAILED") {
+        completed = true;
+        
+        // Show appropriate message
+        if (submissionData.status === "PASSED") {
+          setSubmissionStatus("All tests passed successfully!");
+          toast.success("Your solution passed all test cases");
+        } else {
+          setSubmissionStatus("Some tests failed. Check the results for details.");
+          toast.error("Your solution didn't pass all test cases");
+        }
+
+        //exit polling
+        break;
+      } 
+
+      await pollJudge0Submissions(submissionId);
+
+        setSubmissionStatus(`Running test cases (${attempts}/${maxAttempts})...`);
+      
+    } catch (error) {
+      console.error("Error polling submission status:", error);
+    }
+  }
+  
+  if (!completed) {
+    setSubmissionStatus("Submission is taking longer than expected. You can check results later.");
+  }
+  
+  return completed;
+};
 
   const handleEnterFullscreen = () => {
     setIsFullscreen(true);
@@ -199,7 +294,7 @@ export function AssignmentLayout({
 
   return (
     <>
-      {showFullscreenAlert && (
+      {!showFullscreenAlert && (
         <FullscreenAlert onEnterFullscreen={handleEnterFullscreen} />
       )}
       <div className="flex h-[calc(100vh-4rem)] overflow-hidden">

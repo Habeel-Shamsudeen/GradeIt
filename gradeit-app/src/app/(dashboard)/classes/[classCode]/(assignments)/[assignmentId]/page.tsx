@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function AssignmentPage({
   params,
 }: {
-  params: { assignmentId: string; classId: string }
+  params: any
 }) {
   const {assignmentId, classId} = await params;
   const {assignment} = await getAssignmentById(assignmentId);

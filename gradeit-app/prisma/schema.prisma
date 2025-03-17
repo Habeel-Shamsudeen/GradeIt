@@ -75,7 +75,7 @@ model Classroom {
   inviteLink  String    @unique
   facultyId   String
   facultyName String
-  faculty     User      @relation("FacultyClassrooms", fields: [facultyId], references: [id])
+  faculty     User      @relation("FacultyClassrooms", fields: [facultyId], references: [id], onDelete: Cascade)
   students    User[]    @relation("StudentClasses")
   assignments Assignment[]
   createdAt   DateTime  @default(now())
@@ -86,7 +86,7 @@ model Assignment {
   title       String
   description String
   classroomId String
-  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   questions   Question[]
   DueDate     DateTime? //recheck
   createdAt   DateTime  @default(now())
@@ -98,7 +98,7 @@ model Assignment {
 model Question {
   id           String    @id @default(uuid())
   assignmentId String
-  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete:Cascade)
   title        String
   description  String
   language     String
@@ -110,7 +110,7 @@ model Question {
 model TestCase {
   id          String  @id @default(uuid())
   questionId  String
-  question    Question @relation(fields: [questionId], references: [id])
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   input       String
   expectedOutput String
   hidden      Boolean @default(false) // Some test cases are hidden
@@ -119,9 +119,9 @@ model TestCase {
 model Submission {
   id            String   @id @default(uuid())
   studentId     String
-  student       User     @relation(fields: [studentId], references: [id])
+  student       User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   questionId    String
-  question      Question @relation(fields: [questionId], references: [id])
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   code          String
   language      String
   status        Status  @default(PENDING) 
@@ -134,12 +134,13 @@ model Submission {
 model TestCaseResult {
   id            String        @id @default(uuid())
   submissionId  String
-  submission    Submission    @relation(fields: [submissionId], references: [id])
+  submission    Submission    @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   testCaseId    String
   status        TestCaseStatus @default(PENDING)
   actualOutput  String?       // The actual output from running the test case
   executionTime Int?          // Time taken to execute in milliseconds
   errorMessage  String?       // If there was an error, store the message
+  judge0Token   String?
   createdAt     DateTime      @default(now())
 
   @@unique([submissionId, testCaseId]) // One result per test case per submission

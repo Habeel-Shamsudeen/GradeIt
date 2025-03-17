@@ -86,7 +86,8 @@ export default async function SubmissionsPage({
 }: {
   params: { assignmentId: string; classId: string }
 }) {
-  const assignment = await getAssignment(params.assignmentId)
+  const {assignmentId, classId} = await params;
+  const assignment = await getAssignment(assignmentId)
 
   if (!assignment) {
     notFound()
@@ -94,7 +95,7 @@ export default async function SubmissionsPage({
 
   // In a real app, you'd get the user ID from the session
   const userId = "user123"
-  const submissions = await getSubmissions(params.assignmentId, userId)
+  const submissions = await getSubmissions(assignmentId, userId)
 
   // Group submissions by question
   const submissionsByQuestion = assignment.questions.map((question) => {
@@ -109,7 +110,7 @@ export default async function SubmissionsPage({
     <div className="container mx-auto max-w-5xl p-6">
       <div className="mb-8 flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild className="h-8 w-8 rounded-full">
-          <Link href={`/classes/${params.classId}/assignments/${params.assignmentId}`}>
+          <Link href={`/classes/${params.classId}/assignments/${assignmentId}`}>
             <ChevronLeft className="h-4 w-4" />
             <span className="sr-only">Back to assignment</span>
           </Link>
