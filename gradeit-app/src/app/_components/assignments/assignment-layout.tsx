@@ -31,10 +31,6 @@ export function AssignmentLayout({
   const [customInput, setCustomInput] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  // const [customOutput, setCustomOutput] = useState<string | null>(null);
-  // const [activeTab, setActiveTab] = useState<"testcases" | "custom">(
-  //   "testcases"
-  // );
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -294,10 +290,10 @@ const pollSubmissionStatus = async (submissionId: string) => {
 
   return (
     <>
-      {!showFullscreenAlert && (
+      {showFullscreenAlert && (
         <FullscreenAlert onEnterFullscreen={handleEnterFullscreen} />
       )}
-      <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="flex h-[calc(100vh-5rem)] overflow-hidden">
         {/* Left Panel */}
         <motion.div
           initial={false}
@@ -307,7 +303,7 @@ const pollSubmissionStatus = async (submissionId: string) => {
           transition={{ duration: 0.2 }}
           className="relative flex h-full flex-col border-r border-[#E6E4DD] bg-white"
         >
-          <div className="flex items-center justify-between border-b border-[#E6E4DD] px-4 py-2">
+          <div className="flex items-center justify-between overflow-x-auto border-b border-[#E6E4DD] px-4 py-2">
             <QuestionNav
               questions={assignment.questions}
               currentIndex={currentQuestionIndex}

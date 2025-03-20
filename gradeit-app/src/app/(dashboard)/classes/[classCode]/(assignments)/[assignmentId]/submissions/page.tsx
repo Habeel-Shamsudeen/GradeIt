@@ -14,63 +14,6 @@ export const metadata: Metadata = {
   description: "View your submission history",
 }
 
-// This would come from your database based on the updated schema
-// const getSubmissions = async (assignmentId: string, userId: string) => {
-//   // Mock data for demonstration
-//   return [
-//     {
-//       id: "1",
-//       studentId: userId,
-//       questionId: "1",
-//       questionTitle: "BST Insertion",
-//       code: "// Code here",
-//       language: "python",
-//       status: "ACCEPTED", // PENDING, ACCEPTED, REJECTED, PARTIALLY_ACCEPTED
-//       score: 100,
-//       plagiarismScore: 5.2, // percentage similarity
-//       testCaseResults: [
-//         { id: "tc1", status: "PASSED", executionTime: 12 },
-//         { id: "tc2", status: "PASSED", executionTime: 15 },
-//       ],
-//       createdAt: "2024-03-05T14:30:00",
-//     },
-//     {
-//       id: "2",
-//       studentId: userId,
-//       questionId: "1",
-//       questionTitle: "BST Insertion",
-//       code: "// Code here",
-//       language: "python",
-//       status: "PARTIALLY_ACCEPTED",
-//       score: 60,
-//       plagiarismScore: null,
-//       testCaseResults: [
-//         { id: "tc1", status: "PASSED", executionTime: 14 },
-//         {
-//           id: "tc2",
-//           status: "FAILED",
-//           executionTime: 18,
-//           errorMessage: "Expected [4,2,7,1,3,5] but got [4,2,7,1,3,null,5]",
-//         },
-//       ],
-//       createdAt: "2024-03-05T14:15:00",
-//     },
-//     {
-//       id: "3",
-//       studentId: userId,
-//       questionId: "2",
-//       questionTitle: "BST Deletion",
-//       code: "// Code here",
-//       language: "python",
-//       status: "PENDING",
-//       score: null,
-//       plagiarismScore: null,
-//       testCaseResults: [],
-//       createdAt: "2024-03-05T15:45:00",
-//     },
-//   ]
-// }
-
 export default async function SubmissionsPage({
   params,
 }: {

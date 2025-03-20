@@ -11,7 +11,7 @@ export async function gradeSubmission(submissionId: string) {
       include: {
         testCaseResults: {
           include: {
-            testCase: true,
+            testCase: true, // Include the test case to access its properties
           },
         },
       },
@@ -38,6 +38,7 @@ export async function gradeSubmission(submissionId: string) {
     const testResults = [];
     
     submission.testCaseResults.forEach((result) => {
+      // Use weight and isBonus from the testCase model, with fallbacks
       const weight = result.testCase.weight || 1;
       const isBonus = result.testCase.isBonus || false;
       

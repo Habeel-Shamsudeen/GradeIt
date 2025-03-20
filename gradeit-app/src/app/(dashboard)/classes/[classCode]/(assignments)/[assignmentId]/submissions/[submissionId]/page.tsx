@@ -14,139 +14,6 @@ export const metadata: Metadata = {
   description: "View your submission details",
 }
 
-// This would come from your database based on the updated schema
-// const getSubmission = async (submissionId: string) => {
-//   // Mock data for demonstration
-//   const submissions = [
-//     {
-//       id: "1",
-//       studentId: "user123",
-//       questionId: "1",
-//       question: {
-//         id: "1",
-//         title: "BST Insertion",
-//         description: "Implement a function to insert a node into a Binary Search Tree",
-//         difficulty: "Easy",
-//       },
-//       code: `class TreeNode:
-//     def __init__(self, val=0, left=None, right=None):
-//         self.val = val
-//         self.left = left
-//         self.right = right
-
-// class Solution:
-//     def insertIntoBST(self, root: TreeNode, val: int) -> TreeNode:
-//         if not root:
-//             return TreeNode(val)
-        
-//         if val < root.val:
-//             root.left = self.insertIntoBST(root.left, val)
-//         else:
-//             root.right = self.insertIntoBST(root.right, val)
-            
-//         return root`,
-//       language: "python",
-//       status: "ACCEPTED", // PENDING, ACCEPTED, REJECTED, PARTIALLY_ACCEPTED
-//       score: 100,
-//       plagiarismScore: 5.2, // percentage similarity
-//       testCaseResults: [
-//         {
-//           id: "tc1",
-//           testCaseId: "test1",
-//           status: "PASSED",
-//           executionTime: 12,
-//           actualOutput: "[4,2,7,1,3,5]",
-//           testCase: {
-//             id: "test1",
-//             input: "[4,2,7,1,3], 5",
-//             expectedOutput: "[4,2,7,1,3,5]",
-//             isHidden: false,
-//           },
-//         },
-//         {
-//           id: "tc2",
-//           testCaseId: "test2",
-//           status: "PASSED",
-//           executionTime: 15,
-//           actualOutput: "[5]",
-//           testCase: {
-//             id: "test2",
-//             input: "[], 5",
-//             expectedOutput: "[5]",
-//             isHidden: false,
-//           },
-//         },
-//       ],
-//       createdAt: "2024-03-05T14:30:00",
-//     },
-//     {
-//       id: "2",
-//       studentId: "user123",
-//       questionId: "1",
-//       question: {
-//         id: "1",
-//         title: "BST Insertion",
-//         description: "Implement a function to insert a node into a Binary Search Tree",
-//         difficulty: "Easy",
-//       },
-//       code: `class TreeNode:
-//     def __init__(self, val=0, left=None, right=None):
-//         self.val = val
-//         self.left = left
-//         self.right = right
-
-// class Solution:
-//     def insertIntoBST(self, root: TreeNode, val: int) -> TreeNode:
-//         if not root:
-//             return TreeNode(val)
-        
-//         # Bug: condition should be val < root.val
-//         if val > root.val:
-//             root.left = self.insertIntoBST(root.left, val)
-//         else:
-//             root.right = self.insertIntoBST(root.right, val)
-            
-//         return root`,
-//       language: "python",
-//       status: "PARTIALLY_ACCEPTED",
-//       score: 60,
-//       plagiarismScore: null,
-//       testCaseResults: [
-//         {
-//           id: "tc1",
-//           testCaseId: "test1",
-//           status: "FAILED",
-//           executionTime: 14,
-//           actualOutput: "[4,2,7,1,3,null,5]",
-//           errorMessage: "Expected [4,2,7,1,3,5] but got [4,2,7,1,3,null,5]",
-//           testCase: {
-//             id: "test1",
-//             input: "[4,2,7,1,3], 5",
-//             expectedOutput: "[4,2,7,1,3,5]",
-//             isHidden: false,
-//           },
-//         },
-//         {
-//           id: "tc2",
-//           testCaseId: "test2",
-//           status: "PASSED",
-//           executionTime: 18,
-//           actualOutput: "[5]",
-//           testCase: {
-//             id: "test2",
-//             input: "[], 5",
-//             expectedOutput: "[5]",
-//             isHidden: false,
-//           },
-//         },
-//       ],
-//       createdAt: "2024-03-05T14:15:00",
-//     },
-//   ]
-
-//   return submissions.find((s) => s.id === submissionId)
-// }
-
 export default async function SubmissionDetailPage({
   params,
 }: {
@@ -239,15 +106,15 @@ export default async function SubmissionDetailPage({
                     )}
 
                     <div className="space-y-2 text-sm">
-                      {/* <div>
+                      <div>
                         <p className="text-[#605F5B]">Input:</p>
                         <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-xs">{result.testCase.input}</pre>
                       </div>
 
                       <div>
                         <p className="text-[#605F5B]">Expected Output:</p>
-                        <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-xs">{result.expectedOutput}</pre>
-                      </div> */}
+                        <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-xs">{result.testCase.expectedOutput}</pre>
+                      </div>
 
                       {result.actualOutput && (
                         <div>

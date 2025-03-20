@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 export async function getLoginMethod(userId: string) {
   const res = await prisma.account.findFirst({
@@ -56,4 +57,12 @@ export async function getAssigmentTitleFromId(id: string) {
     },
   });
   return assignment?.title;
+}
+
+export async function setStudentCookie(studentId: string) {
+  (await cookies()).set("student", studentId, {
+    httpOnly: true, // Only accessible by the server 
+    path: "/",      // Available across the app
+    sameSite: "strict",
+  });
 }

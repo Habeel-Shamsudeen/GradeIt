@@ -2,6 +2,8 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Status, TestCaseStatus } from "@prisma/client";
+import { gradeSubmission } from "./grading-actions";
+import { cookies } from "next/headers";
 
 export async function pollJudge0Submissions(submissionId: string) {
   try {
@@ -85,8 +87,6 @@ export async function processJudgeResult(
       ? Math.round(parseFloat(judgeResult.time) * 1000)
       : null; // Convert to ms
 
-    // Process based on Judge0 status ID
-    // Status ID reference: https://github.com/judge0/judge0/blob/master/docs/api/submissions.md#status
     if (judgeResult.status.id === 3) {
       // Accepted
       testCaseStatus = TestCaseStatus.PASSED;
@@ -137,7 +137,6 @@ export async function processJudgeResult(
   }
 }
 
-// Helper function to update the submission status
 export async function updateSubmissionStatus(submissionId: string) {
   try {
     // Check if all test cases for this submission have been processed
@@ -151,17 +150,19 @@ export async function updateSubmissionStatus(submissionId: string) {
 
     if (allProcessed) {
       // Determine overall submission status
-      const allPassed = testCaseResults.every(
-        (result) => result.status === TestCaseStatus.PASSED
-      );
 
-      // Update submission status
-      await prisma.submission.update({
-        where: { id: submissionId },
-        data: {
-          status: allPassed ? Status.COMPLETED : Status.FAILED,
-        },
-      });
+      await gradeSubmission(submissionId)
+      // const allPassed = testCaseResults.every(
+      //   (result) => result.status === TestCaseStatus.PASSED
+      // );
+
+      // // Update submission status
+      // await prisma.submission.update({
+      //   where: { id: submissionId },
+      //   data: {
+      //     status: allPassed ? Status.COMPLETED : Status.FAILED,
+      //   },
+      // });
     }
   } catch (error) {
     console.error(
@@ -176,7 +177,8 @@ export async function getSubmissions(assignmentId: string) {
   if (!session?.user) {
     throw new Error("Unauthorized");
   }
-
+  const cookieStore =await cookies();
+  const studentId = cookieStore.get("student")?.value;
   try {
     const assignment = await prisma.assignment.findFirst({
       where: {
@@ -196,7 +198,7 @@ export async function getSubmissions(assignmentId: string) {
 
     const submissions = await prisma.submission.findMany({
       where: {
-        studentId: session.user.id,
+        studentId: studentId? studentId : session.user.id,
         questionId: {
           in: assignment.questions.map((ques) => ques.id),
         },
@@ -231,16 +233,21 @@ export async function getSubmissionsById(submissionId: string) {
   if (!session?.user) {
     throw new Error("Unauthorized");
   }
-
+  const cookieStore =await cookies();
+  const studentId = cookieStore.get("student")?.value || session.user.id;
   try {
     const submission = await prisma.submission.findUnique({
       where: {
-        studentId: session.user.id,
+        studentId: studentId,
         id: submissionId,
       },
       include: {
         question: true,
-        testCaseResults: true,
+        testCaseResults:{
+          include:{
+            testCase:true
+          }
+        }
       },
     });
 
@@ -268,4 +275,82 @@ export async function getSubmissionsById(submissionId: string) {
   } catch (error) {
     throw new Error("Failed to get submissions " + error);
   }
+}
+
+export async function getStudentAssignmentProgress(assignmentId: string, classCode: string) {
+  // 1. Get the classroom with its enrolled students
+  const classroom = await prisma.classroom.findUnique({
+    where: { code: classCode },
+    include: {
+      students: true,
+      assignments: {
+        where: { id: assignmentId },
+        include: {
+          questions: true
+        }
+      }
+    }
+  })
+
+  if (!classroom || !classroom.assignments[0]) {
+    throw new Error("Classroom or assignment not found")
+  }
+
+  const assignment = classroom.assignments[0]
+  const questionIds = assignment.questions.map(q => q.id)
+  
+  // 2. Get all submissions for this assignment's questions
+  const submissions = await prisma.submission.findMany({
+    where: {
+      questionId: { in: questionIds },
+      studentId: { in: classroom.students.map(s => s.id) }
+    },
+    include: {
+      testCaseResults: true
+    }
+  })
+
+  // 3. Process student data
+  const studentsProgress = classroom.students.map((student) => {
+    // Get this student's submissions for this assignment
+    const studentSubmissions = submissions.filter(s => s.studentId === student.id)
+    
+    // Count questions completed (has submission)
+    const questionsCompleted = new Set(studentSubmissions.map(s => s.questionId)).size
+    
+    // Determine status
+    let status = "not_started"
+    if (questionsCompleted > 0) {
+      status = questionsCompleted === assignment.questions.length ? "completed" : "in_progress"
+    }
+    
+    // Calculate average score if completed
+    let score = null
+    if (status === "completed") {
+      const scores = studentSubmissions.map(s => s.score).filter(Boolean) as number[]
+      if (scores.length > 0) {
+        score = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+      }
+    }
+    
+    return {
+      id: student.id,
+      name: student.name,
+      email: student.email || "",
+      avatar: student.image || "",
+      status,
+      submittedAt: studentSubmissions.length > 0 
+        ? new Date(Math.max(...studentSubmissions.map(s => s.createdAt.getTime()))).toISOString()
+        : null,
+      score,
+      questionsCompleted,
+      submissions: studentSubmissions.map(sub => ({
+        questionId: sub.questionId,
+        status: sub.status,
+        score: sub.score,
+      }))
+    }
+  })
+
+  return studentsProgress
 }

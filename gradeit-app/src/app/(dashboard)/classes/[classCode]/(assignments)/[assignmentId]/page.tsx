@@ -4,6 +4,7 @@ import { AssignmentLayout } from "@/app/_components/assignments/assignment-layou
 import { FacultyView } from "@/app/_components/assignments/faculty-view"
 import { getUserRole } from "@/server/actions/user-actions"
 import { getAssignmentById } from "@/server/actions/assignment-actions"
+import { getStudentAssignmentProgress } from "@/server/actions/submission-actions"
 
 export const metadata: Metadata = {
   title: "Assignment | gradeIT",
@@ -18,6 +19,7 @@ export default async function AssignmentPage({
   const {assignmentId, classCode} = await params;
   const {assignment} = await getAssignmentById(assignmentId);
   const {role} = await getUserRole()
+  const initialStudentData = await getStudentAssignmentProgress(assignmentId,classCode)
 
 
   if (!assignment) {
@@ -25,7 +27,7 @@ export default async function AssignmentPage({
   }
 
   if ( role === "FACULTY") {
-    return <FacultyView assignment={assignment} classCode={classCode} />
+    return <FacultyView assignment={assignment} classCode={classCode} initialStudents={initialStudentData}/>
   }
 
   return <AssignmentLayout assignment={assignment} classCode={classCode} />
