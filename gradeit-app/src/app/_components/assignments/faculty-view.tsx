@@ -14,7 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AssignmentById } from "@/lib/types/assignment-tyes"
 interface FacultyViewProps {
   assignment: AssignmentById
-  classId: string
+  classCode: string
 }
 
 // Mock data for demonstration
@@ -51,7 +51,7 @@ const students = [
   },
 ]
 
-export function FacultyView({ assignment, classId }: FacultyViewProps) {
+export function FacultyView({ assignment, classCode }: FacultyViewProps) {
   const [searchQuery, setSearchQuery] = useState("")
 
   const totalStudents = students.length

@@ -1,101 +1,92 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { notFound } from "next/navigation"
-import { ChevronLeft, FileText, CheckCircle, XCircle, Clock } from "lucide-react"
+import { ChevronLeft, FileText, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react"
 import { Button } from "@/app/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card"
 import { Badge } from "@/app/_components/ui/badge"
 import { cn } from "@/lib/utils"
+import { getAssignmentById } from "@/server/actions/assignment-actions"
+import { getSubmissions } from "@/server/actions/submission-actions"
+import NotFound from "@/app/not-found"
 
 export const metadata: Metadata = {
   title: "Submissions | gradeIT",
   description: "View your submission history",
 }
 
-// This would come from your database
-const getAssignment = async (assignmentId: string) => {
-  // Mock data for demonstration
-  const assignments = [
-    {
-      id: "1",
-      title: "Binary Search Trees Implementation",
-      description: "Implement a binary search tree with insertion, deletion, and traversal operations.",
-      dueDate: new Date("2025-04-15T23:59:59"),
-      questions: [
-        {
-          id: "1",
-          title: "BST Insertion",
-          description: "Implement a function to insert a node into a Binary Search Tree",
-          difficulty: "Easy",
-        },
-        {
-          id: "2",
-          title: "BST Deletion",
-          description: "Implement a function to delete a node from a Binary Search Tree",
-          difficulty: "Medium",
-        },
-      ],
-    },
-  ]
-
-  return assignments.find((a) => a.id === assignmentId)
-}
-
-// This would come from your database
-const getSubmissions = async (assignmentId: string, userId: string) => {
-  // Mock data for demonstration
-  return [
-    {
-      id: "1",
-      questionId: "1",
-      questionTitle: "BST Insertion",
-      submittedAt: "2024-03-05T14:30:00",
-      status: "passed",
-      score: 100,
-      runtime: "2ms",
-      memory: "5.2MB",
-      language: "Python",
-    },
-    {
-      id: "2",
-      questionId: "1",
-      questionTitle: "BST Insertion",
-      submittedAt: "2024-03-05T14:15:00",
-      status: "failed",
-      score: 60,
-      runtime: "3ms",
-      memory: "5.3MB",
-      language: "Python",
-    },
-    {
-      id: "3",
-      questionId: "2",
-      questionTitle: "BST Deletion",
-      submittedAt: "2024-03-05T15:45:00",
-      status: "in_progress",
-      score: null,
-      runtime: null,
-      memory: null,
-      language: "Python",
-    },
-  ]
-}
+// This would come from your database based on the updated schema
+// const getSubmissions = async (assignmentId: string, userId: string) => {
+//   // Mock data for demonstration
+//   return [
+//     {
+//       id: "1",
+//       studentId: userId,
+//       questionId: "1",
+//       questionTitle: "BST Insertion",
+//       code: "// Code here",
+//       language: "python",
+//       status: "ACCEPTED", // PENDING, ACCEPTED, REJECTED, PARTIALLY_ACCEPTED
+//       score: 100,
+//       plagiarismScore: 5.2, // percentage similarity
+//       testCaseResults: [
+//         { id: "tc1", status: "PASSED", executionTime: 12 },
+//         { id: "tc2", status: "PASSED", executionTime: 15 },
+//       ],
+//       createdAt: "2024-03-05T14:30:00",
+//     },
+//     {
+//       id: "2",
+//       studentId: userId,
+//       questionId: "1",
+//       questionTitle: "BST Insertion",
+//       code: "// Code here",
+//       language: "python",
+//       status: "PARTIALLY_ACCEPTED",
+//       score: 60,
+//       plagiarismScore: null,
+//       testCaseResults: [
+//         { id: "tc1", status: "PASSED", executionTime: 14 },
+//         {
+//           id: "tc2",
+//           status: "FAILED",
+//           executionTime: 18,
+//           errorMessage: "Expected [4,2,7,1,3,5] but got [4,2,7,1,3,null,5]",
+//         },
+//       ],
+//       createdAt: "2024-03-05T14:15:00",
+//     },
+//     {
+//       id: "3",
+//       studentId: userId,
+//       questionId: "2",
+//       questionTitle: "BST Deletion",
+//       code: "// Code here",
+//       language: "python",
+//       status: "PENDING",
+//       score: null,
+//       plagiarismScore: null,
+//       testCaseResults: [],
+//       createdAt: "2024-03-05T15:45:00",
+//     },
+//   ]
+// }
 
 export default async function SubmissionsPage({
   params,
 }: {
-  params: { assignmentId: string; classId: string }
+  params: { assignmentId: string; classCode: string }
 }) {
-  const {assignmentId, classId} = await params;
-  const assignment = await getAssignment(assignmentId)
-
+  const {assignmentId,classCode} = await params;
+  const {assignment} = await getAssignmentById(assignmentId)
   if (!assignment) {
-    notFound()
+    return NotFound()
   }
 
-  // In a real app, you'd get the user ID from the session
-  const userId = "user123"
-  const submissions = await getSubmissions(assignmentId, userId)
+  const {submissions} = await getSubmissions(assignmentId)
+
+  if (!submissions) {
+    return NotFound()
+  }
 
   // Group submissions by question
   const submissionsByQuestion = assignment.questions.map((question) => {
@@ -110,7 +101,7 @@ export default async function SubmissionsPage({
     <div className="container mx-auto max-w-5xl p-6">
       <div className="mb-8 flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild className="h-8 w-8 rounded-full">
-          <Link href={`/classes/${params.classId}/assignments/${assignmentId}`}>
+          <Link href={`/classes/${classCode}/${assignmentId}`}>
             <ChevronLeft className="h-4 w-4" />
             <span className="sr-only">Back to assignment</span>
           </Link>
@@ -123,13 +114,13 @@ export default async function SubmissionsPage({
       </div>
 
       <div className="space-y-6">
-        {submissionsByQuestion.map(({ question, submissions }) => (
+        {submissionsByQuestion.map(({ question, submissions},index) => (
           <Card key={question.id} className="rounded-2xl border-[#E6E4DD]">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-lg">
-                <span className="mr-2">Question {question.id}:</span> {question.title}
+                <span className="mr-2">Question {index+1}:</span> {question.title}
               </CardTitle>
-              <Badge
+              {/* <Badge
                 className={cn(
                   "px-3 py-1",
                   question.difficulty === "Easy" && "bg-[#7EBF8E] hover:bg-[#6CAF7E]",
@@ -138,7 +129,7 @@ export default async function SubmissionsPage({
                 )}
               >
                 {question.difficulty}
-              </Badge>
+              </Badge> */}
             </CardHeader>
 
             <CardContent>
@@ -152,14 +143,16 @@ export default async function SubmissionsPage({
                         <div
                           className={cn(
                             "flex h-10 w-10 items-center justify-center rounded-full",
-                            submission.status === "passed" && "bg-[#7EBF8E]/10 text-[#7EBF8E]",
-                            submission.status === "failed" && "bg-[#D2886F]/10 text-[#D2886F]",
-                            submission.status === "in_progress" && "bg-[#F1E6D0]/10 text-[#3A3935]",
+                            submission.status === "COMPLETED" && "bg-[#7EBF8E]/10 text-[#7EBF8E]",
+                            submission.status === "FAILED" && "bg-[#D2886F]/10 text-[#D2886F]",
+                            submission.status === "PARTIAL"  && "bg-[#F1E6D0]/10 text-[#3A3935]",
+                            submission.status === "PENDING" && "bg-[#E6E4DD]/50 text-[#605F5B]",
                           )}
                         >
-                          {submission.status === "passed" && <CheckCircle className="h-5 w-5" />}
-                          {submission.status === "failed" && <XCircle className="h-5 w-5" />}
-                          {submission.status === "in_progress" && <Clock className="h-5 w-5" />}
+                          {submission.status === "COMPLETED" && <CheckCircle className="h-5 w-5" />}
+                          {submission.status === "FAILED" && <XCircle className="h-5 w-5" />}
+                          {submission.status === "PARTIAL"&& <AlertTriangle className="h-5 w-5" />}
+                          {submission.status === "PENDING" && <Clock className="h-5 w-5" />}
                         </div>
 
                         <div>
@@ -172,20 +165,36 @@ export default async function SubmissionsPage({
                             </Badge>
                           </div>
 
-                          {submission.status !== "in_progress" && (
-                            <p className="text-sm text-[#605F5B]">
-                              Score: {submission.score}% | Runtime: {submission.runtime} | Memory: {submission.memory}
-                            </p>
+                          {submission.status !== "PENDING" && (
+                            <div className="flex gap-4 text-sm text-[#605F5B]">
+                              {submission.score !== null && <span>Score: {submission.score}%</span>}
+                              {submission.plagiarismScore !== null && (
+                                <span
+                                  className={cn(
+                                    submission.plagiarismScore > 30 && "text-[#D2886F]",
+                                    submission.plagiarismScore > 15 &&
+                                      submission.plagiarismScore <= 30 &&
+                                      "text-[#F1E6D0]/90",
+                                  )}
+                                >
+                                  Similarity: {submission.plagiarismScore.toFixed(1)}%
+                                </span>
+                              )}
+                              <span>
+                                {submission.testCaseResults.filter((tc) => tc.status === "PASSED").length}/
+                                {submission.testCaseResults.length} tests passed
+                              </span>
+                            </div>
                           )}
                         </div>
                       </div>
 
                       <Button variant="outline" size="sm" className="gap-1.5 border-[#E6E4DD]" asChild>
                         <Link
-                          href={`/classes/${params.classId}/assignments/${params.assignmentId}/submissions/${submission.id}`}
+                          href={`/classes/${classCode}/${assignmentId}/submissions/${submission.id}`}
                         >
                           <FileText className="h-4 w-4" />
-                          View Code
+                          View Details
                         </Link>
                       </Button>
                     </div>
@@ -199,4 +208,3 @@ export default async function SubmissionsPage({
     </div>
   )
 }
-

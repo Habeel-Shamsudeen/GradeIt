@@ -1,4 +1,5 @@
 "use server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Status, TestCaseStatus } from "@prisma/client";
 
@@ -167,5 +168,104 @@ export async function updateSubmissionStatus(submissionId: string) {
       `Error updating submission status for submission ${submissionId}:`,
       error
     );
+  }
+}
+
+export async function getSubmissions(assignmentId: string) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const assignment = await prisma.assignment.findFirst({
+      where: {
+        id: assignmentId,
+      },
+      include: {
+        questions: true,
+      },
+    });
+
+    if (!assignment) {
+      return {
+        status: "falied",
+        message: "Assignment not found",
+      };
+    }
+
+    const submissions = await prisma.submission.findMany({
+      where: {
+        studentId: session.user.id,
+        questionId: {
+          in: assignment.questions.map((ques) => ques.id),
+        },
+      },
+      include: {
+        question: true,
+        testCaseResults: true,
+      },
+    });
+
+    const formattedSubmissions = submissions.map((submission) => ({
+      id: submission.id,
+      studentId: submission.studentId,
+      questionId: submission.questionId,
+      questionTitle: submission.question.title,
+      code: submission.code,
+      submittedAt: submission.createdAt,
+      status: submission.status,
+      score: submission.score,
+      language: submission.question.language,
+      plagiarismScore: submission.plagiarismScore,
+      testCaseResults: submission.testCaseResults,
+    }));
+    return { status: "success", submissions: formattedSubmissions };
+  } catch (error) {
+    throw new Error("Failed to get submissions " + error);
+  }
+}
+
+export async function getSubmissionsById(submissionId: string) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const submission = await prisma.submission.findUnique({
+      where: {
+        studentId: session.user.id,
+        id: submissionId,
+      },
+      include: {
+        question: true,
+        testCaseResults: true,
+      },
+    });
+
+    if (!submission) {
+      return {
+        status: "falied",
+        message: "Submission not found",
+      };
+    }
+
+    const formattedSubmissions = {
+      id: submission.id,
+      studentId: submission.studentId,
+      questionId: submission.questionId,
+      questionTitle: submission.question.title,
+      code: submission.code,
+      submittedAt: submission.createdAt,
+      status: submission.status,
+      score: submission.score,
+      language: submission.question.language,
+      plagiarismScore: submission.plagiarismScore,
+      testCaseResults: submission.testCaseResults,
+    };
+    return { status: "success", submission: formattedSubmissions };
+  } catch (error) {
+    throw new Error("Failed to get submissions " + error);
   }
 }

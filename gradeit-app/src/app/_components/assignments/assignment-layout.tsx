@@ -16,12 +16,12 @@ import { pollJudge0Submissions } from "@/server/actions/submission-actions";
 
 interface AssignmentLayoutProps {
   assignment: AssignmentById;
-  classId: string;
+  classCode: string;
 }
 
 export function AssignmentLayout({
   assignment,
-  classId,
+  classCode,
 }: AssignmentLayoutProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -258,7 +258,7 @@ const pollSubmissionStatus = async (submissionId: string) => {
         completed = true;
         
         // Show appropriate message
-        if (submissionData.status === "PASSED") {
+        if (submissionData.status === "COMPLETED") {
           setSubmissionStatus("All tests passed successfully!");
           toast.success("Your solution passed all test cases");
         } else {
@@ -319,7 +319,7 @@ const pollSubmissionStatus = async (submissionId: string) => {
                 size="sm"
                 className="gap-1.5 border-[#E6E4DD]"
                 onClick={() =>
-                  (window.location.href = `/classes/${classId}/${assignment.id}/submissions`)
+                  (window.location.href = `/classes/${classCode}/${assignment.id}/submissions`)
                 }
               >
                 <FileText className="h-4 w-4" />

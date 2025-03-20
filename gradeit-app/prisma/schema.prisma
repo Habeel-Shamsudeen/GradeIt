@@ -145,3 +145,19 @@ model TestCaseResult {
 
   @@unique([submissionId, testCaseId]) // One result per test case per submission
 }
+
+
+// Add to existing Submission model
+// model Submission {
+//   // existing fields...
+//   score           Float?   // Overall score (0-100)
+//   feedback        String?  // Automated feedback
+//   testCaseResults TestCaseResult[]
+// }
+
+// // Add to existing TestCase model
+// model TestCase {
+//   // existing fields...
+//   weight          Int     @default(1) // Simple weight (1-3)
+//   isBonus         Boolean @default(false) // Optional bonus test cases
+// }  

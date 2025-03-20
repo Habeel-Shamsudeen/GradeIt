@@ -34,12 +34,12 @@ export const  getNavigationConfig = () => {
       url: `/classes/${classroom.code}`,
       icon: UserAccountIcon as HugeiconsIcon, // Change icon if needed
       isActive: false,
-      items: [
-        {
-          title: 'assignments',
-          url: `/classes/${classroom.code}`,
-        },
-      ],
+      // items: [
+      //   {
+      //     title: 'assignments',
+      //     url: `/classes/${classroom.code}`,
+      //   },
+      // ],
     })),
   navGroup3: [
     {

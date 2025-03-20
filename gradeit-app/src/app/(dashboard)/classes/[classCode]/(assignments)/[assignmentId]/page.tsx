@@ -15,7 +15,7 @@ export default async function AssignmentPage({
 }: {
   params: any
 }) {
-  const {assignmentId, classId} = await params;
+  const {assignmentId, classCode} = await params;
   const {assignment} = await getAssignmentById(assignmentId);
   const {role} = await getUserRole()
 
@@ -25,9 +25,9 @@ export default async function AssignmentPage({
   }
 
   if ( role === "FACULTY") {
-    return <FacultyView assignment={assignment} classId={classId} />
+    return <FacultyView assignment={assignment} classCode={classCode} />
   }
 
-  return <AssignmentLayout assignment={assignment} classId={classId} />
+  return <AssignmentLayout assignment={assignment} classCode={classCode} />
 }
 
