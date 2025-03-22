@@ -32,7 +32,7 @@ export function AppBreadcrumbs() {
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {breadcrumbs.map((breadcrumb, index) => (
+        {breadcrumbs.map((breadcrumb) => (
           <Fragment key={breadcrumb.href}>
             <li className="hidden md:inline-flex items-center">
               {breadcrumb.isLast ? (

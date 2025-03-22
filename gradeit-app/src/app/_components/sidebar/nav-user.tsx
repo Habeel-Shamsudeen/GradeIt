@@ -24,7 +24,7 @@ import {
   useSidebar,
 } from '@/app/_components/ui/sidebar';
 import { cn } from '@/lib/utils';
-import { Settings01Icon, SparklesIcon, UnfoldMoreIcon } from 'hugeicons-react';
+import { Settings01Icon, UnfoldMoreIcon } from 'hugeicons-react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
@@ -38,7 +38,6 @@ const NavUser = memo(function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const router = useRouter();
 
   return (
     <SidebarMenu>

@@ -20,7 +20,6 @@ export default async function ClassPage({ params }: any ) {
   const {classroom} = await getClassbyCode(classCode);
   const {role} = await getUserRole();
   const {assignments} = await getAssignments(classroom?.id || "");
-  console.log(classCode);
   const { teachers, students } = await getMembersByClassId(classCode);
 
   if(!classroom){
@@ -40,7 +39,7 @@ export default async function ClassPage({ params }: any ) {
           </TabsList>
 
           <TabsContent value="assignments">
-            <AssignmentList classCode={classCode} role={role || "STUDENT"} assignments={assignments}/>
+            <AssignmentList classCode={classCode} role={role || "STUDENT"} assignments={assignments || []}/>
           </TabsContent>
 
           <TabsContent value="people">

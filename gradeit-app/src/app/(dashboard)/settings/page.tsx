@@ -10,7 +10,7 @@ import {
 import { Suspense } from 'react';
 import { SettingsFormSkeleton } from './profile/Skeleton';
 // import DeleteAccount from './profile/DeleteAccount';
-import ProfileSettings from './profile/page';
+import ProfileSettings from './profile/ProfileSettings';
 import { auth } from '@/lib/auth';
 
 export default async function Settings() {

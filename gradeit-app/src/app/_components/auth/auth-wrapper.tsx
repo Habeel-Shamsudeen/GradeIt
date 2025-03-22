@@ -1,6 +1,6 @@
 'use client';
 import { absoluteUrl } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import { signIn } from "next-auth/react"
@@ -23,6 +23,7 @@ export default function AuthWrapper() {
                         await signIn("google")
                       } catch (error) {
                         // Handle error if needed
+                        console.log(error)
                       } finally {
                         setIsGoogleLoading(false);
                       }

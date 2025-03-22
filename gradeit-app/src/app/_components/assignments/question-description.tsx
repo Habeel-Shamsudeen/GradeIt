@@ -1,10 +1,5 @@
 "use client"
-
-import { cn } from "@/lib/utils"
-
-import { Badge } from "@/app/_components/ui/badge"
 import { Separator } from "@/app/_components/ui/separator"
-import { Clock, HardDrive } from "lucide-react"
 import { Question } from "@/lib/types/assignment-tyes"
 
 

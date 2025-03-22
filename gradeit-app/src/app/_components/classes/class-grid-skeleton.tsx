@@ -1,7 +1,6 @@
 "use client";
 
 import { Skeleton } from "@/app/_components/ui/skeleton";
-import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 
 export function ClassGridSkeleton() {

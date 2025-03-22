@@ -19,6 +19,7 @@ import { getLoginMethod } from '@/server/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loading03Icon } from 'hugeicons-react';
 import { User } from 'next-auth';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';

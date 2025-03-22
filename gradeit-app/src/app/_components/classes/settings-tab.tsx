@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Copy, RefreshCw, Trash2, Save, Link, Key } from "lucide-react";
+import { Copy, Link } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
-import { Textarea } from "@/app/_components/ui/textarea";
-import { Switch } from "@/app/_components/ui/switch";
 import {
   Card,
   CardContent,

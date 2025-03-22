@@ -99,12 +99,13 @@ export const getAssignments = async (classroomId: string) => {
       questionCount: assignment.questions.length,
       submissionCount: assignment.questions.reduce((acc, question) => acc + question.Submission.length, 0),
       createdAt: new Date(assignment.createdAt),
-      copyPastePrevention: assignment.copyPastePrevention
+      copyPastePrevention: assignment.copyPastePrevention,
+      fullScreenEnforcement:assignment.fullScreenEnforcement
     }));
 
     return { status: "success", assignments: formattedAssignments };
   } catch (error) {
-    return { status: "failed", assignments: [], message:error };
+    return { status: "failed", message:error };
   }
 };
 

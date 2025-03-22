@@ -1,4 +1,3 @@
-// app/api/submissions/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -6,10 +5,9 @@ import { mapStatus } from "@/lib/utils";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: any}
 ) {
   try {
-    // Authenticate user
     const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -23,7 +21,7 @@ export async function GET(
     const submission = await prisma.submission.findUnique({
       where: { 
         id: submissionId,
-        studentId: userId // Ensure user can only access their own submissions
+        studentId: userId
       },
       include: {
         testCaseResults: {

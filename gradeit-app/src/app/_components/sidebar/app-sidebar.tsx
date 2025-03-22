@@ -20,6 +20,7 @@ import { isValidUrl, titleCase } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { getNavigationConfig } from "@/config/navigation";
 import { useClientSession } from "@/hooks/use-auth-session";
+import Image from "next/image";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { resolvedTheme } = useTheme();
@@ -51,16 +52,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {isMobile || open ? (
               <>
                 {resolvedTheme === "light" ? (
-                  <img src={'./'} alt="Logo" className="h-10 ml-2" />
+                  <Image src={LOGO_LIGHT} alt="Logo" className="ml-2" width={100} height={10}/>
                 ) : (
-                  <img src={LOGO_DARK} alt="Logo" className="h-10 ml-2" />
+                  <Image src={LOGO_DARK} alt="Logo" className="ml-2" width={100} height={10}/>
                 )}
                 <ModeToggle />
               </>
             ) : resolvedTheme === "light" ? (
-              <img src={LOGO_LIGHT_SQUARE} alt="Logo" className="mb-4 w-12" />
+              <Image src={LOGO_LIGHT_SQUARE} alt="Logo" className="mb-4" width={100} height={10}/>
             ) : (
-              <img src={LOGO_DARK_SQUARE} alt="Logo" className="mb-4 w-12" />
+              <Image src={LOGO_DARK_SQUARE} alt="Logo" className="mb-4" width={100} height={10}/>
             )}
           </div>
         </SidebarHeader>

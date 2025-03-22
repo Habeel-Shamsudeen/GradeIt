@@ -8,7 +8,6 @@ import { Code } from "lucide-react"
 import { ModeToggle } from "./mode-toggle"
 
 export function SiteHeader() {
-  const pathname = usePathname()
 
   return (
     <motion.header

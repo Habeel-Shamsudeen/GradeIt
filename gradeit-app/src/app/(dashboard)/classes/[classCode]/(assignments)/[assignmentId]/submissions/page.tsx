@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function SubmissionsPage({
   params,
 }: {
-  params: { assignmentId: string; classCode: string }
+  params: any
 }) {
   const {assignmentId,classCode} = await params;
   const {assignment} = await getAssignmentById(assignmentId)

@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { TestResults } from "@/lib/types/assignment-tyes";
 import { Status, TestCaseStatus } from "@prisma/client";
 
 export async function gradeSubmission(submissionId: string) {
@@ -35,7 +36,7 @@ export async function gradeSubmission(submissionId: string) {
     let earnedPoints = 0;
     let bonusPoints = 0;
     
-    const testResults = [];
+    const testResults: TestResults[] = [];
     
     submission.testCaseResults.forEach((result) => {
       // Use weight and isBonus from the testCase model, with fallbacks
@@ -93,8 +94,8 @@ export async function gradeSubmission(submissionId: string) {
   }
 }
 
-function generateFeedback(testResults, score) {
-  let feedback = [];
+function generateFeedback(testResults:TestResults[], score:number) {
+  const feedback = [];
   
   // General score feedback
   if (score >= 90) {
@@ -133,10 +134,10 @@ function generateFeedback(testResults, score) {
   }
   
   // Add suggestions for slow tests
-  const slowTests = testResults.filter(t => t.passed && t.executionTime > 1000); // Tests taking over 1 second
+  const slowTests = testResults.filter(t => t.passed && t.executionTime? t.executionTime > 1000 : false); // Tests taking over 1 second
   if (slowTests.length > 0) {
     feedback.push("\nSome of your solutions run slowly and could be optimized:");
-    slowTests.forEach((test, i) => {
+    slowTests.forEach((test) => {
       feedback.push(`- ${test.description} (${test.executionTime}ms)`);
     });
   }

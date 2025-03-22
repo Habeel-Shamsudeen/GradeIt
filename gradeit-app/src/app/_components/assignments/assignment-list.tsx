@@ -7,37 +7,6 @@ import { Button } from "@/app/_components/ui/button"
 import { Role } from "@prisma/client"
 import { Assignment } from "@/lib/types/assignment-tyes"
 
-// Mock data for demonstration
-const assignments = [
-  {
-    id: "1",
-    title: "Binary Search Trees Implementation",
-    description: "Implement a binary search tree with insertion, deletion, and traversal operations.",
-    dueDate: new Date("2025-04-15T23:59:59"),
-    questionCount: 3,
-    submissionCount: 24,
-    createdAt: new Date("2025-03-01T10:30:00"),
-  },
-  {
-    id: "2",
-    title: "Sorting Algorithms Analysis",
-    description: "Implement and analyze the time complexity of various sorting algorithms.",
-    dueDate: new Date("2025-04-22T23:59:59"),
-    questionCount: 5,
-    submissionCount: 18,
-    createdAt: new Date("2025-03-05T14:15:00"),
-  },
-  {
-    id: "3",
-    title: "Graph Algorithms",
-    description: "Implement BFS, DFS, and Dijkstra's algorithm for graph traversal and shortest path finding.",
-    dueDate: new Date("2025-05-01T23:59:59"),
-    questionCount: 4,
-    submissionCount: 0,
-    createdAt: new Date("2025-03-10T09:45:00"),
-  },
-]
-
 interface AssignmentListProps {
   classCode: string
   role:Role

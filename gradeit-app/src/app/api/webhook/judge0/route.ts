@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     let testCaseStatus: TestCaseStatus;
     let actualOutput = null;
     let errorMessage = null;
-    let executionTime = judgeResult.time ? Math.round(parseFloat(judgeResult.time) * 1000) : null; // Convert to ms
+    const executionTime = judgeResult.time ? Math.round(parseFloat(judgeResult.time) * 1000) : null; // Convert to ms
     
     // Process based on Judge0 status
     // Status ID reference: https://github.com/judge0/judge0/blob/master/docs/api/submissions.md#status

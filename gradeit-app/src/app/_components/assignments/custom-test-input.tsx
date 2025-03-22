@@ -48,7 +48,7 @@ export function CustomTestInput({ input, onInputChange, output, isRunning }: Cus
 
         {!output && !isRunning && (
           <div className="mt-4 text-center text-sm text-[#A1A1A1]">
-            Click "Run" to execute your code with the custom input
+            Click &quot;Run&quot; to execute your code with the custom input
           </div>
         )}
       </div>

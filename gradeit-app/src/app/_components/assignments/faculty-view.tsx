@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, exportToCSV } from "@/lib/utils";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -42,40 +42,6 @@ interface FacultyViewProps {
   classCode: string;
   initialStudents: any[];
 }
-
-// Mock data for demonstration
-// const students = [
-//   {
-//     id: "1",
-//     name: "Alex Chen",
-//     email: "alex.chen@university.edu",
-//     avatar: "/placeholder.svg?height=40&width=40",
-//     status: "completed",
-//     submittedAt: "2024-03-04T15:30:00",
-//     score: 95,
-//     questionsCompleted: 2,
-//   },
-//   {
-//     id: "2",
-//     name: "Jamie Smith",
-//     email: "jamie.smith@university.edu",
-//     avatar: "/placeholder.svg?height=40&width=40",
-//     status: "in_progress",
-//     submittedAt: null,
-//     score: null,
-//     questionsCompleted: 1,
-//   },
-//   {
-//     id: "3",
-//     name: "Taylor Johnson",
-//     email: "taylor.johnson@university.edu",
-//     avatar: "/placeholder.svg?height=40&width=40",
-//     status: "not_started",
-//     submittedAt: null,
-//     score: null,
-//     questionsCompleted: 0,
-//   },
-// ]
 
 export function FacultyView({
   assignment,
@@ -242,7 +208,7 @@ export function FacultyView({
                     <DropdownMenuItem>Not Started</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="outline" className="gap-1.5 border-[#E6E4DD]">
+                <Button variant="outline" className="gap-1.5 border-[#E6E4DD]" onClick={()=> exportToCSV(students)}>
                   <Download className="h-4 w-4" />
                   Export
                 </Button>

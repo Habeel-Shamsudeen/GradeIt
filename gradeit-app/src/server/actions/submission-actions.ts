@@ -1,7 +1,7 @@
 "use server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Status, TestCaseStatus } from "@prisma/client";
+import { TestCaseStatus } from "@prisma/client";
 import { gradeSubmission } from "./grading-actions";
 import { cookies } from "next/headers";
 
@@ -83,7 +83,7 @@ export async function processJudgeResult(
     let testCaseStatus: TestCaseStatus;
     let actualOutput = null;
     let errorMessage = null;
-    let executionTime = judgeResult.time
+    const executionTime = judgeResult.time
       ? Math.round(parseFloat(judgeResult.time) * 1000)
       : null; // Convert to ms
 

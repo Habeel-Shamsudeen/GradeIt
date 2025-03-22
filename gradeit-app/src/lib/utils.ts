@@ -120,3 +120,41 @@ export function mapStatus(status: string): "passed" | "failed" | "running" {
       return "failed";
   }
 }
+
+export const exportToCSV = (students: any[]) => {
+  if (!students.length) {
+    alert("No data available to export.");
+    return;
+  }
+
+  // Convert JSON to CSV format
+  const headers = ["ID", "Name", "Email", "Avatar", "Status", "Submitted At", "Score", "Questions Completed"];
+  const csvRows = [
+    headers.join(","), // Add headers
+    ...students.map((student) =>
+      [
+        student.id,
+        student.name,
+        student.email,
+        student.avatar,
+        student.status,
+        student.submittedAt,
+        student.score,
+        student.questionsCompleted,
+      ].join(",")
+    ),
+  ];
+
+  const csvContent = csvRows.join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  // Create a hidden download link
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "students_submissions.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};

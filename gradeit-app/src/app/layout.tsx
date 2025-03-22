@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono,Onest } from "next/font/google";
+import { Onest } from "next/font/google";
 import "@/app/styles/globals.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import NextTopLoader from 'nextjs-toploader';

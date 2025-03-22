@@ -1,4 +1,5 @@
 import { useUploadFile } from 'better-upload/client';
+import Image from 'next/image';
 import { useRef } from 'react';
 
 type ProfileImageUploadProps = Parameters<typeof useUploadFile>[0] & {
@@ -57,7 +58,7 @@ export function ProfileImageUpload({
           className="relative overflow-hidden rounded-full ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-primary"
           style={{ width: size, height: size }}
         >
-          <img
+          <Image
             src={imageUrl}
             alt={alt}
             width={size}
