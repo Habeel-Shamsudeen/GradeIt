@@ -21,6 +21,7 @@ import { FeatureCard } from "../_components/landing/feature-card"
 import { ProcessStep } from "../_components/landing/process-step"
 import { Button } from "../_components/ui/button"
 import { FeatureHighlight } from "../_components/landing/feature-highlight"
+import { HeroCarousel } from "../_components/landing/hero-carousel"
 
 // Animated section component that triggers when scrolled into view
 const AnimatedSection = ({ children, delay = 0, className = "" }:any) => {
@@ -194,12 +195,7 @@ export default function Home() {
               className="relative mx-auto mt-20 max-w-5xl"
             >
               <div className="rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] backdrop-blur-sm bg-white/90 border border-[#E6E4DD]">
-                <ParallaxImage
-                  src="/placeholder.svg?height=600&width=1200"
-                  width={1200}
-                  height={600}
-                  alt="gradeIT Dashboard"
-                />
+                <HeroCarousel className="w-full h-[600px]" />
               </div>
               <div className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full bg-[#F1E6D0] blur-2xl opacity-60"></div>
               <div className="absolute -top-6 -left-6 h-24 w-24 rounded-full bg-[#61AAF2] blur-2xl opacity-20"></div>

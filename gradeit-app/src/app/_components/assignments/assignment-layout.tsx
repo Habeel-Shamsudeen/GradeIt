@@ -99,7 +99,6 @@ export function AssignmentLayout({
       let resultData;
       for (let i = 0; i < 10; i++) {
         await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second between requests
-
         const resultResponse = await fetch(
           `https://judge0-ce.p.rapidapi.com/submissions/${submitData.token}?base64_encoded=true&fields=*`,
           {
