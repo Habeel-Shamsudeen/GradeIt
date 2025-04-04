@@ -6,13 +6,12 @@ import { Status, TestCaseStatus } from "@prisma/client";
 
 export async function gradeSubmission(submissionId: string) {
   try {
-    // Get submission with test case results
     const submission = await prisma.submission.findUnique({
       where: { id: submissionId },
       include: {
         testCaseResults: {
           include: {
-            testCase: true, // Include the test case to access its properties
+            testCase: true, 
           },
         },
       },
@@ -22,7 +21,6 @@ export async function gradeSubmission(submissionId: string) {
       throw new Error(`Submission ${submissionId} not found`);
     }
 
-    // Skip if not all test cases are processed
     const pendingTestCases = submission.testCaseResults.filter(
       (result) => result.status === TestCaseStatus.PENDING
     );
@@ -31,7 +29,6 @@ export async function gradeSubmission(submissionId: string) {
       return;
     }
 
-    // Calculate score based on test case results
     let totalPoints = 0;
     let earnedPoints = 0;
     let bonusPoints = 0;
@@ -39,7 +36,6 @@ export async function gradeSubmission(submissionId: string) {
     const testResults: TestResults[] = [];
     
     submission.testCaseResults.forEach((result) => {
-      // Use weight and isBonus from the testCase model, with fallbacks
       const weight = result.testCase.weight || 1;
       const isBonus = result.testCase.isBonus || false;
       
@@ -64,16 +60,14 @@ export async function gradeSubmission(submissionId: string) {
       }
     });
     
-    // Calculate base score (0-100)
     const baseScore = totalPoints > 0 ? (earnedPoints / totalPoints) * 100 : 0;
     
-    // Add bonus points (capped to ensure score doesn't exceed 100)
     const totalScore = Math.min(100, baseScore + (bonusPoints * 5));
     
     // Generate simple feedback
     const feedback = generateFeedback(testResults, totalScore);
     
-    // Update submission with score and feedback
+    
     await prisma.submission.update({
       where: { id: submissionId },
       data: {
@@ -108,7 +102,6 @@ function generateFeedback(testResults:TestResults[], score:number) {
     feedback.push("Your solution doesn't pass enough tests yet. Review the failed test cases.");
   }
   
-  // Count passed and failed tests
   const passedTests = testResults.filter(t => t.passed && !t.isBonus).length;
   const totalRequiredTests = testResults.filter(t => !t.isBonus).length;
   const passedBonus = testResults.filter(t => t.passed && t.isBonus).length;
@@ -120,7 +113,6 @@ function generateFeedback(testResults:TestResults[], score:number) {
     feedback.push(`You passed ${passedBonus}/${totalBonus} bonus test cases.`);
   }
   
-  // Add failed test case details
   const failedTests = testResults.filter(t => !t.passed);
   if (failedTests.length > 0) {
     feedback.push("\nFailed test cases:");
@@ -133,7 +125,6 @@ function generateFeedback(testResults:TestResults[], score:number) {
     });
   }
   
-  // Add suggestions for slow tests
   const slowTests = testResults.filter(t => t.passed && t.executionTime? t.executionTime > 1000 : false); // Tests taking over 1 second
   if (slowTests.length > 0) {
     feedback.push("\nSome of your solutions run slowly and could be optimized:");

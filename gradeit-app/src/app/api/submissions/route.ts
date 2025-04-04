@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get question and test cases
+    
     const question = await prisma.question.findUnique({
       where: { id: questionId },
       include: { testCases: true },
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create submission record
+    
     const submission = await prisma.submission.create({
       data: {
         studentId: userId,
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Create TestCaseResult records for each test case
+    
     await prisma.testCaseResult.createMany({
       data: question.testCases.map((testCase) => ({
         submissionId: submission.id,
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       })),
     });
 
-    // Prepare to call Judge0 API for each test case
+    
     const testCasePromises = question.testCases.map(async (testCase) => {
       const response = await fetch(
         "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*",
@@ -79,14 +79,14 @@ export async function POST(req: NextRequest) {
         }
       );
 
-      // Get Judge0 token
+      
       const judgeData = await response.json();
       console.log(judgeData);
       if (!judgeData.token) {
         throw new Error(`Failed to submit test case ${testCase.id}`);
       }
 
-      // Store the Judge0 token in our database for polling
+      
       await prisma.testCaseResult.update({
         where: {
           submissionId_testCaseId: {
@@ -103,19 +103,19 @@ export async function POST(req: NextRequest) {
     });
 
     try {
-      // Wait for all submissions to be sent to Judge0
+      
       await Promise.all(testCasePromises);
 
-      // Trigger the first poll immediately
+      
       await pollJudge0Submissions(submission.id);
 
-      // Return submission ID so frontend can poll for status
+      
       return NextResponse.json({
         submissionId: submission.id,
         message: "Submission created and test cases queued",
       });
     } catch (error) {
-      // Mark submission as failed if any test case submission fails
+      
       await prisma.submission.update({
         where: { id: submission.id },
         data: { status: Status.FAILED },

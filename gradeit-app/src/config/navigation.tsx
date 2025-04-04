@@ -32,7 +32,7 @@ export const  getNavigationConfig = () => {
     navGroup2: userClasses.map((classroom) => ({
       title: classroom.name,
       url: `/classes/${classroom.code}`,
-      icon: UserAccountIcon as HugeiconsIcon, // Change icon if needed
+      // icon: UserAccountIcon as HugeiconsIcon, // Change icon if needed
       isActive: false,
       // items: [
       //   {

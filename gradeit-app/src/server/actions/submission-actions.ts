@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 
 export async function pollJudge0Submissions(submissionId: string) {
   try {
-    // Fetch all pending test case results for this submission
+    
     const pendingResults = await prisma.testCaseResult.findMany({
       where: {
         submissionId,
@@ -19,12 +19,11 @@ export async function pollJudge0Submissions(submissionId: string) {
     });
 
     if (pendingResults.length === 0) {
-      // no pending results, update the submission status
       await updateSubmissionStatus(submissionId);
       return;
     }
 
-    // For each pending result, check its status on Judge0
+    
     const updatePromises = pendingResults.map(async (result) => {
       if (!result.judge0Token) {
         console.error(`Missing Judge0 token for test case result ${result.id}`);
@@ -51,7 +50,7 @@ export async function pollJudge0Submissions(submissionId: string) {
           return;
         }
 
-        // Process the result
+        
         await processJudgeResult(result.id, judgeResult);
       } catch (error) {
         console.error(
@@ -73,13 +72,12 @@ export async function pollJudge0Submissions(submissionId: string) {
   }
 }
 
-// Helper function to process a Judge0 result
+
 export async function processJudgeResult(
   testCaseResultId: string,
   judgeResult: any
 ) {
   try {
-    // Determine test case status based on Judge0 result
     let testCaseStatus: TestCaseStatus;
     let actualOutput = null;
     let errorMessage = null;
@@ -119,7 +117,7 @@ export async function processJudgeResult(
       errorMessage = `Execution failed: ${judgeResult.status.description}`;
     }
 
-    // Update the TestCaseResult record
+    
     await prisma.testCaseResult.update({
       where: { id: testCaseResultId },
       data: {
@@ -149,7 +147,6 @@ export async function updateSubmissionStatus(submissionId: string) {
     );
 
     if (allProcessed) {
-      // Determine overall submission status
 
       await gradeSubmission(submissionId)
       // const allPassed = testCaseResults.every(

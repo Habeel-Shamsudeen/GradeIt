@@ -12,7 +12,6 @@ export const metadata: Metadata = {
 
 export default async function CreateAssignmentPage({ params }: any) {
   const { classCode } = await params;
-  console.log("classCode", classCode);
   const session = await auth();
   if(!session?.user){
     return <Loading/>

@@ -52,16 +52,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {isMobile || open ? (
               <>
                 {resolvedTheme === "light" ? (
-                  <Image src={LOGO_LIGHT} alt="Logo" className="ml-2" width={100} height={10}/>
+                  <Image src={LOGO_DARK} alt="Logo" className="ml-2" width={100} height={10}/>
                 ) : (
                   <Image src={LOGO_DARK} alt="Logo" className="ml-2" width={100} height={10}/>
                 )}
                 <ModeToggle />
               </>
             ) : resolvedTheme === "light" ? (
-              <Image src={LOGO_LIGHT_SQUARE} alt="Logo" className="mb-4" width={100} height={10}/>
+              <Image src={LOGO_LIGHT} alt="Logo" className="mb-4" width={50} height={10}/>
             ) : (
-              <Image src={LOGO_DARK_SQUARE} alt="Logo" className="mb-4" width={100} height={10}/>
+              <Image src={LOGO_LIGHT} alt="Logo" className="mb-4" width={50} height={10}/>
             )}
           </div>
         </SidebarHeader>

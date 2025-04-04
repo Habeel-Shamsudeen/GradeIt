@@ -182,7 +182,6 @@ const handleSubmit = async () => {
   setSubmissionStatus("Submitting your solution...");
   
   try {
-    // Call your backend API endpoint
     const response = await fetch("/api/submissions", {
       method: "POST",
       headers: {
@@ -219,7 +218,7 @@ const handleSubmit = async () => {
 const pollSubmissionStatus = async (submissionId: string) => {
   let completed = false;
   let attempts = 0;
-  const maxAttempts = 30; // Poll for maximum of 30 attempts (30 seconds with 1s interval)
+  const maxAttempts = 30; // Poll for maximum of 30 attempts (30 seconds with 2s interval) that is for 60 seconds
   
   while (!completed && attempts < maxAttempts) {
     attempts++;

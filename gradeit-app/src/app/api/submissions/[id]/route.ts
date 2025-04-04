@@ -50,7 +50,6 @@ export async function GET(
       testCaseMap.set(testCase.id, testCase);
     });
 
-    // Process the results for frontend consumption
     const results = submission.testCaseResults.map((result) => {
       const testCase = testCaseMap.get(result.testCaseId);
       
@@ -59,7 +58,7 @@ export async function GET(
         testCaseId: result.testCaseId,
         status: mapStatus(result.status),
         runtime: result.executionTime ? `${result.executionTime}ms` : "N/A",
-        memory: "N/A", // Judge0 doesn't always provide memory usage
+        memory: "N/A", 
         output: result.actualOutput,
         error: result.errorMessage,
         input: testCase?.hidden ? null : testCase?.input,
