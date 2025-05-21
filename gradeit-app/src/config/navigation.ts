@@ -1,5 +1,6 @@
-'use client'
+"use client";
 import { UserClassroom } from "@/lib/types/class-types";
+import { getRandomEducationIcon } from "@/lib/utils";
 import { getUserClasses } from "@/server/actions/class-actions";
 import {
   HugeiconsIcon,
@@ -8,15 +9,26 @@ import {
 } from "hugeicons-react";
 import { useEffect, useState } from "react";
 
-export const  getNavigationConfig = () => {
+export const getNavigationConfig = () => {
   const [userClasses, setUserClasses] = useState<UserClassroom[]>([]);
   const [loading, setLoading] = useState(true);
+  const [classIcons, setClassIcons] = useState<Record<string, HugeiconsIcon>>(
+    {}
+  );
+
   useEffect(() => {
     const fetchClasses = async () => {
       try {
         const response = await getUserClasses();
         if (response.status === "success") {
-          setUserClasses(response.classes || []);
+          const classes = response.classes || [];
+          setUserClasses(classes);
+
+          const iconMap: Record<string, HugeiconsIcon> = {};
+          classes.forEach((classroom) => {
+            iconMap[classroom.code] = getRandomEducationIcon();
+          });
+          setClassIcons(iconMap);
         }
       } catch (error) {
         console.error("Failed to fetch classes:", error);
@@ -27,26 +39,22 @@ export const  getNavigationConfig = () => {
 
     fetchClasses();
   }, []);
-  return ({
+
+  return {
     loading,
     navGroup2: userClasses.map((classroom) => ({
       title: classroom.name,
       url: `/classes/${classroom.code}`,
-      // icon: UserAccountIcon as HugeiconsIcon, // Change icon if needed
+      icon: classIcons[classroom.code] || (UserAccountIcon as HugeiconsIcon),
       isActive: false,
-      // items: [
-      //   {
-      //     title: 'assignments',
-      //     url: `/classes/${classroom.code}`,
-      //   },
-      // ],
     })),
-  navGroup3: [
-    {
-      title: "Setting & Billing",
-      url: "/settings",
-      icon: Settings02Icon as HugeiconsIcon,
-      items: [],
-    },
-  ],
-})};
+    navGroup3: [
+      {
+        title: "Setting & Billing",
+        url: "/settings",
+        icon: Settings02Icon as HugeiconsIcon,
+        items: [],
+      },
+    ],
+  };
+};

@@ -13,21 +13,24 @@ interface AssignmentCardProps {
 }
 
 export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
-  const isOverdue = assignment.dueDate && new Date() > assignment.dueDate
-  const isDueSoon = !isOverdue && assignment.dueDate &&  new Date() > new Date(assignment.dueDate.getTime() - 2 * 24 * 60 * 60 * 1000)
+  const isOverdue = assignment.dueDate && new Date() > assignment.dueDate;
+  const isDueSoon =
+    !isOverdue &&
+    assignment.dueDate &&
+    new Date() > new Date(assignment.dueDate.getTime() - 2 * 24 * 60 * 60 * 1000);
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-[#E6E4DD] bg-white transition-all hover:shadow-md">
+    <Card className="overflow-hidden rounded-2xl border border-border bg-card transition-all hover:shadow-md">
       <Link href={`/classes/${classCode}/${assignment.id}`} className="block">
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between gap-4">
-            <h3 className="text-lg font-medium text-[#141413]">{assignment.title}</h3>
+            <h3 className="text-lg font-medium text-foreground">{assignment.title}</h3>
             {isOverdue ? (
               <Badge variant="destructive">Overdue</Badge>
             ) : isDueSoon ? (
-              <Badge className="bg-[#F1E6D0] text-[#3A3935] hover:bg-[#EBDBBC]">Due Soon</Badge>
+              <Badge className="bg-muted text-foreground hover:bg-muted/70">Due Soon</Badge>
             ) : (
-              <Badge variant="outline" className="border-[#E6E4DD] text-[#605F5B]">
+              <Badge variant="outline" className="border-border text-muted-foreground">
                 Active
               </Badge>
             )}
@@ -35,24 +38,31 @@ export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
         </CardHeader>
 
         <CardContent className="pb-2">
-          <p className="line-clamp-2 text-sm text-[#605F5B]">{assignment.description}</p>
+          <p className="line-clamp-2 text-sm text-muted-foreground">{assignment.description}</p>
         </CardContent>
 
-        <CardFooter className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs text-[#828179]">
+        <CardFooter className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Calendar className="h-3.5 w-3.5" />
-            <span>Due: {assignment.dueDate ? format(assignment.dueDate, "MMM d, yyyy 'at' h:mm a") : "No due date"}</span>
+            <span>
+              Due:{" "}
+              {assignment.dueDate
+                ? format(assignment.dueDate, "MMM d, yyyy 'at' h:mm a")
+                : "No due date"}
+            </span>
           </div>
           <div className="flex items-center gap-1">
             <FileText className="h-3.5 w-3.5" />
             <span>
-              {assignment.questionCount} question{assignment.questionCount !== 1 ? "s" : ""}
+              {assignment.questionCount} question
+              {assignment.questionCount !== 1 ? "s" : ""}
             </span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="h-3.5 w-3.5" />
             <span>
-              {assignment.submissionCount} submission{assignment.submissionCount !== 1 ? "s" : ""}
+              {assignment.submissionCount} submission
+              {assignment.submissionCount !== 1 ? "s" : ""}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -62,6 +72,6 @@ export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
         </CardFooter>
       </Link>
     </Card>
-  )
+  );
 }
 

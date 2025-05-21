@@ -91,7 +91,6 @@ export const studentFeatures = [
   },
 ];
 
-// Workflow steps data
 export const educatorSteps = [
   {
     number: "01",

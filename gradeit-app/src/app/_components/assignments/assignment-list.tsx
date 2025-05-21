@@ -14,15 +14,15 @@ interface AssignmentListProps {
 }
 
 export function AssignmentList({ classCode, role, assignments }: AssignmentListProps) {
-  const router = useRouter()
+  const router = useRouter();
   const handleCreateAssignment = () => {
-    router.push(`/classes/${classCode}/create`)
-  }
+    router.push(`/classes/${classCode}/create`);
+  };
 
   return (
     <div className="mx-auto max-w-6xl">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-medium text-[#141413]">Assignments</h2>
+        <h2 className="text-xl font-medium text-foreground">Assignments</h2>
         {role === "FACULTY" && (
           <Button onClick={handleCreateAssignment} className="gap-1">
             <Plus className="h-4 w-4" />
@@ -33,10 +33,14 @@ export function AssignmentList({ classCode, role, assignments }: AssignmentListP
 
       <div className="grid gap-4">
         {assignments.length === 0 ? (
-          <div className="flex h-40 flex-col items-center justify-center rounded-2xl border border-dashed border-[#E6E4DD] bg-white/50 p-6 text-center">
-            <p className="text-[#605F5B]">No assignments yet.</p>
+          <div className="flex h-40 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center">
+            <p className="text-muted-foreground">No assignments yet.</p>
             {role === "FACULTY" && (
-              <Button variant="outline" className="mt-4 border-[#E6E4DD]" onClick={handleCreateAssignment}>
+              <Button
+                variant="outline"
+                className="mt-4 border-border"
+                onClick={handleCreateAssignment}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Create your first assignment
               </Button>
@@ -56,6 +60,6 @@ export function AssignmentList({ classCode, role, assignments }: AssignmentListP
         )}
       </div>
     </div>
-  )
+  );
 }
 
