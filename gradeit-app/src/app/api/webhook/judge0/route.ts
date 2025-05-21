@@ -1,4 +1,3 @@
-// app/api/webhook/judge0/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { TestCaseStatus, Status } from "@prisma/client";

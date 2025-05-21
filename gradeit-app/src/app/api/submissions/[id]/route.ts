@@ -17,7 +17,6 @@ export async function GET(
     const submissionId = id;
     const userId = session.user.id;
 
-    // Get the submission with test case results
     const submission = await prisma.submission.findUnique({
       where: { 
         id: submissionId,
@@ -44,7 +43,6 @@ export async function GET(
       );
     }
 
-    // Map test cases to their results
     const testCaseMap = new Map();
     submission.question.testCases.forEach((testCase) => {
       testCaseMap.set(testCase.id, testCase);

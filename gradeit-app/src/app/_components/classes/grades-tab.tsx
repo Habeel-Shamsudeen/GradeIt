@@ -40,39 +40,7 @@ const students = [
       { assignmentId: "3", score: null, total: 100, submitted: false },
     ],
   },
-  {
-    id: "2",
-    name: "Jamie Smith",
-    email: "jamie.smith@university.edu",
-    avatar: "/placeholder.svg?height=40&width=40",
-    grades: [
-      { assignmentId: "1", score: 95, total: 100, submitted: true },
-      { assignmentId: "2", score: 90, total: 100, submitted: true },
-      { assignmentId: "3", score: 85, total: 100, submitted: true },
-    ],
-  },
-  {
-    id: "3",
-    name: "Taylor Johnson",
-    email: "taylor.johnson@university.edu",
-    avatar: "/placeholder.svg?height=40&width=40",
-    grades: [
-      { assignmentId: "1", score: 78, total: 100, submitted: true },
-      { assignmentId: "2", score: null, total: 100, submitted: false },
-      { assignmentId: "3", score: null, total: 100, submitted: false },
-    ],
-  },
-  {
-    id: "4",
-    name: "Morgan Williams",
-    email: "morgan.williams@university.edu",
-    avatar: "/placeholder.svg?height=40&width=40",
-    grades: [
-      { assignmentId: "1", score: 88, total: 100, submitted: true },
-      { assignmentId: "2", score: 92, total: 100, submitted: true },
-      { assignmentId: "3", score: null, total: 100, submitted: false },
-    ],
-  },
+
 ]
 
 export function GradesTab() {

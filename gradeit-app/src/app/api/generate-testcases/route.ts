@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       sampleInput,
       sampleOutput
     );
-    // Call the local LLM
+    
     const prompt = buildPrompt(
       questionTitle,
       questionDescription,

@@ -37,7 +37,6 @@ export function ClassGrid({classes,role}:{classes:UserClassroom[],role:Role}) {
   return (
     <>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Add / Create Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -57,7 +56,6 @@ export function ClassGrid({classes,role}:{classes:UserClassroom[],role:Role}) {
           </Button>
         </motion.div>
 
-        {/* Render Class Cards */}
         {classes.map((classItem, index) => (
           <motion.div
             key={classItem.id}
