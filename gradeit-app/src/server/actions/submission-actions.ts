@@ -62,7 +62,6 @@ export async function pollJudge0Submissions(submissionId: string) {
 
     await Promise.all(updatePromises);
 
-    // Update the submission status
     await updateSubmissionStatus(submissionId);
   } catch (error) {
     console.error(
@@ -149,17 +148,6 @@ export async function updateSubmissionStatus(submissionId: string) {
     if (allProcessed) {
 
       await gradeSubmission(submissionId)
-      // const allPassed = testCaseResults.every(
-      //   (result) => result.status === TestCaseStatus.PASSED
-      // );
-
-      // // Update submission status
-      // await prisma.submission.update({
-      //   where: { id: submissionId },
-      //   data: {
-      //     status: allPassed ? Status.COMPLETED : Status.FAILED,
-      //   },
-      // });
     }
   } catch (error) {
     console.error(
@@ -351,3 +339,4 @@ export async function getStudentAssignmentProgress(assignmentId: string, classCo
 
   return studentsProgress
 }
+

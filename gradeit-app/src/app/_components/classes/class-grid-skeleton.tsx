@@ -6,7 +6,6 @@ import { Plus } from "lucide-react";
 export function ClassGridSkeleton() {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {/* Skeleton for Add / Create Card */}
 
       <div className="group relative flex h-[280px] w-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[hsl(var(--border))] bg-[hsl(var(--card))] dark:bg-[#222222] p-6 text-[hsl(var(--foreground))] shadow-sm transition-all animate-pulse">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(var(--muted))] transition-colors group-hover:bg-[hsl(var(--border-secondary))]">
@@ -14,7 +13,6 @@ export function ClassGridSkeleton() {
         </div>
         <Skeleton className="h-6 w-24" />
       </div>
-      {/* Skeletons for Class Cards */}
       {[...Array(5)].map((_, index) => (
         <div
           key={index}

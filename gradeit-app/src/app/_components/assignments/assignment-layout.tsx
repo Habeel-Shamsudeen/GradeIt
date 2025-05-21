@@ -51,9 +51,7 @@ export function AssignmentLayout({
 
   const handleRun = async () => {
     setIsRunning(true);
-    setTestResults([]); // Clear previous results
-
-    // Add a "running" status result
+    setTestResults([]);
     const runningResult = {
       id: "running-test",
       status: "running" as const,
@@ -61,106 +59,23 @@ export function AssignmentLayout({
     setTestResults([runningResult]);
 
     try {
-      console.log("Running code with input:", customInput);
-
-      // Submit code to Judge0 API
-      const submitResponse = await fetch(
-        `https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-rapidapi-key":
-              process.env.NEXT_PUBLIC_JUDGE0_API_KEY || "",
-            "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
-          },
-          body: JSON.stringify({
-            language_id:
-              LANGUAGE_ID_MAP[
-                currentQuestion.language as keyof typeof LANGUAGE_ID_MAP
-              ],
-            source_code: btoa(code), // Convert code to Base64
-            stdin: customInput ? btoa(customInput) : "",
-            // Set reasonable execution constraints
-            cpu_time_limit: 2, // 2 seconds
-            memory_limit: 128000, // 128MB
-          }),
-        }
-      );
-
-      const submitData = await submitResponse.json();
-      if (!submitData.token) {
-        throw new Error("Failed to retrieve submission token.");
-      }
-
-      console.log("Submission token:", submitData.token);
-
-      // Polling to get execution results
-      let resultData;
-      for (let i = 0; i < 10; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second between requests
-        const resultResponse = await fetch(
-          `https://judge0-ce.p.rapidapi.com/submissions/${submitData.token}?base64_encoded=true&fields=*`,
-          {
-            method: "GET",
-            headers: {
-              "x-rapidapi-key":
-              process.env.NEXT_PUBLIC_JUDGE0_API_KEY || "",
-              "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
-            },
-          }
-        );
-
-        resultData = await resultResponse.json();
-
-        if (resultData.status && resultData.status.id >= 3) {
-          // Status >= 3 means execution is completed
-          break;
-        }
-      }
-
-      console.log("Execution Result:", resultData);
-
-      // Process the result
-      const newResult = {
-        id: submitData.token,
+      const response = await fetch('/api/compile',{
+        method:"POST",
+        headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code,
         input: customInput,
-        runtime: `${resultData.time || 0}s`,
-        memory: `${(resultData.memory || 0) / 1000} MB`,
-        status: "failed", // Default to failed, will update if passed
-        output: "",
-        error: "",
-      };
+        language: currentQuestion.language,
+      }),
+      })
+      const {output} = await response.json();
 
-      // Check for different types of results/errors
-      if (resultData.status.id === 3) {
-        // Accepted - code ran successfully
-        newResult.status = "passed";
-        newResult.output = resultData.stdout
-          ? atob(resultData.stdout)
-          : "No output";
-      } else if (resultData.compile_output) {
-        // Compilation error
-        newResult.error = atob(resultData.compile_output);
-      } else if (resultData.stderr) {
-        // Runtime error
-        newResult.error = atob(resultData.stderr);
-      } else if (resultData.status.id === 5) {
-        // Time limit exceeded
-        newResult.error = "Time limit exceeded";
-      } else if (resultData.status.id === 6) {
-        // Memory limit exceeded
-        newResult.error = "Memory limit exceeded";
-      } else {
-        newResult.error = `Execution failed: ${resultData.status.description}`;
-      }
 
-      // Replace the "running" result with the actual result
-      setTestResults([newResult]);
+      setTestResults([output]);
     } catch (error: any) {
       console.error("Error running code:", error);
-
-      // Handle network errors or other exceptions
       setTestResults([
         {
           id: "error",
