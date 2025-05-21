@@ -11,20 +11,36 @@ export const LOGO_LIGHT_SQUARE = '/images/logo/zs-logo-sq.svg';
 export const MAX_REQUESTS = 25;
 
 export const lightCardColors = [
-  "#EBDBBC",
-  "#F1E6D0",
-  "#61AAF2",
-  "#D2886F",
-  "#D4A27F",
-  "#7EBF8E",
-]
+ 
+  "#EBDBBC", 
+  "#F1E6D0", 
+  "#61AAF2", 
+  "#D2886F", 
+  "#D4A27F", 
+  "#7EBF8E", 
+  "#BCD4EB", 
+  "#D0E1F1", 
+  "#F2CD61", 
+  "#8F6FD2",
+  "#7FD4C5", 
+  "#BF7E9E"  
+];
+
 export const darkCardColors = [
-  "#C2B1A0",
+  "#C2B1A0", 
   "#3A78BF",
-  "#A66456",
+  "#A66456", 
   "#A07B64",
-  "#609E6F", 
-]
+  "#609E6F",
+
+  
+  "#564A87",
+  "#78563A", 
+  "#387A7B",
+  "#9E6097", 
+  "#8A9E60",
+  "#A05B3F" 
+];
 
 export const LANGUAGE_ID_MAP = {
   Assembly: 45, // NASM 2.14.02
