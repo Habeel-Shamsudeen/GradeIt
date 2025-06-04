@@ -13,7 +13,7 @@ export const getNavigationConfig = () => {
   const [userClasses, setUserClasses] = useState<UserClassroom[]>([]);
   const [loading, setLoading] = useState(true);
   const [classIcons, setClassIcons] = useState<Record<string, HugeiconsIcon>>(
-    {}
+    {},
   );
 
   useEffect(() => {

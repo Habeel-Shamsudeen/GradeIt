@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import * as TabsPrimitive from '@radix-ui/react-tabs';
-import * as React from 'react';
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+import * as React from "react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 const Tabs = TabsPrimitive.Root;
 
@@ -14,8 +14,8 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      'inline-flex w-full items-left justify-start border-b border-accent',
-      className
+      "inline-flex w-full items-left justify-start border-b border-accent",
+      className,
     )}
     {...props}
   />
@@ -29,11 +29,11 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex items-center justify-start gap-2 px-5 py-3 text-sm font-medium text-neutral transition-all hover:text-neutral/80',
-      'border-b-2 border-transparent',
-      'data-[state=active]:border-border-secondary data-[state=active]:text-border-secondary hover:data-[state=active]:opacity-80',
-      'disabled:pointer-events-none disabled:text-muted-foreground',
-      className
+      "flex items-center justify-start gap-2 px-5 py-3 text-sm font-medium text-neutral transition-all hover:text-neutral/80",
+      "border-b-2 border-transparent",
+      "data-[state=active]:border-border-secondary data-[state=active]:text-border-secondary hover:data-[state=active]:opacity-80",
+      "disabled:pointer-events-none disabled:text-muted-foreground",
+      className,
     )}
     {...props}
   />
@@ -47,8 +47,8 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      'mt-2  ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-      className
+      "mt-2  ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      className,
     )}
     {...props}
   />

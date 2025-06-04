@@ -1,16 +1,19 @@
-"use client"
-
-import { motion } from "framer-motion"
-import type { LucideIcon } from "lucide-react"
+import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 
 interface ProcessStepProps {
-  number: string
-  icon: LucideIcon
-  title: string
-  description: string
+  number: string;
+  icon: LucideIcon;
+  title: string;
+  description: string;
 }
 
-export function ProcessStep({ number, icon: Icon, title, description }: ProcessStepProps) {
+export default function ProcessStep({
+  number,
+  icon: Icon,
+  title,
+  description,
+}: ProcessStepProps) {
   return (
     <motion.div
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
@@ -24,8 +27,10 @@ export function ProcessStep({ number, icon: Icon, title, description }: ProcessS
           <Icon className="h-7 w-7 text-primary" />
         </div>
       </div>
-      <h3 className="mb-3 text-xl font-medium text-center text-foreground">{title}</h3>
+      <h3 className="mb-3 text-xl font-medium text-center text-foreground">
+        {title}
+      </h3>
       <p className="text-muted-foreground text-center">{description}</p>
     </motion.div>
-  )
+  );
 }

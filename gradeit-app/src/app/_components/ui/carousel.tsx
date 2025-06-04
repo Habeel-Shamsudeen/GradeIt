@@ -1,24 +1,29 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import Image from "next/image"
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CarouselProps {
   images: {
-    src: string
-    alt: string
-    width: number
-    height: number
-  }[]
-  autoPlay?: boolean
-  interval?: number
-  showControls?: boolean
-  showIndicators?: boolean
-  className?: string
-  parallaxEffect?: boolean
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+  }[];
+  autoPlay?: boolean;
+  interval?: number;
+  showControls?: boolean;
+  showIndicators?: boolean;
+  className?: string;
+  parallaxEffect?: boolean;
 }
 
 export function Carousel({
@@ -30,52 +35,54 @@ export function Carousel({
   className = "",
   parallaxEffect = true,
 }: CarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isHovering, setIsHovering] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
-  })
+  });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
+  const y = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
-  }
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
 
   const goToPrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
-  }
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + images.length) % images.length,
+    );
+  };
 
   const goToSlide = (index: number) => {
-    setCurrentIndex(index)
-  }
+    setCurrentIndex(index);
+  };
 
   // Auto-play functionality
   useEffect(() => {
-    if (!autoPlay || isHovering) return
+    if (!autoPlay || isHovering) return;
 
-    const timer = setInterval(goToNext, interval)
-    return () => clearInterval(timer)
-  }, [autoPlay, interval, isHovering, images.length])
+    const timer = setInterval(goToNext, interval);
+    return () => clearInterval(timer);
+  }, [autoPlay, interval, isHovering, images.length]);
 
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
-        goToPrev()
+        goToPrev();
       } else if (e.key === "ArrowRight") {
-        goToNext()
+        goToNext();
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
-  if (images.length === 0) return null
+  if (images.length === 0) return null;
 
   return (
     <div
@@ -149,7 +156,9 @@ export function Carousel({
               onClick={() => goToSlide(index)}
               className={cn(
                 "h-2 w-2 rounded-full transition-all",
-                currentIndex === index ? "w-6 bg-white" : "bg-white/50 hover:bg-white/70",
+                currentIndex === index
+                  ? "w-6 bg-white"
+                  : "bg-white/50 hover:bg-white/70",
               )}
               aria-label={`Go to slide ${index + 1}`}
             />
@@ -157,6 +166,5 @@ export function Carousel({
         </div>
       )}
     </div>
-  )
+  );
 }
-

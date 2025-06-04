@@ -11,8 +11,7 @@ import OnboardingInitiator from "./initiator";
 import { useState } from "react";
 
 export default function OnboardingPopup() {
-  const [isOnboardingComplete, setIsOnboardingComplete] =
-    useState(false);
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
 
   const handleCloseDialog = () => {
     setIsOnboardingComplete(true);

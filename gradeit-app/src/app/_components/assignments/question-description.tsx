@@ -1,17 +1,18 @@
-"use client"
-import { Separator } from "@/app/_components/ui/separator"
-import { Question } from "@/lib/types/assignment-tyes"
-
+"use client";
+import { Separator } from "@/app/_components/ui/separator";
+import { Question } from "@/lib/types/assignment-tyes";
 
 interface QuestionDescriptionProps {
-  question: Question
+  question: Question;
 }
 
 export function QuestionDescription({ question }: QuestionDescriptionProps) {
   return (
     <div className="prose prose-slate max-w-none">
       <div className="flex items-center justify-between">
-        <h1 className="m-0 text-2xl font-medium text-[#141413]">{question.title}</h1>
+        <h1 className="m-0 text-2xl font-medium text-[#141413]">
+          {question.title}
+        </h1>
         {/* <Badge
           className={cn(
             "px-3 py-1",
@@ -44,19 +45,29 @@ export function QuestionDescription({ question }: QuestionDescriptionProps) {
         {question.testCases
           .filter((testCase) => !testCase.hidden)
           .map((testCase) => (
-            <div key={testCase.id} className="mb-6 rounded-lg border border-[#E6E4DD] p-4">
+            <div
+              key={testCase.id}
+              className="mb-6 rounded-lg border border-[#E6E4DD] p-4"
+            >
               <div className="mb-2">
-                <strong className="text-sm font-medium text-[#141413]">Input:</strong>
-                <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-sm">{testCase.input}</pre>
+                <strong className="text-sm font-medium text-[#141413]">
+                  Input:
+                </strong>
+                <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-sm">
+                  {testCase.input}
+                </pre>
               </div>
               <div>
-                <strong className="text-sm font-medium text-[#141413]">Expected Output:</strong>
-                <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-sm">{testCase.expectedOutput}</pre>
+                <strong className="text-sm font-medium text-[#141413]">
+                  Expected Output:
+                </strong>
+                <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-sm">
+                  {testCase.expectedOutput}
+                </pre>
               </div>
             </div>
           ))}
       </div>
     </div>
-  )
+  );
 }
-

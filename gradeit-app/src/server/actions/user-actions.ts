@@ -72,12 +72,12 @@ export const updateUserRole = async (role: Role) => {
     const user = await prisma.user.findUnique({
       where: {
         id: session.user.id,
-      }
+      },
     });
-    if(!user){
+    if (!user) {
       throw new Error("No user found");
     }
-    if(user.role === role){
+    if (user.role === role) {
       return { status: "success", message: "No changes detected" };
     }
     await prisma.user.update({
@@ -102,9 +102,9 @@ export const getUserRole = async () => {
       where: {
         id: session.user.id,
       },
-      select:{
-        role:true
-      }
+      select: {
+        role: true,
+      },
     });
     if (!user) {
       throw new Error("No user found");
@@ -112,6 +112,6 @@ export const getUserRole = async () => {
     return { role: user.role, status: "success" };
   } catch (error) {
     console.error("Error:", error);
-    return { status: "failed"};
+    return { status: "failed" };
   }
 };

@@ -190,57 +190,63 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
         </CardContent>
       </Card>
 
-      { role=="FACULTY" && <Card className="rounded-2xl border-[#E6E4DD]">
-        <CardHeader>
-          <CardTitle>Danger Zone</CardTitle>
-          <CardDescription>Irreversible actions for this class</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-sm font-medium">Archive Class</h4>
-              <p className="text-xs text-[#605F5B]">
-                Hide this class from active view
-              </p>
+      {role == "FACULTY" && (
+        <Card className="rounded-2xl border-[#E6E4DD]">
+          <CardHeader>
+            <CardTitle>Danger Zone</CardTitle>
+            <CardDescription>
+              Irreversible actions for this class
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium">Archive Class</h4>
+                <p className="text-xs text-[#605F5B]">
+                  Hide this class from active view
+                </p>
+              </div>
+              <Button variant="outline" className="border-[#E6E4DD]">
+                Archive
+              </Button>
             </div>
-            <Button variant="outline" className="border-[#E6E4DD]">
-              Archive
-            </Button>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-sm font-medium text-destructive">
-                Delete Class
-              </h4>
-              <p className="text-xs text-[#605F5B]">
-                Permanently delete this class and all its data
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-destructive">
+                  Delete Class
+                </h4>
+                <p className="text-xs text-[#605F5B]">
+                  Permanently delete this class and all its data
+                </p>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">Delete</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      the class and all associated assignments, questions, and
+                      student submissions.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="border-[#E6E4DD]">
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction>Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive">Delete</Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    the class and all associated assignments, questions, and
-                    student submissions.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="border-[#E6E4DD]">
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction>Delete</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </CardContent>
-      </Card>}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -72,19 +72,19 @@ export function FacultyView({
 
   const totalStudents = students.length;
   const completedCount = students.filter(
-    (s) => s.status === "completed"
+    (s) => s.status === "completed",
   ).length;
   const inProgressCount = students.filter(
-    (s) => s.status === "in_progress"
+    (s) => s.status === "in_progress",
   ).length;
   const notStartedCount = students.filter(
-    (s) => s.status === "not_started"
+    (s) => s.status === "not_started",
   ).length;
 
   const filteredStudents = students.filter(
     (student) =>
       student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchQuery.toLowerCase())
+      student.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -208,7 +208,11 @@ export function FacultyView({
                     <DropdownMenuItem>Not Started</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="outline" className="gap-1.5 border-[#E6E4DD]" onClick={()=> exportToCSV(students)}>
+                <Button
+                  variant="outline"
+                  className="gap-1.5 border-[#E6E4DD]"
+                  onClick={() => exportToCSV(students)}
+                >
                   <Download className="h-4 w-4" />
                   Export
                 </Button>
@@ -257,7 +261,7 @@ export function FacultyView({
                         student.status === "in_progress" &&
                           "bg-[#F1E6D0]/10 text-[#3A3935]",
                         student.status === "not_started" &&
-                          "bg-[#D2886F]/10 text-[#D2886F]"
+                          "bg-[#D2886F]/10 text-[#D2886F]",
                       )}
                     >
                       {student.status === "completed" && "Completed"}
@@ -268,11 +272,10 @@ export function FacultyView({
                       variant="ghost"
                       size="sm"
                       className="h-8 px-2 text-[#605F5B]"
-                      onClick={async () =>{
+                      onClick={async () => {
                         await setStudentCookie(student.id);
-                        window.location.href = `/classes/${classCode}/${assignment.id}/submissions`
-                      }
-                      }
+                        window.location.href = `/classes/${classCode}/${assignment.id}/submissions`;
+                      }}
                     >
                       View Details
                     </Button>

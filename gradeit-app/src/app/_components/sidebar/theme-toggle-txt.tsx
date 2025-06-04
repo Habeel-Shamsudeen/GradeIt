@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/app/_components/ui/sidebar';
-import { Moon02Icon, Sun01Icon } from 'hugeicons-react';
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+} from "@/app/_components/ui/sidebar";
+import { Moon02Icon, Sun01Icon } from "hugeicons-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function ThemeToggleTxt() {
   const { theme, setTheme } = useTheme();
@@ -19,7 +19,7 @@ export function ThemeToggleTxt() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   // Prevent hydration mismatch by not rendering theme-dependent content until mounted
@@ -35,13 +35,13 @@ export function ThemeToggleTxt() {
           onClick={toggleTheme}
           className="w-full group-data-[collapsible=icon]:justify-center"
         >
-          {theme === 'light' ? (
+          {theme === "light" ? (
             <Moon02Icon className="h-5 w-5" />
           ) : (
             <Sun01Icon className="h-5 w-5" />
           )}
           <div className="ml-2 flex-1 text-left text-sm font-medium group-data-[collapsible=icon]:hidden">
-            <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+            <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
           </div>
         </SidebarMenuButton>
       </SidebarMenuItem>

@@ -167,7 +167,7 @@ export const joinClassUsingCode = async (code: string) => {
     }
 
     const isAlreadyEnrolled = student.enrolledClasses.some(
-      (c) => c.id === classroom.id
+      (c) => c.id === classroom.id,
     );
 
     if (isAlreadyEnrolled) {
@@ -219,11 +219,11 @@ export const getMembersByClassId = async (code: string) => {
       },
     });
 
-    if(!classroom){
-      return({
-        status:"failed",
-        message:"No class with the given code found"
-      })
+    if (!classroom) {
+      return {
+        status: "failed",
+        message: "No class with the given code found",
+      };
     }
 
     const teachers = [

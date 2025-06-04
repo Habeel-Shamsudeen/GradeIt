@@ -1,6 +1,6 @@
-import { useUploadFile } from 'better-upload/client';
-import Image from 'next/image';
-import { useRef } from 'react';
+import { useUploadFile } from "better-upload/client";
+import Image from "next/image";
+import { useRef } from "react";
 
 type ProfileImageUploadProps = Parameters<typeof useUploadFile>[0] & {
   accept?: string;
@@ -11,10 +11,10 @@ type ProfileImageUploadProps = Parameters<typeof useUploadFile>[0] & {
 };
 
 export function ProfileImageUpload({
-  accept = 'image/*',
+  accept = "image/*",
   metadata,
   imageUrl,
-  alt = 'Profile',
+  alt = "Profile",
   size = 64,
   ...params
 }: ProfileImageUploadProps) {
@@ -24,7 +24,7 @@ export function ProfileImageUpload({
     ...params,
     onUploadSettled: () => {
       if (inputRef.current) {
-        inputRef.current.value = '';
+        inputRef.current.value = "";
       }
       params.onUploadSettled?.();
     },
@@ -48,7 +48,7 @@ export function ProfileImageUpload({
         disabled={isPending}
         onClick={() => inputRef.current?.click()}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             inputRef.current?.click();
           }
         }}
@@ -64,7 +64,7 @@ export function ProfileImageUpload({
             width={size}
             height={size}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity ${
-              isPending ? 'opacity-50' : ''
+              isPending ? "opacity-50" : ""
             }`}
           />
           {isPending && (

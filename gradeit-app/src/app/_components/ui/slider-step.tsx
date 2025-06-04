@@ -1,4 +1,4 @@
-import * as SliderPrimitive from '@radix-ui/react-slider';
+import * as SliderPrimitive from "@radix-ui/react-slider";
 
 interface StepSliderProps {
   options: number[];
@@ -37,9 +37,9 @@ export function StepSlider({ options, value, onChange }: StepSliderProps) {
           <div key={mark} className="relative flex flex-col items-center">
             <span className="font-medium">
               {mark === 1000
-                ? '1k'
+                ? "1k"
                 : mark === 1250
-                  ? '1.25k'
+                  ? "1.25k"
                   : mark >= 1000
                     ? `${mark / 1000}k`
                     : mark}

@@ -1,8 +1,8 @@
-import { darkCardColors, lightCardColors } from '@/config/constants';
-import { getAssigmentTitleFromId, getClassNameFromCode } from '@/server/utils';
-import { type ClassValue, clsx } from 'clsx';
-import { randomUUID } from 'crypto';
-import { twMerge } from 'tailwind-merge';
+import { darkCardColors, lightCardColors } from "@/config/constants";
+import { getAssigmentTitleFromId, getClassNameFromCode } from "@/server/utils";
+import { type ClassValue, clsx } from "clsx";
+import { randomUUID } from "crypto";
+import { twMerge } from "tailwind-merge";
 import {
   HugeiconsIcon,
   Settings02Icon,
@@ -22,12 +22,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export async function generateBreadcrumbs(pathname: string) {
-  const paths = pathname.split('/').filter(Boolean);
+  const paths = pathname.split("/").filter(Boolean);
   const breadcrumbs = [];
 
   for (let i = 0; i < paths.length; i++) {
     let label = paths[i];
-    const href = `/${paths.slice(0, i + 1).join('/')}`;
+    const href = `/${paths.slice(0, i + 1).join("/")}`;
     const isLast = i === paths.length - 1;
 
     if (i === 1) {
@@ -51,11 +51,11 @@ export function capitalizeFirstLetter(string: string) {
 }
 
 export function snakeCase(string: string) {
-  return string.toLowerCase().replace(/ /g, '_');
+  return string.toLowerCase().replace(/ /g, "_");
 }
 
 export function kebabCase(string: string) {
-  return string.toLowerCase().replace(/ /g, '-');
+  return string.toLowerCase().replace(/ /g, "-");
 }
 
 export const sentenceCase = (str: string): string => {
@@ -69,9 +69,9 @@ export const lowerCase = (str: string): string => {
 export const titleCase = (str: string): string => {
   return str
     .toLowerCase()
-    .split(' ')
+    .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .join(" ");
 };
 
 export const isValidUrl = (string: string) => {
@@ -86,12 +86,12 @@ export const isValidUrl = (string: string) => {
 export function formatNumberShort(num: number | string): string {
   // Convert string numbers with commas to number type
   const normalizedNum =
-    typeof num === 'string' ? Number(num.replace(/,/g, '')) : num;
+    typeof num === "string" ? Number(num.replace(/,/g, "")) : num;
 
   const lookup = [
-    { value: 1e9, symbol: 'B' },
-    { value: 1e6, symbol: 'M' },
-    { value: 1e3, symbol: 'k' },
+    { value: 1e9, symbol: "B" },
+    { value: 1e6, symbol: "M" },
+    { value: 1e3, symbol: "k" },
   ];
 
   const item = lookup.find((item) => Math.abs(normalizedNum) >= item.value);
@@ -99,7 +99,7 @@ export function formatNumberShort(num: number | string): string {
   if (item) {
     const formattedNum = (normalizedNum / item.value)
       .toFixed(1)
-      .replace(/\.0$/, '');
+      .replace(/\.0$/, "");
     return `${formattedNum}${item.symbol}`;
   }
 
@@ -110,18 +110,18 @@ export const absoluteUrl = (path: string) => {
   return new URL(path, process.env.NEXT_PUBLIC_APP_URL).toString();
 };
 
-export const getCardBgColor = (theme:string|undefined) => {
-  const palette = theme === "dark" ? darkCardColors : lightCardColors
-  return palette[Math.floor(Math.random() * palette.length)]
-}
+export const getCardBgColor = (theme: string | undefined) => {
+  const palette = theme === "dark" ? darkCardColors : lightCardColors;
+  return palette[Math.floor(Math.random() * palette.length)];
+};
 
-export const generateClassroomCode = ()=>{
-  return randomUUID().slice(0,6);
-}
+export const generateClassroomCode = () => {
+  return randomUUID().slice(0, 6);
+};
 
 export const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
-}
+};
 
 export function mapStatus(status: string): "passed" | "failed" | "running" {
   switch (status) {
@@ -141,7 +141,16 @@ export const exportToCSV = (students: any[]) => {
   }
 
   // Convert JSON to CSV format
-  const headers = ["ID", "Name", "Email", "Avatar", "Status", "Submitted At", "Score", "Questions Completed"];
+  const headers = [
+    "ID",
+    "Name",
+    "Email",
+    "Avatar",
+    "Status",
+    "Submitted At",
+    "Score",
+    "Questions Completed",
+  ];
   const csvRows = [
     headers.join(","), // Add headers
     ...students.map((student) =>
@@ -154,7 +163,7 @@ export const exportToCSV = (students: any[]) => {
         student.submittedAt,
         student.score,
         student.questionsCompleted,
-      ].join(",")
+      ].join(","),
     ),
   ];
 

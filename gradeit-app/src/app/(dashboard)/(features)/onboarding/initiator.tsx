@@ -1,41 +1,54 @@
-'use client';
+"use client";
 
-import { Button } from '@/app/_components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/_components/ui/card';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { updateOnboardingStatus, updateUserRole } from '@/server/actions/user-actions';
-import { Role } from '@prisma/client';
-import { useClientSession } from '@/hooks/use-auth-session';
-import { useRouter } from 'next/navigation';
+import { Button } from "@/app/_components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/_components/ui/card";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  updateOnboardingStatus,
+  updateUserRole,
+} from "@/server/actions/user-actions";
+import { Role } from "@prisma/client";
+import { useClientSession } from "@/hooks/use-auth-session";
+import { useRouter } from "next/navigation";
 
 interface OnboardingInitiatorProps {
   onClose: () => void;
 }
 
-export default function OnboardingInitiator({ onClose }: OnboardingInitiatorProps) {
+export default function OnboardingInitiator({
+  onClose,
+}: OnboardingInitiatorProps) {
   const [role, setRole] = useState<Role | null>(null);
-  const [isOnboardingComplete,setIsOnboardingComplete] = useState(false);
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {refreshSession} = useClientSession();
+  const { refreshSession } = useClientSession();
   const router = useRouter();
 
   const handleSubmit = async () => {
     if (!role) {
-      toast.error('Please select a role before proceeding.');
+      toast.error("Please select a role before proceeding.");
       return;
     }
     setIsSubmitting(true);
     const roleUpdate = await updateUserRole(role);
     const onboardingUpdate = await updateOnboardingStatus(true);
     await refreshSession();
-    if (roleUpdate.status === 'success' && onboardingUpdate.status === 'success') {
-      toast.success('Onboarding complete!');
+    if (
+      roleUpdate.status === "success" &&
+      onboardingUpdate.status === "success"
+    ) {
+      toast.success("Onboarding complete!");
       setIsOnboardingComplete(true);
       router.refresh();
       onClose();
     } else {
-      toast.error('Something went wrong. Please try again.');
+      toast.error("Something went wrong. Please try again.");
     }
     setIsSubmitting(false);
   };
@@ -54,15 +67,15 @@ export default function OnboardingInitiator({ onClose }: OnboardingInitiatorProp
         <CardContent>
           <div className="flex flex-col space-y-4">
             <Button
-              variant={role === 'FACULTY' ? 'default' : 'outline'}
-              onClick={() => setRole('FACULTY')}
+              variant={role === "FACULTY" ? "default" : "outline"}
+              onClick={() => setRole("FACULTY")}
               disabled={isSubmitting}
             >
               Faculty
             </Button>
             <Button
-              variant={role === 'STUDENT' ? 'default' : 'outline'}
-              onClick={() => setRole('STUDENT')}
+              variant={role === "STUDENT" ? "default" : "outline"}
+              onClick={() => setRole("STUDENT")}
               disabled={isSubmitting}
             >
               Student
@@ -72,7 +85,7 @@ export default function OnboardingInitiator({ onClose }: OnboardingInitiatorProp
       </Card>
       <div className="mt-6 flex justify-end">
         <Button onClick={handleSubmit} disabled={isSubmitting || !role}>
-          {isSubmitting ? 'Submitting...' : 'Continue'}
+          {isSubmitting ? "Submitting..." : "Continue"}
         </Button>
       </div>
     </div>

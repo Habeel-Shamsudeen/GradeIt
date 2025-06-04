@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { LogOut } from 'lucide-react';
-import { memo } from 'react';
+import { LogOut } from "lucide-react";
+import { memo } from "react";
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '@/app/_components/ui/avatar';
+} from "@/app/_components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,17 +16,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/app/_components/ui/dropdown-menu';
+} from "@/app/_components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/app/_components/ui/sidebar';
-import { cn } from '@/lib/utils';
-import { Settings01Icon, UnfoldMoreIcon } from 'hugeicons-react';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+} from "@/app/_components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { Settings01Icon, UnfoldMoreIcon } from "hugeicons-react";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 const NavUser = memo(function NavUser({
   user,
@@ -47,8 +47,8 @@ const NavUser = memo(function NavUser({
             <SidebarMenuButton
               size="lg"
               className={cn(
-                'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
-                'group-data-[collapsible=icon]:justify-center'
+                "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
+                "group-data-[collapsible=icon]:justify-center",
               )}
             >
               <div className="relative">
@@ -73,7 +73,7 @@ const NavUser = memo(function NavUser({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? 'bottom' : 'right'}
+            side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
@@ -105,7 +105,7 @@ const NavUser = memo(function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={async () => {
-                await signOut({redirectTo:'/'});
+                await signOut({ redirectTo: "/" });
               }}
             >
               <LogOut />

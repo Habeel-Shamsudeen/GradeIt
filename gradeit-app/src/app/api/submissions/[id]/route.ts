@@ -3,29 +3,26 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { mapStatus } from "@/lib/utils";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: any}
-) {
+export async function GET(req: NextRequest, { params }: { params: any }) {
   try {
     const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const {id} = await params;
+    const { id } = await params;
     const submissionId = id;
     const userId = session.user.id;
 
     const submission = await prisma.submission.findUnique({
-      where: { 
+      where: {
         id: submissionId,
-        studentId: userId
+        studentId: userId,
       },
       include: {
         testCaseResults: {
           orderBy: {
-            createdAt: 'asc',
+            createdAt: "asc",
           },
         },
         question: {
@@ -39,7 +36,7 @@ export async function GET(
     if (!submission) {
       return NextResponse.json(
         { error: "Submission not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -50,13 +47,13 @@ export async function GET(
 
     const results = submission.testCaseResults.map((result) => {
       const testCase = testCaseMap.get(result.testCaseId);
-      
+
       return {
         id: result.id,
         testCaseId: result.testCaseId,
         status: mapStatus(result.status),
         runtime: result.executionTime ? `${result.executionTime}ms` : "N/A",
-        memory: "N/A", 
+        memory: "N/A",
         output: result.actualOutput,
         error: result.errorMessage,
         input: testCase?.hidden ? null : testCase?.input,
@@ -78,7 +75,7 @@ export async function GET(
     console.error("Error fetching submission:", error);
     return NextResponse.json(
       { error: error.message || "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

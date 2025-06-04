@@ -17,11 +17,10 @@ export async function POST(req: NextRequest) {
     if (!code || !questionId || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    
     const question = await prisma.question.findUnique({
       where: { id: questionId },
       include: { testCases: true },
@@ -30,11 +29,10 @@ export async function POST(req: NextRequest) {
     if (!question) {
       return NextResponse.json(
         { error: "Question not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    
     const submission = await prisma.submission.create({
       data: {
         studentId: userId,
@@ -45,7 +43,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    
     await prisma.testCaseResult.createMany({
       data: question.testCases.map((testCase) => ({
         submissionId: submission.id,
@@ -54,7 +51,6 @@ export async function POST(req: NextRequest) {
       })),
     });
 
-    
     const testCasePromises = question.testCases.map(async (testCase) => {
       const response = await fetch(
         "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*",
@@ -71,22 +67,20 @@ export async function POST(req: NextRequest) {
             source_code: Buffer.from(code).toString("base64"),
             stdin: Buffer.from(testCase.input).toString("base64"),
             expected_output: Buffer.from(testCase.expectedOutput).toString(
-              "base64"
+              "base64",
             ),
             cpu_time_limit: 2, // 2 seconds
             memory_limit: 128000, // 128MB
           }),
-        }
+        },
       );
 
-      
       const judgeData = await response.json();
       console.log(judgeData);
       if (!judgeData.token) {
         throw new Error(`Failed to submit test case ${testCase.id}`);
       }
 
-      
       await prisma.testCaseResult.update({
         where: {
           submissionId_testCaseId: {
@@ -103,19 +97,15 @@ export async function POST(req: NextRequest) {
     });
 
     try {
-      
       await Promise.all(testCasePromises);
 
-      
       await pollJudge0Submissions(submission.id);
 
-      
       return NextResponse.json({
         submissionId: submission.id,
         message: "Submission created and test cases queued",
       });
     } catch (error) {
-      
       await prisma.submission.update({
         where: { id: submission.id },
         data: { status: Status.FAILED },
@@ -127,7 +117,7 @@ export async function POST(req: NextRequest) {
     console.error("Error in submission:", error);
     return NextResponse.json(
       { error: error.message || "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

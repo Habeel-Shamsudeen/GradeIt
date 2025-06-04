@@ -1,15 +1,17 @@
-"use client"
-
-import { motion } from "framer-motion"
-import type { LucideIcon } from "lucide-react"
+import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 
 interface FeatureHighlightProps {
-  icon: LucideIcon
-  title: string
-  description: string
+  icon: LucideIcon;
+  title: string;
+  description: string;
 }
 
-export function FeatureHighlight({ icon: Icon, title, description }: FeatureHighlightProps) {
+export default function FeatureHighlight({
+  icon: Icon,
+  title,
+  description,
+}: FeatureHighlightProps) {
   return (
     <motion.div
       whileHover={{ x: 5, transition: { duration: 0.2 } }}
@@ -25,7 +27,5 @@ export function FeatureHighlight({ icon: Icon, title, description }: FeatureHigh
         <p className="text-muted-foreground">{description}</p>
       </div>
     </motion.div>
-  )
+  );
 }
-
-

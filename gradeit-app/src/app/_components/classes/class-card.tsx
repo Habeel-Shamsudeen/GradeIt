@@ -1,23 +1,34 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { MoreVertical, Users, FolderClosed } from "lucide-react"
-import { Button } from "@/app/_components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/app/_components/ui/card"
+import Link from "next/link";
+import { MoreVertical, Users, FolderClosed } from "lucide-react";
+import { Button } from "@/app/_components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/app/_components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/app/_components/ui/dropdown-menu"
-import { UserClassroom } from "@/lib/types/class-types"
+} from "@/app/_components/ui/dropdown-menu";
+import { UserClassroom } from "@/lib/types/class-types";
 
-interface ClassCardProps extends UserClassroom{
-  backgroundColor: string
+interface ClassCardProps extends UserClassroom {
+  backgroundColor: string;
 }
 
-export function ClassCard({ code, name, section, facultyName, backgroundColor }: ClassCardProps) {
+export function ClassCard({
+  code,
+  name,
+  section,
+  facultyName,
+  backgroundColor,
+}: ClassCardProps) {
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-[#E6E4DD] bg-white transition-all hover:shadow-lg dark:bg-white/[0.02]">
       <Link href={`/classes/${code}`} className="absolute inset-0 z-10">
@@ -25,9 +36,7 @@ export function ClassCard({ code, name, section, facultyName, backgroundColor }:
       </Link>
 
       <CardHeader className="relative h-32 p-0">
-        <div className="absolute inset-0 z-0" style={{ backgroundColor }}>
-
-        </div>
+        <div className="absolute inset-0 z-0" style={{ backgroundColor }}></div>
         <div className="relative z-10 flex h-full flex-col justify-between p-6">
           <div className="flex items-start justify-between">
             <div>
@@ -49,7 +58,9 @@ export function ClassCard({ code, name, section, facultyName, backgroundColor }:
                 <DropdownMenuItem>Copy class code</DropdownMenuItem>
                 <DropdownMenuItem>Edit class details</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive">Archive class</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive">
+                  Archive class
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -80,6 +91,5 @@ export function ClassCard({ code, name, section, facultyName, backgroundColor }:
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
-

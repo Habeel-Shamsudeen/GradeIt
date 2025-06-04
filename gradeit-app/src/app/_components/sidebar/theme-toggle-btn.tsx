@@ -1,14 +1,14 @@
-'use client';
-import { Button } from '@/app/_components/ui/button';
-import { Moon02Icon, Sun01Icon } from 'hugeicons-react';
-import { useTheme } from 'next-themes';
+"use client";
+import { Button } from "@/app/_components/ui/button";
+import { Moon02Icon, Sun01Icon } from "hugeicons-react";
+import { useTheme } from "next-themes";
 
 //this is hidden on collapsed sidebar
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (

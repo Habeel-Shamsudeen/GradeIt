@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import * as z from "zod";
 
 const CONSTRAINTS = {
   NAME: { MAX: 50 },
@@ -13,29 +13,28 @@ const baseStringSchema = (field: string) =>
 export const nameSchema = (field: string) =>
   baseStringSchema(field).max(
     CONSTRAINTS.NAME.MAX,
-    `${field} must be at most ${CONSTRAINTS.NAME.MAX} characters`
+    `${field} must be at most ${CONSTRAINTS.NAME.MAX} characters`,
   );
 
 export const emailSchema = z.object({
   email: z
     .string()
-    .email('Invalid email address')
+    .email("Invalid email address")
     .min(
       CONSTRAINTS.EMAIL.MIN,
-      `Email must be at least ${CONSTRAINTS.EMAIL.MIN} characters`
+      `Email must be at least ${CONSTRAINTS.EMAIL.MIN} characters`,
     )
     .max(
       CONSTRAINTS.EMAIL.MAX,
-      `Email must be at most ${CONSTRAINTS.EMAIL.MAX} characters`
+      `Email must be at most ${CONSTRAINTS.EMAIL.MAX} characters`,
     )
     .trim(),
 });
 
-
 export const accountUpdateSchema = z.object({
-  firstName: nameSchema('First name').optional(),
-  lastName: nameSchema('Last name').optional(),
-  displayName: nameSchema('Display name').optional(),
+  firstName: nameSchema("First name").optional(),
+  lastName: nameSchema("Last name").optional(),
+  displayName: nameSchema("Display name").optional(),
   primaryEmail: emailSchema.shape.email.optional(),
   profileImageURL: z.string().optional(),
 });

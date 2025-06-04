@@ -1,5 +1,5 @@
-'use client';
-import { Button } from '@/app/_components/ui/button';
+"use client";
+import { Button } from "@/app/_components/ui/button";
 import {
   Form,
   FormControl,
@@ -7,28 +7,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/app/_components/ui/form';
-import { Input } from '@/app/_components/ui/input';
-import { isValidUrl, titleCase } from '@/lib/utils';
+} from "@/app/_components/ui/form";
+import { Input } from "@/app/_components/ui/input";
+import { isValidUrl, titleCase } from "@/lib/utils";
 import {
   type AccountUpdateSchema,
   accountUpdateSchema,
-} from '@/lib/validators/auth';
-import { updateUserName } from '@/server/actions/user-actions';
-import { getLoginMethod } from '@/server/utils';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Loading03Icon } from 'hugeicons-react';
-import { User } from 'next-auth';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+} from "@/lib/validators/auth";
+import { updateUserName } from "@/server/actions/user-actions";
+import { getLoginMethod } from "@/server/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loading03Icon } from "hugeicons-react";
+import { User } from "next-auth";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-export default function ProfileSettings({user}:{user:User | undefined}) {
+export default function ProfileSettings({ user }: { user: User | undefined }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [buttonText, setButtonText] = useState('Save Changes');
-  const [userLoginMethod,setUserLoginMethod] = useState<string | null>()
-  
+  const [buttonText, setButtonText] = useState("Save Changes");
+  const [userLoginMethod, setUserLoginMethod] = useState<string | null>();
 
   useEffect(() => {
     const userLoginMethod = async () => {
@@ -41,29 +40,29 @@ export default function ProfileSettings({user}:{user:User | undefined}) {
   }, [user?.id, setUserLoginMethod]);
 
   const name = user?.name;
-  const firstName = user?.name?.split(' ')[0];
-  const lastName = user?.name?.split(' ')[1];
+  const firstName = user?.name?.split(" ")[0];
+  const lastName = user?.name?.split(" ")[1];
   const email = user?.email;
   const profileImageUrl = user?.image
     ? isValidUrl(user.image)
       ? user.image
-      : `https://ui-avatars.com/api/?name=${name ?? ''}`
-    : `https://ui-avatars.com/api/?name=${name ?? ''}`;
+      : `https://ui-avatars.com/api/?name=${name ?? ""}`
+    : `https://ui-avatars.com/api/?name=${name ?? ""}`;
 
   const form = useForm<AccountUpdateSchema>({
     resolver: zodResolver(accountUpdateSchema),
     defaultValues: {
-      firstName: firstName ?? '',
-      lastName: lastName ?? '',
-      displayName: name ?? '',
-      primaryEmail: email ?? '',
+      firstName: firstName ?? "",
+      lastName: lastName ?? "",
+      displayName: name ?? "",
+      primaryEmail: email ?? "",
       profileImageURL: profileImageUrl,
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const handleProfileSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
 
@@ -72,9 +71,9 @@ export default function ProfileSettings({user}:{user:User | undefined}) {
     if (!isValid) {
       return;
     }
-    console.log("asdfsdf")
+    console.log("asdfsdf");
     setIsSubmitting(true);
-    setButtonText('Saving Changes...');
+    setButtonText("Saving Changes...");
 
     try {
       const values = form.getValues();
@@ -82,17 +81,15 @@ export default function ProfileSettings({user}:{user:User | undefined}) {
       const lastName = values.lastName;
       if (firstName || lastName) {
         const newName = `${firstName} ${lastName}`.trim();
-        await updateUserName(
-          newName
-        );
+        await updateUserName(newName);
       }
-      toast.success('Profile updated successfully');
+      toast.success("Profile updated successfully");
     } catch (error) {
-      toast.error('Failed to update profile');
-      console.error('Error updating profile:', error);
+      toast.error("Failed to update profile");
+      console.error("Error updating profile:", error);
     } finally {
       setIsSubmitting(false);
-      setButtonText('Save Changes');
+      setButtonText("Save Changes");
     }
   };
 

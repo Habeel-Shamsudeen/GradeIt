@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/app/_components/ui/collapsible';
+} from "@/app/_components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -13,10 +13,10 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
-} from '@/app/_components/ui/sidebar';
-import { ArrowRight01Icon, type HugeiconsIcon } from 'hugeicons-react';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+} from "@/app/_components/ui/sidebar";
+import { ArrowRight01Icon, type HugeiconsIcon } from "hugeicons-react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function NavMain({
   items,
@@ -45,7 +45,7 @@ export function NavMain({
     <>
       <SidebarGroup>
         <SidebarGroupLabel className="text-xs font-bold text-sidebar-primary-foreground">
-          {label || 'Overview'}
+          {label || "Overview"}
         </SidebarGroupLabel>
         <SidebarMenu className="text-sidebar-primary-foreground">
           {items.map((item) =>
@@ -103,7 +103,7 @@ export function NavMain({
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            )
+            ),
           )}
         </SidebarMenu>
       </SidebarGroup>

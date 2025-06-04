@@ -65,7 +65,7 @@ export function CombinedTesting({
             variant="outline"
             className={cn(
               "border-[#2D2D2D] bg-[#2D2D2D] text-white hover:bg-[#3D3D3D] focus-visible:ring-[#4D4D4D]",
-              isCustomInputOpen && "bg-[#3D3D3D]"
+              isCustomInputOpen && "bg-[#3D3D3D]",
             )}
             onClick={() => setIsCustomInputOpen(!isCustomInputOpen)}
           >
@@ -129,7 +129,7 @@ export function CombinedTesting({
                       "flex h-6 w-6 items-center justify-center rounded-full",
                       customInputResult.status === "passed" && "bg-[#7EBF8E]",
                       customInputResult.status === "failed" && "bg-[#D2886F]",
-                      customInputResult.status === "running" && "bg-[#F1E6D0]"
+                      customInputResult.status === "running" && "bg-[#F1E6D0]",
                     )}
                   >
                     {customInputResult.status === "passed" && (
@@ -206,7 +206,7 @@ export function CombinedTesting({
                     "flex h-6 w-6 items-center justify-center rounded-full",
                     result.status === "passed" && "bg-[#7EBF8E]",
                     result.status === "failed" && "bg-[#D2886F]",
-                    result.status === "running" && "bg-[#F1E6D0]"
+                    result.status === "running" && "bg-[#F1E6D0]",
                   )}
                 >
                   {result.status === "passed" && (

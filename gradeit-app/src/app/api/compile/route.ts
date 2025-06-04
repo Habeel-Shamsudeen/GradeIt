@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     if (!code || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,11 +29,11 @@ export async function POST(req: NextRequest) {
           language_id:
             LANGUAGE_ID_MAP[language as keyof typeof LANGUAGE_ID_MAP],
           source_code: Buffer.from(code).toString("base64"),
-          stdin: input ? Buffer.from(input).toString("base64"): "",
+          stdin: input ? Buffer.from(input).toString("base64") : "",
           cpu_time_limit: 2,
           memory_limit: 128000,
         }),
-      }
+      },
     );
     console.log("here 2");
     const judgeData = await response.json();
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
             "x-rapidapi-key": process.env.JUDGE0_API_KEY || "",
             "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
           },
-        }
+        },
       );
 
       resultData = await resultResponse.json();

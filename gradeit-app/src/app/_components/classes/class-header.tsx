@@ -1,21 +1,20 @@
-'use client'
-import { UserClassroom } from "@/lib/types/class-types"
-import { getCardBgColor } from "@/lib/utils"
-import { useTheme } from "next-themes"
+"use client";
+import { UserClassroom } from "@/lib/types/class-types";
+import { getCardBgColor } from "@/lib/utils";
+import { useTheme } from "next-themes";
 interface ClassHeaderProps {
-  classData: UserClassroom
+  classData: UserClassroom;
 }
 
 export function ClassHeader({ classData }: ClassHeaderProps) {
-  const { resolvedTheme } = useTheme() 
+  const { resolvedTheme } = useTheme();
   return (
     <div className="relative">
       {/* Banner */}
       <div
         className="relative h-44 w-full rounded-2xl"
         style={{ backgroundColor: getCardBgColor(resolvedTheme) }}
-      >
-      </div>
+      ></div>
 
       {/* Class Info */}
       <div className="relative mx-auto max-w-6xl px-6">
@@ -31,5 +30,5 @@ export function ClassHeader({ classData }: ClassHeaderProps) {
         {/* Tabs */}
       </div>
     </div>
-  )
+  );
 }

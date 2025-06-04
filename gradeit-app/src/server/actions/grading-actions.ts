@@ -11,7 +11,7 @@ export async function gradeSubmission(submissionId: string) {
       include: {
         testCaseResults: {
           include: {
-            testCase: true, 
+            testCase: true,
           },
         },
       },
@@ -22,9 +22,9 @@ export async function gradeSubmission(submissionId: string) {
     }
 
     const pendingTestCases = submission.testCaseResults.filter(
-      (result) => result.status === TestCaseStatus.PENDING
+      (result) => result.status === TestCaseStatus.PENDING,
     );
-    
+
     if (pendingTestCases.length > 0) {
       return;
     }
@@ -32,22 +32,23 @@ export async function gradeSubmission(submissionId: string) {
     let totalPoints = 0;
     let earnedPoints = 0;
     let bonusPoints = 0;
-    
+
     const testResults: TestResults[] = [];
-    
+
     submission.testCaseResults.forEach((result) => {
       const weight = result.testCase.weight || 1;
       const isBonus = result.testCase.isBonus || false;
-      
+
       // Track test case outcome for feedback
       testResults.push({
-        description: result.testCase.description || `Test Case ${result.testCase.id}`,
+        description:
+          result.testCase.description || `Test Case ${result.testCase.id}`,
         passed: result.status === TestCaseStatus.PASSED,
         isBonus,
         executionTime: result.executionTime,
         error: result.errorMessage,
       });
-      
+
       if (isBonus) {
         if (result.status === TestCaseStatus.PASSED) {
           bonusPoints += weight;
@@ -59,15 +60,14 @@ export async function gradeSubmission(submissionId: string) {
         }
       }
     });
-    
+
     const baseScore = totalPoints > 0 ? (earnedPoints / totalPoints) * 100 : 0;
-    
-    const totalScore = Math.min(100, baseScore + (bonusPoints * 5));
-    
+
+    const totalScore = Math.min(100, baseScore + bonusPoints * 5);
+
     // Generate simple feedback
     const feedback = generateFeedback(testResults, totalScore);
-    
-    
+
     await prisma.submission.update({
       where: { id: submissionId },
       data: {
@@ -76,7 +76,7 @@ export async function gradeSubmission(submissionId: string) {
         status: totalScore >= 60 ? Status.COMPLETED : Status.FAILED, // Pass with 60% or higher
       },
     });
-    
+
     return {
       submissionId,
       score: totalScore,
@@ -88,50 +88,64 @@ export async function gradeSubmission(submissionId: string) {
   }
 }
 
-function generateFeedback(testResults:TestResults[], score:number) {
+function generateFeedback(testResults: TestResults[], score: number) {
   const feedback = [];
-  
+
   // General score feedback
   if (score >= 90) {
     feedback.push("Excellent work! Your solution performs well.");
   } else if (score >= 70) {
-    feedback.push("Good job! Your solution is solid but has some room for improvement.");
+    feedback.push(
+      "Good job! Your solution is solid but has some room for improvement.",
+    );
   } else if (score >= 60) {
-    feedback.push("Your solution passes enough tests, but needs significant improvement.");
+    feedback.push(
+      "Your solution passes enough tests, but needs significant improvement.",
+    );
   } else {
-    feedback.push("Your solution doesn't pass enough tests yet. Review the failed test cases.");
+    feedback.push(
+      "Your solution doesn't pass enough tests yet. Review the failed test cases.",
+    );
   }
-  
-  const passedTests = testResults.filter(t => t.passed && !t.isBonus).length;
-  const totalRequiredTests = testResults.filter(t => !t.isBonus).length;
-  const passedBonus = testResults.filter(t => t.passed && t.isBonus).length;
-  const totalBonus = testResults.filter(t => t.isBonus).length;
-  
-  feedback.push(`\nYou passed ${passedTests}/${totalRequiredTests} required test cases.`);
-  
+
+  const passedTests = testResults.filter((t) => t.passed && !t.isBonus).length;
+  const totalRequiredTests = testResults.filter((t) => !t.isBonus).length;
+  const passedBonus = testResults.filter((t) => t.passed && t.isBonus).length;
+  const totalBonus = testResults.filter((t) => t.isBonus).length;
+
+  feedback.push(
+    `\nYou passed ${passedTests}/${totalRequiredTests} required test cases.`,
+  );
+
   if (totalBonus > 0) {
     feedback.push(`You passed ${passedBonus}/${totalBonus} bonus test cases.`);
   }
-  
-  const failedTests = testResults.filter(t => !t.passed);
+
+  const failedTests = testResults.filter((t) => !t.passed);
   if (failedTests.length > 0) {
     feedback.push("\nFailed test cases:");
     failedTests.forEach((test, i) => {
       const bonusLabel = test.isBonus ? " (Bonus)" : "";
-      feedback.push(`${i+1}. ${test.description}${bonusLabel}`);
+      feedback.push(`${i + 1}. ${test.description}${bonusLabel}`);
       if (test.error) {
-        feedback.push(`   Error: ${test.error.substring(0, 100)}${test.error.length > 100 ? '...' : ''}`);
+        feedback.push(
+          `   Error: ${test.error.substring(0, 100)}${test.error.length > 100 ? "..." : ""}`,
+        );
       }
     });
   }
-  
-  const slowTests = testResults.filter(t => t.passed && t.executionTime? t.executionTime > 1000 : false); // Tests taking over 1 second
+
+  const slowTests = testResults.filter((t) =>
+    t.passed && t.executionTime ? t.executionTime > 1000 : false,
+  ); // Tests taking over 1 second
   if (slowTests.length > 0) {
-    feedback.push("\nSome of your solutions run slowly and could be optimized:");
+    feedback.push(
+      "\nSome of your solutions run slowly and could be optimized:",
+    );
     slowTests.forEach((test) => {
       feedback.push(`- ${test.description} (${test.executionTime}ms)`);
     });
   }
-  
+
   return feedback.join("\n");
 }

@@ -1,15 +1,20 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { format } from "date-fns"
-import { Calendar, FileText, Users, Clock } from "lucide-react"
-import { Card, CardContent, CardFooter, CardHeader } from "@/app/_components/ui/card"
-import { Badge } from "@/app/_components/ui/badge"
-import { Assignment } from "@/lib/types/assignment-tyes"
+import Link from "next/link";
+import { format } from "date-fns";
+import { Calendar, FileText, Users, Clock } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/app/_components/ui/card";
+import { Badge } from "@/app/_components/ui/badge";
+import { Assignment } from "@/lib/types/assignment-tyes";
 
 interface AssignmentCardProps {
-  assignment: Assignment
-  classCode: string
+  assignment: Assignment;
+  classCode: string;
 }
 
 export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
@@ -17,20 +22,28 @@ export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
   const isDueSoon =
     !isOverdue &&
     assignment.dueDate &&
-    new Date() > new Date(assignment.dueDate.getTime() - 2 * 24 * 60 * 60 * 1000);
+    new Date() >
+      new Date(assignment.dueDate.getTime() - 2 * 24 * 60 * 60 * 1000);
 
   return (
     <Card className="overflow-hidden rounded-2xl border border-border bg-card transition-all hover:shadow-md">
       <Link href={`/classes/${classCode}/${assignment.id}`} className="block">
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between gap-4">
-            <h3 className="text-lg font-medium text-foreground">{assignment.title}</h3>
+            <h3 className="text-lg font-medium text-foreground">
+              {assignment.title}
+            </h3>
             {isOverdue ? (
               <Badge variant="destructive">Overdue</Badge>
             ) : isDueSoon ? (
-              <Badge className="bg-muted text-foreground hover:bg-muted/70">Due Soon</Badge>
+              <Badge className="bg-muted text-foreground hover:bg-muted/70">
+                Due Soon
+              </Badge>
             ) : (
-              <Badge variant="outline" className="border-border text-muted-foreground">
+              <Badge
+                variant="outline"
+                className="border-border text-muted-foreground"
+              >
                 Active
               </Badge>
             )}
@@ -38,7 +51,9 @@ export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
         </CardHeader>
 
         <CardContent className="pb-2">
-          <p className="line-clamp-2 text-sm text-muted-foreground">{assignment.description}</p>
+          <p className="line-clamp-2 text-sm text-muted-foreground">
+            {assignment.description}
+          </p>
         </CardContent>
 
         <CardFooter className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs text-muted-foreground">
@@ -74,4 +89,3 @@ export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
     </Card>
   );
 }
-

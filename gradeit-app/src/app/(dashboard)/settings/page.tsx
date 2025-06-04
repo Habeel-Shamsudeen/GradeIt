@@ -3,15 +3,13 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@/app/_components/ui/tabs-modified';
-import {
-  UserAccountIcon,
-} from 'hugeicons-react';
-import { Suspense } from 'react';
-import { SettingsFormSkeleton } from './profile/Skeleton';
+} from "@/app/_components/ui/tabs-modified";
+import { UserAccountIcon } from "hugeicons-react";
+import { Suspense } from "react";
+import { SettingsFormSkeleton } from "./profile/Skeleton";
 // import DeleteAccount from './profile/DeleteAccount';
-import ProfileSettings from './profile/ProfileSettings';
-import { auth } from '@/lib/auth';
+import ProfileSettings from "./profile/ProfileSettings";
+import { auth } from "@/lib/auth";
 
 export default async function Settings() {
   const session = await auth();
@@ -19,12 +17,8 @@ export default async function Settings() {
     <div className="container p-2">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Settings
-          </h2>
-          <p className="text-muted-foreground mt-2">
-            Manage settings.
-          </p>
+          <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
+          <p className="text-muted-foreground mt-2">Manage settings.</p>
         </div>
       </div>
 
@@ -39,7 +33,7 @@ export default async function Settings() {
         <TabsContent value="profile">
           <div className="p-6 rounded-2xl border-2 border-accent">
             <Suspense fallback={<SettingsFormSkeleton />}>
-              <ProfileSettings user={session?.user}/>
+              <ProfileSettings user={session?.user} />
             </Suspense>
           </div>
 

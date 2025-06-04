@@ -61,8 +61,8 @@ export async function getAssigmentTitleFromId(id: string) {
 
 export async function setStudentCookie(studentId: string) {
   (await cookies()).set("student", studentId, {
-    httpOnly: true, // Only accessible by the server 
-    path: "/",      // Available across the app
+    httpOnly: true, // Only accessible by the server
+    path: "/", // Available across the app
     sameSite: "strict",
   });
 }

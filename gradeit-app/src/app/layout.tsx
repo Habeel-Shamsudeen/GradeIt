@@ -2,26 +2,33 @@ import type { Metadata, Viewport } from "next";
 import { Onest } from "next/font/google";
 import "@/app/styles/globals.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
-import NextTopLoader from 'nextjs-toploader';
+import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 
-const onest = Onest({ 
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-onest',
+const onest = Onest({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-onest",
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://grade-it-ten.vercel.app'),
+  metadataBase: new URL("https://grade-it-ten.vercel.app"),
   title: {
-    template: '%s | GradeIt',
-    default: 'GradeIt - Online Classroom & Coding Assignment Platform'
+    template: "%s | GradeIt",
+    default: "GradeIt - Online Classroom & Coding Assignment Platform",
   },
-  description: "Empower learning, automate grading, and simplify coding assignments with our comprehensive platform for educators and students.",
-  keywords: ['coding platform', 'online classroom', 'automated grading', 'programming assignments', 'education technology'],
-  authors: [{ name: 'GradeIt Team' }],
-  creator: 'GradeIt',
-  publisher: 'GradeIt',
+  description:
+    "Empower learning, automate grading, and simplify coding assignments with our comprehensive platform for educators and students.",
+  keywords: [
+    "coding platform",
+    "online classroom",
+    "automated grading",
+    "programming assignments",
+    "education technology",
+  ],
+  authors: [{ name: "GradeIt Team" }],
+  creator: "GradeIt",
+  publisher: "GradeIt",
   formatDetection: {
     email: false,
     telephone: false,
@@ -32,48 +39,48 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-image-preview': 'large',
-      'max-video-preview': -1,
-      'max-snippet': -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+      "max-snippet": -1,
     },
   },
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://grade-it-ten.vercel.app',
-    siteName: 'GradeIt',
-    title: 'GradeIt - Online Classroom & Coding Assignment Platform',
-    description: 'Empower learning, automate grading, and simplify coding assignments with our comprehensive platform for educators and students.',
+    type: "website",
+    locale: "en_US",
+    url: "https://grade-it-ten.vercel.app",
+    siteName: "GradeIt",
+    title: "GradeIt - Online Classroom & Coding Assignment Platform",
+    description:
+      "Empower learning, automate grading, and simplify coding assignments with our comprehensive platform for educators and students.",
     images: [
       {
-        url: 'https://gradeit.example.com/og-image.jpg',
+        url: "https://gradeit.example.com/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: 'GradeIt Platform',
+        alt: "GradeIt Platform",
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'GradeIt - Online Classroom & Coding Assignment Platform',
-    description: 'Empower learning, automate grading, and simplify coding assignments with our comprehensive platform for educators and students.',
-    images: ['https://gradeit.example.com/twitter-image.jpg'],
-    creator: '@gradeit',
+    card: "summary_large_image",
+    title: "GradeIt - Online Classroom & Coding Assignment Platform",
+    description:
+      "Empower learning, automate grading, and simplify coding assignments with our comprehensive platform for educators and students.",
+    images: ["https://gradeit.example.com/twitter-image.jpg"],
+    creator: "@gradeit",
   },
   icons: {
     icon: [
-      { url: '/favicon.ico' },
-      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: "/favicon.ico" },
+      { url: "/icon.svg", type: "image/svg+xml" },
     ],
-    apple: [
-      { url: '/apple-icon.png' },
-    ],
+    apple: [{ url: "/apple-icon.png" }],
   },
-  manifest: '/manifest.json',
+  manifest: "/manifest.json",
   alternates: {
-    canonical: 'https://grade-it-ten.vercel.app',
+    canonical: "https://grade-it-ten.vercel.app",
     languages: {
-      'en-US': 'https://grade-it-ten.vercel.app',
+      "en-US": "https://grade-it-ten.vercel.app",
     },
   },
 };
@@ -81,10 +88,10 @@ export const metadata: Metadata = {
 // Define viewport settings
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#111827' },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#111827" },
   ],
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 5,
 };
@@ -95,9 +102,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en"
-    className={`${onest.className} antialiased`}
-    suppressHydrationWarning
+    <html
+      lang="en"
+      className={`${onest.className} antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <script
@@ -106,29 +114,28 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "name": "GradeIt",
-              "url": "https://grade-it-ten.vercel.app",
-              "potentialAction": {
+              name: "GradeIt",
+              url: "https://grade-it-ten.vercel.app",
+              potentialAction: {
                 "@type": "SearchAction",
-                "target": "https://grade-it-ten.vercel.app/classes",
-                "query-input": "required name=search_term_string"
-              }
-            })
+                target: "https://grade-it-ten.vercel.app/classes",
+                "query-input": "required name=search_term_string",
+              },
+            }),
           }}
         />
       </head>
       <body>
-         <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <NextTopLoader />
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextTopLoader />
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

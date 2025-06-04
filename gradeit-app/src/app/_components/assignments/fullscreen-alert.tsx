@@ -1,11 +1,18 @@
-"use client"
-import { motion } from "framer-motion"
-import { Maximize2 } from "lucide-react"
-import { Button } from "@/app/_components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/_components/ui/card"
+"use client";
+import { motion } from "framer-motion";
+import { Maximize2 } from "lucide-react";
+import { Button } from "@/app/_components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/app/_components/ui/card";
 
 interface FullscreenAlertProps {
-  onEnterFullscreen: () => void
+  onEnterFullscreen: () => void;
 }
 
 export function FullscreenAlert({ onEnterFullscreen }: FullscreenAlertProps) {
@@ -14,13 +21,15 @@ export function FullscreenAlert({ onEnterFullscreen }: FullscreenAlertProps) {
       document.documentElement
         .requestFullscreen()
         .then(() => {
-          onEnterFullscreen()
+          onEnterFullscreen();
         })
         .catch((err) => {
-          console.error(`Error attempting to enable fullscreen: ${err.message}`)
-        })
+          console.error(
+            `Error attempting to enable fullscreen: ${err.message}`,
+          );
+        });
     }
-  }
+  };
 
   return (
     <motion.div
@@ -39,15 +48,19 @@ export function FullscreenAlert({ onEnterFullscreen }: FullscreenAlertProps) {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#F0EFEA]">
               <Maximize2 className="h-8 w-8 text-[#141413]" />
             </div>
-            <CardTitle className="text-center text-xl">Fullscreen Required</CardTitle>
+            <CardTitle className="text-center text-xl">
+              Fullscreen Required
+            </CardTitle>
             <CardDescription className="text-center">
-              This assignment requires fullscreen mode to prevent academic dishonesty.
+              This assignment requires fullscreen mode to prevent academic
+              dishonesty.
             </CardDescription>
           </CardHeader>
           <CardContent className="pb-4 text-center text-[#605F5B]">
             <p>
-              Please enter fullscreen mode to continue with your assignment. This helps maintain academic integrity by
-              preventing access to unauthorized resources during the assessment.
+              Please enter fullscreen mode to continue with your assignment.
+              This helps maintain academic integrity by preventing access to
+              unauthorized resources during the assessment.
             </p>
           </CardContent>
           <CardFooter className="flex justify-center pb-6">
@@ -59,6 +72,5 @@ export function FullscreenAlert({ onEnterFullscreen }: FullscreenAlertProps) {
         </Card>
       </motion.div>
     </motion.div>
-  )
+  );
 }
-

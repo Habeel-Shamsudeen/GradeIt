@@ -1,7 +1,7 @@
-import * as ProgressPrimitive from '@radix-ui/react-progress';
-import * as React from 'react';
+import * as ProgressPrimitive from "@radix-ui/react-progress";
+import * as React from "react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 type ProgressSegment = {
   value: number;
@@ -22,8 +22,8 @@ const Progress = React.forwardRef<
     <ProgressPrimitive.Root
       ref={ref}
       className={cn(
-        'relative h-2 w-full overflow-hidden rounded bg-slate-200',
-        className
+        "relative h-2 w-full overflow-hidden rounded bg-slate-200",
+        className,
       )}
       {...props}
     >
@@ -31,12 +31,12 @@ const Progress = React.forwardRef<
         <ProgressPrimitive.Indicator
           key={`segment-${segment.value}-${index}`}
           className={cn(
-            'h-full transition-all absolute top-0 rounded-r',
-            segment.color ? segment.color : 'bg-primary'
+            "h-full transition-all absolute top-0 rounded-r",
+            segment.color ? segment.color : "bg-primary",
           )}
           style={{
             width: `${segment.value}%`,
-            left: '0%',
+            left: "0%",
             zIndex: sortedSegments.length - index,
           }}
         />
@@ -45,6 +45,6 @@ const Progress = React.forwardRef<
   );
 });
 
-Progress.displayName = 'Progress';
+Progress.displayName = "Progress";
 
 export { Progress };
