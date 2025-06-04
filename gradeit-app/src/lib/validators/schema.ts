@@ -17,9 +17,9 @@ export const assignmentSchema = z.object({
           input: z.string().min(1, "Test case input is required"),
           expectedOutput: z.string().min(1, "Expected output is required"),
           hidden: z.boolean(),
-        })
+        }),
       ),
-    })
+    }),
   ),
 });
 

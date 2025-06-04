@@ -8,8 +8,8 @@ import {
 import { auth } from "@/lib/auth";
 import AuthPopup from "../_components/auth/auth-popup";
 import { SessionProvider } from "next-auth/react";
-import { AppBreadcrumbs } from '../_components/navigation/breadcrumbs';
-import OnboardingCheck from './(features)/onboarding/onboarding-check';
+import { AppBreadcrumbs } from "../_components/navigation/breadcrumbs";
+import OnboardingCheck from "./(features)/onboarding/onboarding-check";
 
 export default async function DashboardLayout({
   children,

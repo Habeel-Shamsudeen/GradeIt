@@ -1,15 +1,18 @@
-"use client"
-
-import { motion } from "framer-motion"
-import type { LucideIcon } from "lucide-react"
+"use client";
+import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 
 interface FeatureCardProps {
-  icon: LucideIcon
-  title: string
-  description: string
+  icon: LucideIcon;
+  title: string;
+  description: string;
 }
 
-export function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
+export default function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+}: FeatureCardProps) {
   return (
     <motion.div
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
@@ -25,6 +28,5 @@ export function FeatureCard({ icon: Icon, title, description }: FeatureCardProps
       </h3>
       <p className="text-muted-foreground text-center">{description}</p>
     </motion.div>
-  )
+  );
 }
-

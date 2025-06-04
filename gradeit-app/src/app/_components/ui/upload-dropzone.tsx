@@ -1,8 +1,8 @@
-import { cn } from '@/lib/utils';
-import { useUploadFiles } from 'better-upload/client';
-import { Loader2, Upload } from 'lucide-react';
-import { useId } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { cn } from "@/lib/utils";
+import { useUploadFiles } from "better-upload/client";
+import { Loader2, Upload } from "lucide-react";
+import { useId } from "react";
+import { useDropzone } from "react-dropzone";
 
 type UploadDropzoneProps = Parameters<typeof useUploadFiles>[0] & {
   accept?: string;
@@ -31,7 +31,7 @@ export function UploadDropzone({
     ...params,
     onUploadSettled: () => {
       if (inputRef.current) {
-        inputRef.current.value = '';
+        inputRef.current.value = "";
       }
 
       params.onUploadSettled?.();
@@ -50,20 +50,20 @@ export function UploadDropzone({
   return (
     <div
       className={cn(
-        'relative rounded-lg border-2 border-dashed transition-colors',
+        "relative rounded-lg border-2 border-dashed transition-colors",
         {
-          'border-foreground/60': isDragActive,
-        }
+          "border-foreground/60": isDragActive,
+        },
       )}
     >
       <label
         {...getRootProps()}
         className={cn(
-          'bg-muted/5 flex w-full min-w-64 cursor-pointer flex-col items-center justify-center px-2 py-6 transition-colors',
+          "bg-muted/5 flex w-full min-w-64 cursor-pointer flex-col items-center justify-center px-2 py-6 transition-colors",
           {
-            'bg-muted/15 text-muted-foreground cursor-not-allowed': isPending,
-            'hover:dark:bg-muted/20 hover:bg-muted/25': !isPending,
-          }
+            "bg-muted/15 text-muted-foreground cursor-not-allowed": isPending,
+            "hover:dark:bg-muted/20 hover:bg-muted/25": !isPending,
+          },
         )}
         htmlFor={id}
       >
@@ -79,14 +79,14 @@ export function UploadDropzone({
           <p className="text-sm font-semibold">Drag and drop files here</p>
 
           <p className="text-muted-foreground max-w-64 text-xs">
-            {typeof description === 'string' ? (
+            {typeof description === "string" ? (
               description
             ) : (
               <>
                 {description?.maxFiles &&
-                  `You can upload ${description.maxFiles} file${description.maxFiles !== 1 ? 's' : ''}.`}{' '}
+                  `You can upload ${description.maxFiles} file${description.maxFiles !== 1 ? "s" : ""}.`}{" "}
                 {description?.maxFileSize &&
-                  `${description.maxFiles !== 1 ? 'Each u' : 'U'}p to ${description.maxFileSize}.`}{' '}
+                  `${description.maxFiles !== 1 ? "Each u" : "U"}p to ${description.maxFileSize}.`}{" "}
                 {description?.fileTypes && `Accepted ${description.fileTypes}.`}
               </>
             )}

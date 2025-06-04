@@ -14,7 +14,7 @@ import {
 import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
 import { createClass } from "@/server/actions/class-actions";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 interface CreateClassDialogProps {
@@ -22,7 +22,10 @@ interface CreateClassDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateClassDialog({ open, onOpenChange }: CreateClassDialogProps) {
+export function CreateClassDialog({
+  open,
+  onOpenChange,
+}: CreateClassDialogProps) {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [section, setSection] = useState("");
@@ -36,11 +39,11 @@ export function CreateClassDialog({ open, onOpenChange }: CreateClassDialogProps
       const result = await createClass({ name, section });
 
       if (result.status === "success") {
-        toast.success("Class created successfully!" );
+        toast.success("Class created successfully!");
         onOpenChange(false);
         setName("");
         setSection("");
-        router.refresh()
+        router.refresh();
       } else {
         toast.warning("Failed to create class");
       }
@@ -58,7 +61,8 @@ export function CreateClassDialog({ open, onOpenChange }: CreateClassDialogProps
         <DialogHeader>
           <DialogTitle>Create Class</DialogTitle>
           <DialogDescription>
-            Create a new class for your students. They can join using the class code that will be generated.
+            Create a new class for your students. They can join using the class
+            code that will be generated.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
@@ -83,7 +87,12 @@ export function CreateClassDialog({ open, onOpenChange }: CreateClassDialogProps
             />
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-[#E6E4DD]">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="border-[#E6E4DD]"
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>

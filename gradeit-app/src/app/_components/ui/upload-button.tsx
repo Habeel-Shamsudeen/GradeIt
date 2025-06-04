@@ -1,7 +1,7 @@
-import { Button } from '@/app/_components/ui/button';
-import { useUploadFile } from 'better-upload/client';
-import { Loader2, Upload } from 'lucide-react';
-import { useId, useRef } from 'react';
+import { Button } from "@/app/_components/ui/button";
+import { useUploadFile } from "better-upload/client";
+import { Loader2, Upload } from "lucide-react";
+import { useId, useRef } from "react";
 
 type UploadButtonProps = Parameters<typeof useUploadFile>[0] & {
   accept?: string;
@@ -22,7 +22,7 @@ export function UploadButton({
     ...params,
     onUploadSettled: () => {
       if (inputRef.current) {
-        inputRef.current.value = '';
+        inputRef.current.value = "";
       }
 
       params.onUploadSettled?.();

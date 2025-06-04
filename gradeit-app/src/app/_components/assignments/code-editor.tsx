@@ -35,15 +35,20 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: typeof import("monaco-editor")) => {
+  const onMount = (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    monaco: typeof import("monaco-editor"),
+  ) => {
     editorRef.current = editor;
     editor.focus();
-
 
     if (disableCopyPaste) {
       editor.onKeyDown((event) => {
         const { keyCode, ctrlKey, metaKey } = event;
-        if ((keyCode === 52 || keyCode === 33 || keyCode === 88) && (metaKey || ctrlKey)) {
+        if (
+          (keyCode === 52 || keyCode === 33 || keyCode === 88) &&
+          (metaKey || ctrlKey)
+        ) {
           event.preventDefault();
         }
       });
@@ -100,7 +105,7 @@ export function CodeEditor({
           fontSize: 14,
           fontFamily: "JetBrains Mono, monospace",
           automaticLayout: true,
-          contextmenu:!disableCopyPaste
+          contextmenu: !disableCopyPaste,
         }}
         onMount={onMount}
       />

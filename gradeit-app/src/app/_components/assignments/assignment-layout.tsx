@@ -59,19 +59,18 @@ export function AssignmentLayout({
     setTestResults([runningResult]);
 
     try {
-      const response = await fetch('/api/compile',{
-        method:"POST",
+      const response = await fetch("/api/compile", {
+        method: "POST",
         headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        code,
-        input: customInput,
-        language: currentQuestion.language,
-      }),
-      })
-      const {output} = await response.json();
-
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code,
+          input: customInput,
+          language: currentQuestion.language,
+        }),
+      });
+      const { output } = await response.json();
 
       setTestResults([output]);
     } catch (error: any) {
@@ -90,110 +89,118 @@ export function AssignmentLayout({
     }
   };
 
-const handleSubmit = async () => {
-  if (isRunning) return;
-  
-  setIsSubmitting(true);
-  setSubmissionStatus("Submitting your solution...");
-  
-  try {
-    const response = await fetch("/api/submissions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        code,
-        questionId: currentQuestion.id,
-        language: currentQuestion.language,
-      }),
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to submit solution");
-    }
-    
-    const data = await response.json();
-    const submissionId = data.submissionId;
-    
-    // Start polling for submission status
-    setSubmissionStatus("Running test cases...");
-    await pollSubmissionStatus(submissionId);
-    
-  } catch (error: any) {
-    console.error("Submission error:", error);
-    setSubmissionStatus(`Submission failed: ${error.message}`);
-    toast.error(error.message || "An error occurred while submitting your solution");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  const handleSubmit = async () => {
+    if (isRunning) return;
 
-const pollSubmissionStatus = async (submissionId: string) => {
-  let completed = false;
-  let attempts = 0;
-  const maxAttempts = 30; // Poll for maximum of 30 attempts (30 seconds with 2s interval) that is for 60 seconds
-  
-  while (!completed && attempts < maxAttempts) {
-    attempts++;
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for 2 second
-    
+    setIsSubmitting(true);
+    setSubmissionStatus("Submitting your solution...");
+
     try {
-      const response = await fetch(`/api/submissions/${submissionId}`);
-      
+      const response = await fetch("/api/submissions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code,
+          questionId: currentQuestion.id,
+          language: currentQuestion.language,
+        }),
+      });
+
       if (!response.ok) {
-        throw new Error("Failed to fetch submission status");
+        const error = await response.json();
+        throw new Error(error.error || "Failed to submit solution");
       }
-      
-      const submissionData = await response.json();
-      
-      // Update test results in UI
-      const mappedResults = submissionData.results.map((result: any) => ({
-        id: result.id,
-        status: result.status,
-        runtime: result.runtime,
-        memory: result.memory,
-        output: result.output,
-        error: result.error,
-      }));
-      
-      setTestResults(mappedResults);
-      
-      // Check if submission is completed
-      if (submissionData.status === "COMPLETED" || 
-          submissionData.status === "PASSED" || 
-          submissionData.status === "FAILED") {
-        completed = true;
-        
-        // Show appropriate message
-        if (submissionData.status === "COMPLETED") {
-          setSubmissionStatus("All tests passed successfully!");
-          toast.success("Your solution passed all test cases");
-        } else {
-          setSubmissionStatus("Some tests failed. Check the results for details.");
-          toast.error("Your solution didn't pass all test cases");
+
+      const data = await response.json();
+      const submissionId = data.submissionId;
+
+      // Start polling for submission status
+      setSubmissionStatus("Running test cases...");
+      await pollSubmissionStatus(submissionId);
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      setSubmissionStatus(`Submission failed: ${error.message}`);
+      toast.error(
+        error.message || "An error occurred while submitting your solution",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const pollSubmissionStatus = async (submissionId: string) => {
+    let completed = false;
+    let attempts = 0;
+    const maxAttempts = 30; // Poll for maximum of 30 attempts (30 seconds with 2s interval) that is for 60 seconds
+
+    while (!completed && attempts < maxAttempts) {
+      attempts++;
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 second
+
+      try {
+        const response = await fetch(`/api/submissions/${submissionId}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch submission status");
         }
 
-        //exit polling
-        break;
-      } 
+        const submissionData = await response.json();
 
-      await pollJudge0Submissions(submissionId);
+        // Update test results in UI
+        const mappedResults = submissionData.results.map((result: any) => ({
+          id: result.id,
+          status: result.status,
+          runtime: result.runtime,
+          memory: result.memory,
+          output: result.output,
+          error: result.error,
+        }));
 
-        setSubmissionStatus(`Running test cases (${attempts}/${maxAttempts})...`);
-      
-    } catch (error) {
-      console.error("Error polling submission status:", error);
+        setTestResults(mappedResults);
+
+        // Check if submission is completed
+        if (
+          submissionData.status === "COMPLETED" ||
+          submissionData.status === "PASSED" ||
+          submissionData.status === "FAILED"
+        ) {
+          completed = true;
+
+          // Show appropriate message
+          if (submissionData.status === "COMPLETED") {
+            setSubmissionStatus("All tests passed successfully!");
+            toast.success("Your solution passed all test cases");
+          } else {
+            setSubmissionStatus(
+              "Some tests failed. Check the results for details.",
+            );
+            toast.error("Your solution didn't pass all test cases");
+          }
+
+          //exit polling
+          break;
+        }
+
+        await pollJudge0Submissions(submissionId);
+
+        setSubmissionStatus(
+          `Running test cases (${attempts}/${maxAttempts})...`,
+        );
+      } catch (error) {
+        console.error("Error polling submission status:", error);
+      }
     }
-  }
-  
-  if (!completed) {
-    setSubmissionStatus("Submission is taking longer than expected. You can check results later.");
-  }
-  
-  return completed;
-};
+
+    if (!completed) {
+      setSubmissionStatus(
+        "Submission is taking longer than expected. You can check results later.",
+      );
+    }
+
+    return completed;
+  };
 
   const handleEnterFullscreen = () => {
     setIsFullscreen(true);

@@ -1,4 +1,3 @@
-
 import { TestCase } from "@/lib/types/assignment-tyes";
 
 export async function generateTestCasesWithLLM(
@@ -6,10 +5,16 @@ export async function generateTestCasesWithLLM(
   questionDescription: string,
   language: string,
   sampleInput?: string,
-  sampleOutput?: string
+  sampleOutput?: string,
 ): Promise<any[]> {
-  const prompt = buildPrompt(questionTitle, questionDescription, language, sampleInput, sampleOutput);
-  
+  const prompt = buildPrompt(
+    questionTitle,
+    questionDescription,
+    language,
+    sampleInput,
+    sampleOutput,
+  );
+
   try {
     const response = await fetch(process.env.LOCAL_LLM_URL!, {
       method: "POST",
@@ -22,11 +27,11 @@ export async function generateTestCasesWithLLM(
         stream: false,
       }),
     });
-    
+
     if (!response.ok) {
       throw new Error("Failed to generate test cases");
     }
-    
+
     const data = await response.json();
     return parseTestCasesFromResponse(data.response);
   } catch (error) {
@@ -38,33 +43,37 @@ export async function generateTestCasesWithLLM(
 // Add to llm-service.ts
 
 export async function generateBasicTestCases(language: string): Promise<any[]> {
-    // Generate simple test cases based on language
-    switch (language.toLowerCase()) {
-      case "python":
-        return [
-          {
-            id: "1",
-            description: "Basic functionality test",
-            input: "10\n20",
-            expectedOutput: "30",
-            hidden: false,
-          },
-          {
-            id: "2",
-            description: "Edge case with zero",
-            input: "0\n0",
-            expectedOutput: "0",
-            hidden: false,
-          },
-          // Add more default test cases
-        ];
-      case "javascript":
-        // JavaScript-specific test cases
-        return [/* ... */];
-      default:
-        return [/* Generic test cases */];
-    }
+  // Generate simple test cases based on language
+  switch (language.toLowerCase()) {
+    case "python":
+      return [
+        {
+          id: "1",
+          description: "Basic functionality test",
+          input: "10\n20",
+          expectedOutput: "30",
+          hidden: false,
+        },
+        {
+          id: "2",
+          description: "Edge case with zero",
+          input: "0\n0",
+          expectedOutput: "0",
+          hidden: false,
+        },
+        // Add more default test cases
+      ];
+    case "javascript":
+      // JavaScript-specific test cases
+      return [
+        /* ... */
+      ];
+    default:
+      return [
+        /* Generic test cases */
+      ];
   }
+}
 
 // Include the buildPrompt and parseTestCasesFromResponse functions from earlier
 
@@ -73,7 +82,7 @@ export function buildPrompt(
   description: string,
   language: string,
   sampleInput?: string,
-  sampleOutput?: string
+  sampleOutput?: string,
 ): string {
   return `Generate test cases for the following programming question:
   
@@ -186,7 +195,7 @@ export function fallbackParsing(response: string): Array<{
     const expectedOutput = extractValue(
       testCaseText,
       "Expected Output",
-      "Hidden"
+      "Hidden",
     );
     const hidden = extractValue(testCaseText, "Hidden", "")
       .toLowerCase()
@@ -206,7 +215,7 @@ export function fallbackParsing(response: string): Array<{
 export function extractValue(
   text: string,
   startMarker: string,
-  endMarker: string
+  endMarker: string,
 ): string {
   const startIndex = text.indexOf(startMarker + ":");
   if (startIndex === -1) return "";
@@ -235,6 +244,6 @@ export function validateTestCases(testCases: any[]): boolean {
     (tc) =>
       typeof tc.input === "string" &&
       typeof tc.expectedOutput === "string" &&
-      typeof tc.hidden === "boolean"
+      typeof tc.hidden === "boolean",
   );
 }

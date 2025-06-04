@@ -55,7 +55,7 @@
     --sidebar-border: 240 6% 90%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    --font-inter: 'Inter', sans-serif;
+    --font-inter: "Inter", sans-serif;
   }
 
   .dark {
@@ -78,7 +78,7 @@
     --neutral: 0 0% 98%;
     --neutral-foreground: 217 14% 47%;
 
-    --primary: 226 60% 60%;;
+    --primary: 226 60% 60%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 240 4.8% 95.9%;
@@ -107,9 +107,9 @@
     --sidebar-accent-foreground: 216 24% 96%;
     --sidebar-border: 240 4% 16%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --landingpage-background: #060C14;
+    --landingpage-background: #060c14;
 
-    --font-inter: 'Inter', sans-serif;
+    --font-inter: "Inter", sans-serif;
   }
 }
 /* * {
@@ -184,33 +184,32 @@
   backdrop-filter: blur(8px);
 }
 
-.hero-color{
-  color: #0077B5;
-
+.hero-color {
+  color: #0077b5;
 }
 
-.hero-color-background{
-  background-color: #0077B5;
+.hero-color-background {
+  background-color: #0077b5;
   color: #ffffff;
 }
 
-.sub-hero-color{
+.sub-hero-color {
   color: #000000;
 }
 
-.button-primary{
-  background-color: #0077B5;
+.button-primary {
+  background-color: #0077b5;
   color: #ffffff;
 }
 
-.button-secondary{
+.button-secondary {
   background-color: #ffffff;
-  color: #0077B5;
-  border: 2px solid #0077B5;
+  color: #0077b5;
+  border: 2px solid #0077b5;
 }
 
-.nav-bar{
+.nav-bar {
   border-radius: 15px;
   border: 1px solid #262626;
-  background: linear-gradient(180deg, #1E1E1E 0%, #151515 100%);
+  background: linear-gradient(180deg, #1e1e1e 0%, #151515 100%);
 }

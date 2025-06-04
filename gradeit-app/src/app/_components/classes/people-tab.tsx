@@ -1,17 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search, UserPlus, Mail, MoreVertical } from 'lucide-react'
-import { Button } from "@/app/_components/ui/button"
-import { Input } from "@/app/_components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/_components/ui/avatar"
+import { useState } from "react";
+import { Search, UserPlus, Mail, MoreVertical } from "lucide-react";
+import { Button } from "@/app/_components/ui/button";
+import { Input } from "@/app/_components/ui/input";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/_components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/app/_components/ui/dropdown-menu"
+} from "@/app/_components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -19,30 +23,37 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/app/_components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/_components/ui/tabs"
-import { Members } from "@/lib/types/class-types"
+} from "@/app/_components/ui/dialog";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/_components/ui/tabs";
+import { Members } from "@/lib/types/class-types";
 
 interface PeopleTabProps {
-  classCode: string
-  teachers: Members[]
-  students: Members[]
+  classCode: string;
+  teachers: Members[];
+  students: Members[];
 }
 
 export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
-  const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const filteredTeachers = teachers.filter(
-    teacher => teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    teacher.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-  
+    (teacher) =>
+      teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      teacher.email?.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   const filteredStudents = students.filter(
-    student => student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-  
+    (student) =>
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.email?.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -55,26 +66,37 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button onClick={() => setInviteDialogOpen(true)} className="gap-1 whitespace-nowrap">
+        <Button
+          onClick={() => setInviteDialogOpen(true)}
+          className="gap-1 whitespace-nowrap"
+        >
           <UserPlus className="h-4 w-4" />
           Invite People
         </Button>
       </div>
-      
+
       <div className="rounded-2xl border border-[#E6E4DD] bg-white overflow-hidden">
         <div className="p-6 border-b border-[#E6E4DD]">
           <h3 className="text-lg font-medium text-[#141413]">Teachers</h3>
         </div>
         <div className="divide-y divide-[#E6E4DD]">
           {filteredTeachers.length === 0 ? (
-            <div className="p-6 text-center text-[#605F5B]">No teachers found</div>
+            <div className="p-6 text-center text-[#605F5B]">
+              No teachers found
+            </div>
           ) : (
             filteredTeachers.map((teacher) => (
-              <div key={teacher.id} className="flex items-center justify-between p-4 hover:bg-[#FAFAF8]">
+              <div
+                key={teacher.id}
+                className="flex items-center justify-between p-4 hover:bg-[#FAFAF8]"
+              >
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-[#E6E4DD]">
                     <AvatarImage src={teacher.image || ""} alt={teacher.name} />
-                    <AvatarFallback>{teacher.name.charAt(0)}{teacher.name.split(' ')[1]?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>
+                      {teacher.name.charAt(0)}
+                      {teacher.name.split(" ")[1]?.charAt(0)}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium text-[#141413]">{teacher.name}</p>
@@ -82,13 +104,21 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-[#605F5B]">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full text-[#605F5B]"
+                  >
                     <Mail className="h-4 w-4" />
                     <span className="sr-only">Email</span>
                   </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-[#605F5B]">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full text-[#605F5B]"
+                      >
                         <MoreVertical className="h-4 w-4" />
                         <span className="sr-only">More options</span>
                       </Button>
@@ -97,7 +127,9 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                       <DropdownMenuItem>View profile</DropdownMenuItem>
                       <DropdownMenuItem>Change role</DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive">Remove from class</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">
+                        Remove from class
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -106,7 +138,7 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
           )}
         </div>
       </div>
-      
+
       <div className="rounded-2xl border border-[#E6E4DD] bg-white overflow-hidden">
         <div className="p-6 border-b border-[#E6E4DD]">
           <h3 className="text-lg font-medium text-[#141413]">Students</h3>
@@ -114,14 +146,22 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
         </div>
         <div className="divide-y divide-[#E6E4DD]">
           {filteredStudents.length === 0 ? (
-            <div className="p-6 text-center text-[#605F5B]">No students found</div>
+            <div className="p-6 text-center text-[#605F5B]">
+              No students found
+            </div>
           ) : (
             filteredStudents.map((student) => (
-              <div key={student.id} className="flex items-center justify-between p-4 hover:bg-[#FAFAF8]">
+              <div
+                key={student.id}
+                className="flex items-center justify-between p-4 hover:bg-[#FAFAF8]"
+              >
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-[#E6E4DD]">
                     <AvatarImage src={student.image || ""} alt={student.name} />
-                    <AvatarFallback>{student.name.charAt(0)}{student.name.split(' ')[1]?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>
+                      {student.name.charAt(0)}
+                      {student.name.split(" ")[1]?.charAt(0)}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium text-[#141413]">{student.name}</p>
@@ -129,13 +169,21 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-[#605F5B]">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full text-[#605F5B]"
+                  >
                     <Mail className="h-4 w-4" />
                     <span className="sr-only">Email</span>
                   </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-[#605F5B]">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full text-[#605F5B]"
+                      >
                         <MoreVertical className="h-4 w-4" />
                         <span className="sr-only">More options</span>
                       </Button>
@@ -144,7 +192,9 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                       <DropdownMenuItem>View profile</DropdownMenuItem>
                       <DropdownMenuItem>View submissions</DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive">Remove from class</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">
+                        Remove from class
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -153,34 +203,42 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
           )}
         </div>
       </div>
-      
-      <InvitePeopleDialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen} classCode={classCode} />
+
+      <InvitePeopleDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+        classCode={classCode}
+      />
     </div>
-  )
+  );
 }
 
 interface InvitePeopleDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  classCode: string
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  classCode: string;
 }
 
-function InvitePeopleDialog({ open, onOpenChange, classCode }: InvitePeopleDialogProps) {
-  const [activeTab, setActiveTab] = useState("email")
-  const [emails, setEmails] = useState("")
-  const [loading, setLoading] = useState(false)
-  
+function InvitePeopleDialog({
+  open,
+  onOpenChange,
+  classCode,
+}: InvitePeopleDialogProps) {
+  const [activeTab, setActiveTab] = useState("email");
+  const [emails, setEmails] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    
+    e.preventDefault();
+    setLoading(true);
+
     // Simulate API call
     setTimeout(() => {
-      setLoading(false)
-      onOpenChange(false)
-    }, 1000)
-  }
-  
+      setLoading(false);
+      onOpenChange(false);
+    }, 1000);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
@@ -190,13 +248,18 @@ function InvitePeopleDialog({ open, onOpenChange, classCode }: InvitePeopleDialo
             Add students or teachers to your class.
           </DialogDescription>
         </DialogHeader>
-        
-        <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab} className="mt-4">
+
+        <Tabs
+          defaultValue="email"
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="mt-4"
+        >
           <TabsList className="grid w-full grid-cols-2 bg-[#F0EFEA]">
             <TabsTrigger value="email">Email Addresses</TabsTrigger>
             <TabsTrigger value="link">Invite Link</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="email" className="mt-4">
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4">
@@ -213,27 +276,44 @@ function InvitePeopleDialog({ open, onOpenChange, classCode }: InvitePeopleDialo
                     required
                   />
                   <p className="text-xs text-[#605F5B]">
-                    Recipients will receive an email with a link to join your class.
+                    Recipients will receive an email with a link to join your
+                    class.
                   </p>
                 </div>
-                
+
                 <div className="grid gap-2">
                   <label className="text-sm font-medium">Role</label>
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2">
-                      <input type="radio" name="role" value="student" defaultChecked className="h-4 w-4" />
+                      <input
+                        type="radio"
+                        name="role"
+                        value="student"
+                        defaultChecked
+                        className="h-4 w-4"
+                      />
                       <span>Student</span>
                     </label>
                     <label className="flex items-center gap-2">
-                      <input type="radio" name="role" value="teacher" className="h-4 w-4" />
+                      <input
+                        type="radio"
+                        name="role"
+                        value="teacher"
+                        className="h-4 w-4"
+                      />
                       <span>Teacher</span>
                     </label>
                   </div>
                 </div>
               </div>
-              
+
               <DialogFooter className="mt-6">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-[#E6E4DD]">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  className="border-[#E6E4DD]"
+                >
                   Cancel
                 </Button>
                 <Button type="submit" disabled={loading}>
@@ -242,7 +322,7 @@ function InvitePeopleDialog({ open, onOpenChange, classCode }: InvitePeopleDialo
               </DialogFooter>
             </form>
           </TabsContent>
-          
+
           <TabsContent value="link" className="mt-4">
             <div className="grid gap-4">
               <div className="grid gap-2">
@@ -256,15 +336,22 @@ function InvitePeopleDialog({ open, onOpenChange, classCode }: InvitePeopleDialo
                   <Button className="rounded-l-none">Copy</Button>
                 </div>
                 <p className="text-xs text-[#605F5B]">
-                  Anyone with this link can join your class. The link expires in 7 days.
+                  Anyone with this link can join your class. The link expires in
+                  7 days.
                 </p>
               </div>
-              
+
               <div className="grid gap-2">
                 <label className="text-sm font-medium">Class Code</label>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl font-medium tracking-wider">{classCode}</span>
-                  <Button variant="outline" size="sm" className="h-7 border-[#E6E4DD]">
+                  <span className="text-xl font-medium tracking-wider">
+                    {classCode}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 border-[#E6E4DD]"
+                  >
                     Copy
                   </Button>
                 </div>
@@ -273,18 +360,21 @@ function InvitePeopleDialog({ open, onOpenChange, classCode }: InvitePeopleDialo
                 </p>
               </div>
             </div>
-            
+
             <DialogFooter className="mt-6">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-[#E6E4DD]">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="border-[#E6E4DD]"
+              >
                 Close
               </Button>
-              <Button type="button">
-                Generate New Link
-              </Button>
+              <Button type="button">Generate New Link</Button>
             </DialogFooter>
           </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

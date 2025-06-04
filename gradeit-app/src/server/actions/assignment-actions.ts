@@ -31,10 +31,16 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         errors: validation.error.format(),
       };
     }
-      
 
-    const { title, description, dueDate, classCode, questions, copyPastePrevention, fullScreenEnforcement } =
-      validation.data;
+    const {
+      title,
+      description,
+      dueDate,
+      classCode,
+      questions,
+      copyPastePrevention,
+      fullScreenEnforcement,
+    } = validation.data;
 
     const classroomId = await getClassIdFromCode(classCode);
     if (!classroomId) {
@@ -68,7 +74,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
     revalidatePath(`/classes/${classCode}`); // Refresh cache for updated data
     return { status: "success", assignment };
   } catch (error) {
-    throw new Error("Failed to create assignment"+ error);
+    throw new Error("Failed to create assignment" + error);
   }
 };
 
@@ -97,15 +103,18 @@ export const getAssignments = async (classroomId: string) => {
       description: assignment.description,
       dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
       questionCount: assignment.questions.length,
-      submissionCount: assignment.questions.reduce((acc, question) => acc + question.Submission.length, 0),
+      submissionCount: assignment.questions.reduce(
+        (acc, question) => acc + question.Submission.length,
+        0,
+      ),
       createdAt: new Date(assignment.createdAt),
       copyPastePrevention: assignment.copyPastePrevention,
-      fullScreenEnforcement:assignment.fullScreenEnforcement
+      fullScreenEnforcement: assignment.fullScreenEnforcement,
     }));
 
     return { status: "success", assignments: formattedAssignments };
   } catch (error) {
-    return { status: "failed", message:error };
+    return { status: "failed", message: error };
   }
 };
 
@@ -120,8 +129,8 @@ export const getAssignmentById = async (assignmentId: string) => {
       include: {
         questions: {
           include: {
-            testCases:true,
-            Submission:true,
+            testCases: true,
+            Submission: true,
           },
         },
       },
@@ -137,14 +146,17 @@ export const getAssignmentById = async (assignmentId: string) => {
       description: assignment.description,
       dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
       questionCount: assignment.questions.length,
-      submissionCount: assignment.questions.reduce((acc, question) => acc + question.Submission.length, 0),
+      submissionCount: assignment.questions.reduce(
+        (acc, question) => acc + question.Submission.length,
+        0,
+      ),
       createdAt: new Date(assignment.createdAt),
       questions: assignment.questions,
       copyPastePrevention: assignment.copyPastePrevention,
-      fullScreenEnforcement: assignment.fullScreenEnforcement
+      fullScreenEnforcement: assignment.fullScreenEnforcement,
     };
     return { status: "success", assignment: formattedAssignment };
   } catch (error) {
-    throw new Error("Failed to get assignment "+ error);
+    throw new Error("Failed to get assignment " + error);
   }
-}
+};

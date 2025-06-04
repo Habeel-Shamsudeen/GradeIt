@@ -32,8 +32,10 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [copyPastePrevention,setCopypasteprevention] = useState<boolean>(false);
-  const [fullScreenEnforcement,setFullScreenEnforcement] = useState<boolean>(false);
+  const [copyPastePrevention, setCopypasteprevention] =
+    useState<boolean>(false);
+  const [fullScreenEnforcement, setFullScreenEnforcement] =
+    useState<boolean>(false);
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: "1",
@@ -95,7 +97,7 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
         classCode,
         questions,
         copyPastePrevention,
-        fullScreenEnforcement
+        fullScreenEnforcement,
       });
 
       if (response.status === "success") {
@@ -154,14 +156,22 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
               />
             </div>
             <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-            <Label htmlFor="copyPastePrevention">Disable copy paste</Label>
-            <Switch checked={copyPastePrevention} onCheckedChange={(e)=> setCopypasteprevention((c)=>!c)}/> 
-            </div>
-            <div className="flex items-center gap-2">
-            <Label htmlFor="fullScreenEnforcement">Full screen enforcement</Label>
-            <Switch checked={fullScreenEnforcement} onCheckedChange={(e)=> setFullScreenEnforcement((c)=>!c)}/>
-            </div>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="copyPastePrevention">Disable copy paste</Label>
+                <Switch
+                  checked={copyPastePrevention}
+                  onCheckedChange={(e) => setCopypasteprevention((c) => !c)}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="fullScreenEnforcement">
+                  Full screen enforcement
+                </Label>
+                <Switch
+                  checked={fullScreenEnforcement}
+                  onCheckedChange={(e) => setFullScreenEnforcement((c) => !c)}
+                />
+              </div>
             </div>
           </div>
         </CardContent>

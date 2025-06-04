@@ -1,22 +1,28 @@
-"use client"
-import { motion, AnimatePresence } from "framer-motion"
-import { Plus, Trash2, Beaker, Loader2, Wand2 } from "lucide-react"
-import { Button } from "@/app/_components/ui/button"
-import { Input } from "@/app/_components/ui/input"
-import { Label } from "@/app/_components/ui/label"
-import { Textarea } from "@/app/_components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select"
-import { Checkbox } from "@/app/_components/ui/checkbox"
-import { Card, CardContent } from "@/app/_components/ui/card"
-import { Separator } from "@/app/_components/ui/separator"
-import { Question, TestCase } from "@/lib/types/assignment-tyes"
-import { LANGUAGE_ID_MAP } from "@/config/constants"
-import { useState } from "react"
-import { toast } from "sonner"
+"use client";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Trash2, Beaker, Loader2, Wand2 } from "lucide-react";
+import { Button } from "@/app/_components/ui/button";
+import { Input } from "@/app/_components/ui/input";
+import { Label } from "@/app/_components/ui/label";
+import { Textarea } from "@/app/_components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/_components/ui/select";
+import { Checkbox } from "@/app/_components/ui/checkbox";
+import { Card, CardContent } from "@/app/_components/ui/card";
+import { Separator } from "@/app/_components/ui/separator";
+import { Question, TestCase } from "@/lib/types/assignment-tyes";
+import { LANGUAGE_ID_MAP } from "@/config/constants";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface QuestionFormProps {
-  question: Question
-  onChange: (question: Question) => void
+  question: Question;
+  onChange: (question: Question) => void;
 }
 
 export function QuestionForm({ question, onChange }: QuestionFormProps) {
@@ -25,8 +31,8 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
     onChange({
       ...question,
       [field]: value,
-    })
-  }
+    });
+  };
 
   const addTestCase = () => {
     updateField("testCases", [
@@ -37,78 +43,78 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
         expectedOutput: "",
         hidden: false,
       },
-    ])
-  }
+    ]);
+  };
 
   const removeTestCase = (index: number) => {
     if (question.testCases.length > 1) {
       updateField(
         "testCases",
         question.testCases.filter((_, i) => i !== index),
-      )
+      );
     }
-  }
+  };
 
   const updateTestCase = (index: number, field: keyof TestCase, value: any) => {
-    const newTestCases = [...question.testCases]
+    const newTestCases = [...question.testCases];
     newTestCases[index] = {
       ...newTestCases[index],
       [field]: value,
-    }
-    updateField("testCases", newTestCases)
-  }
-
-  
-
-const generateTestCases = async () => {
-  if (!question.title || !question.description) {
-    toast.warning("Please fill in the question title and description first");
-    return;
-  }
-  
-  setIsGenerating(true);
-  
-  try {
-    const response = await fetch("/api/generate-testcases", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        questionTitle: question.title,
-        questionDescription: question.description,
-        language: question.language,
-      }),
-    });
-    
-    if (!response.ok) {
-      throw new Error("Failed to generate test cases");
-    }
-    
-    const { testCases } = await response.json();
-    
-    const newTestCases = testCases.map((tc:any, index:number) => ({
-      ...tc,
-      id: `generated-${index + 1}` // Ensure unique IDs
-    }));
-    
+    };
     updateField("testCases", newTestCases);
-    
-    console.log(newTestCases);
-    toast.success("Test cases generated successfully!");
-  } catch (error) {
-    console.error("Error generating test cases:", error);
-    toast.error("Failed to generate test cases. Please try again.");
-  } finally {
-    setIsGenerating(false);
-  }
-};
+  };
+
+  const generateTestCases = async () => {
+    if (!question.title || !question.description) {
+      toast.warning("Please fill in the question title and description first");
+      return;
+    }
+
+    setIsGenerating(true);
+
+    try {
+      const response = await fetch("/api/generate-testcases", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          questionTitle: question.title,
+          questionDescription: question.description,
+          language: question.language,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate test cases");
+      }
+
+      const { testCases } = await response.json();
+
+      const newTestCases = testCases.map((tc: any, index: number) => ({
+        ...tc,
+        id: `generated-${index + 1}`, // Ensure unique IDs
+      }));
+
+      updateField("testCases", newTestCases);
+
+      console.log(newTestCases);
+      toast.success("Test cases generated successfully!");
+    } catch (error) {
+      console.error("Error generating test cases:", error);
+      toast.error("Failed to generate test cases. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="grid gap-6">
         <div className="grid gap-2">
-          <Label htmlFor={`question-${question.id}-title`}>Question Title</Label>
+          <Label htmlFor={`question-${question.id}-title`}>
+            Question Title
+          </Label>
           <Input
             id={`question-${question.id}-title`}
             value={question.title}
@@ -120,7 +126,9 @@ const generateTestCases = async () => {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={`question-${question.id}-description`}>Description</Label>
+          <Label htmlFor={`question-${question.id}-description`}>
+            Description
+          </Label>
           <Textarea
             id={`question-${question.id}-description`}
             value={question.description}
@@ -132,14 +140,24 @@ const generateTestCases = async () => {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={`question-${question.id}-language`}>Programming Language</Label>
-          <Select value={question.language} onValueChange={(value) => updateField("language", value)}>
-            <SelectTrigger id={`question-${question.id}-language`} className="border-[#E6E4DD]">
+          <Label htmlFor={`question-${question.id}-language`}>
+            Programming Language
+          </Label>
+          <Select
+            value={question.language}
+            onValueChange={(value) => updateField("language", value)}
+          >
+            <SelectTrigger
+              id={`question-${question.id}-language`}
+              className="border-[#E6E4DD]"
+            >
               <SelectValue placeholder="Select a language" />
             </SelectTrigger>
             <SelectContent>
               {Object.keys(LANGUAGE_ID_MAP).map((language) => (
-                <SelectItem key={language} value={language}>{language}</SelectItem>
+                <SelectItem key={language} value={language}>
+                  {language}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -155,30 +173,35 @@ const generateTestCases = async () => {
             Test Cases
           </h3>
           <div className="space-x-2">
-          <Button 
-      type="button" 
-      variant="outline" 
-      onClick={generateTestCases} 
-      disabled={isGenerating}
-      className="gap-1 border-[#E6E4DD]"
-    >
-      {isGenerating ? (
-        <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Generating...
-        </>
-      ) : (
-        <>
-          <Wand2 className="h-4 w-4" />
-          Auto-Generate Test Cases
-        </>
-      )}
-    </Button>
-          <Button type="button" variant="outline" onClick={addTestCase} className="gap-1 border-[#E6E4DD]">
-            <Plus className="h-4 w-4" />
-            Add Test Case
-          </Button>
-        </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={generateTestCases}
+              disabled={isGenerating}
+              className="gap-1 border-[#E6E4DD]"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="h-4 w-4" />
+                  Auto-Generate Test Cases
+                </>
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addTestCase}
+              className="gap-1 border-[#E6E4DD]"
+            >
+              <Plus className="h-4 w-4" />
+              Add Test Case
+            </Button>
+          </div>
         </div>
 
         <AnimatePresence>
@@ -193,13 +216,17 @@ const generateTestCases = async () => {
               <Card className="rounded-xl border-[#E6E4DD] bg-[#FAFAF8]">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between pb-3">
-                    <h4 className="text-sm font-medium text-[#141413]">Test Case {index + 1}</h4>
+                    <h4 className="text-sm font-medium text-[#141413]">
+                      Test Case {index + 1}
+                    </h4>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-2">
                         <Checkbox
                           id={`test-case-${question.id}-${testCase.id}-hidden`}
                           checked={testCase.hidden}
-                          onCheckedChange={(checked) => updateTestCase(index, "hidden", checked === true)}
+                          onCheckedChange={(checked) =>
+                            updateTestCase(index, "hidden", checked === true)
+                          }
                         />
                         <Label
                           htmlFor={`test-case-${question.id}-${testCase.id}-hidden`}
@@ -223,13 +250,18 @@ const generateTestCases = async () => {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
-                      <Label htmlFor={`test-case-${question.id}-${testCase.id}-input`} className="text-xs">
+                      <Label
+                        htmlFor={`test-case-${question.id}-${testCase.id}-input`}
+                        className="text-xs"
+                      >
                         Input
                       </Label>
                       <Textarea
                         id={`test-case-${question.id}-${testCase.id}-input`}
                         value={testCase.input}
-                        onChange={(e) => updateTestCase(index, "input", e.target.value)}
+                        onChange={(e) =>
+                          updateTestCase(index, "input", e.target.value)
+                        }
                         placeholder="Input for this test case..."
                         className="h-24 resize-none border-[#E6E4DD] text-sm"
                         required
@@ -237,13 +269,22 @@ const generateTestCases = async () => {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor={`test-case-${question.id}-${testCase.id}-output`} className="text-xs">
+                      <Label
+                        htmlFor={`test-case-${question.id}-${testCase.id}-output`}
+                        className="text-xs"
+                      >
                         Expected Output
                       </Label>
                       <Textarea
                         id={`test-case-${question.id}-${testCase.id}-output`}
                         value={testCase.expectedOutput}
-                        onChange={(e) => updateTestCase(index, "expectedOutput", e.target.value)}
+                        onChange={(e) =>
+                          updateTestCase(
+                            index,
+                            "expectedOutput",
+                            e.target.value,
+                          )
+                        }
                         placeholder="Expected output for this test case..."
                         className="h-24 resize-none border-[#E6E4DD] text-sm"
                         required
@@ -257,6 +298,5 @@ const generateTestCases = async () => {
         </AnimatePresence>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,8 +1,7 @@
-import type React from "react"
 interface PageHeaderProps {
-  heading: string
-  text?: string
-  children?: React.ReactNode
+  heading: string;
+  text?: string;
+  children?: React.ReactNode;
 }
 
 export function PageHeader({ heading, text, children }: PageHeaderProps) {
@@ -14,6 +13,5 @@ export function PageHeader({ heading, text, children }: PageHeaderProps) {
       </div>
       {children}
     </div>
-  )
+  );
 }
-

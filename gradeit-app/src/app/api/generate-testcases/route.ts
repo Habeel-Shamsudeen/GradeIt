@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (!questionTitle || !questionDescription || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.log(
@@ -28,15 +28,15 @@ export async function POST(req: NextRequest) {
       questionDescription,
       language,
       sampleInput,
-      sampleOutput
+      sampleOutput,
     );
-    
+
     const prompt = buildPrompt(
       questionTitle,
       questionDescription,
       language,
       sampleInput,
-      sampleOutput
+      sampleOutput,
     );
     const testCases = await generateTestCases(prompt);
 
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     console.error("Error generating test cases:", error);
     return NextResponse.json(
       { error: error.message || "Failed to generate test cases" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

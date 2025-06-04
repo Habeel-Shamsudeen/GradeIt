@@ -1,45 +1,42 @@
-export const APP_TITLE = 'GradeIT - Revolutionize Coding Education';
+export const APP_TITLE = "GradeIT - Revolutionize Coding Education";
 export const APP_DESCRIPTION =
-  'GradeIT provides educators with an intuitive platform to create, manage, and monitor coding assignments, while offering students a dynamic environment for writing, testing, and submitting code with built-in plagiarism detection.';
+  "GradeIT provides educators with an intuitive platform to create, manage, and monitor coding assignments, while offering students a dynamic environment for writing, testing, and submitting code with built-in plagiarism detection.";
 
-
-export const LOGO_DARK = '/images/logo/logo-dark.svg';
-export const LOGO_LIGHT = '/images/logo/loader.svg';
-export const LOGO_DARK_SQUARE = '/images/logo/zs-logo-sq.svg';
-export const LOGO_LIGHT_SQUARE = '/images/logo/zs-logo-sq.svg';
+export const LOGO_DARK = "/images/logo/logo-dark.svg";
+export const LOGO_LIGHT = "/images/logo/loader.svg";
+export const LOGO_DARK_SQUARE = "/images/logo/zs-logo-sq.svg";
+export const LOGO_LIGHT_SQUARE = "/images/logo/zs-logo-sq.svg";
 
 export const MAX_REQUESTS = 25;
 
 export const lightCardColors = [
- 
-  "#EBDBBC", 
-  "#F1E6D0", 
-  "#61AAF2", 
-  "#D2886F", 
-  "#D4A27F", 
-  "#7EBF8E", 
-  "#BCD4EB", 
-  "#D0E1F1", 
-  "#F2CD61", 
+  "#EBDBBC",
+  "#F1E6D0",
+  "#61AAF2",
+  "#D2886F",
+  "#D4A27F",
+  "#7EBF8E",
+  "#BCD4EB",
+  "#D0E1F1",
+  "#F2CD61",
   "#8F6FD2",
-  "#7FD4C5", 
-  "#BF7E9E"  
+  "#7FD4C5",
+  "#BF7E9E",
 ];
 
 export const darkCardColors = [
-  "#C2B1A0", 
+  "#C2B1A0",
   "#3A78BF",
-  "#A66456", 
+  "#A66456",
   "#A07B64",
   "#609E6F",
 
-  
   "#564A87",
-  "#78563A", 
+  "#78563A",
   "#387A7B",
-  "#9E6097", 
+  "#9E6097",
   "#8A9E60",
-  "#A05B3F" 
+  "#A05B3F",
 ];
 
 export const LANGUAGE_ID_MAP = {
@@ -59,64 +56,64 @@ export const LANGUAGE_ID_MAP = {
 };
 
 export const landingImages = [
-    {
-      src: "/images/landing/assignments.png?height=600&width=1200&text=gradeIT+Editor",
-      alt: "gradeIT Dashboard",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/class.png?height=600&width=1200&text=Code+Editor",
-      alt: "Code Editor Interface",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/home.png?height=600&width=1200&text=Grading+Analytics",
-      alt: "Grading Analytics",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/codingEnv.png?height=600&width=1200&text=Grading+Analytics",
-      alt: "Grading Analytics",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/forceFullScreen.png?height=600&width=1200&text=Grading+Analytics",
-      alt: "Grading Analytics",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/peoples.png?height=600&width=1200&text=Grading+Analytics",
-      alt: "Grading Analytics",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/questions.png?height=600&width=1200&text=Grading+Analytics",
-      alt: "Grading Analytics",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/submissionDetail.png?height=600&width=1200&text=Grading+Analytics",
-      alt: "Grading Analytics",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/submissionHistory.png?height=600&width=1200&text=Grading+Analytics",
-      alt: "Grading Analytics",
-      width: 1200,
-      height: 600,
-    },
-    {
-      src: "/images/landing/settings.png?height=600&width=1200&text=Grading+Analytics",
-      alt: "Grading Analytics",
-      width: 1200,
-      height: 600,
-    },
-  ]
+  {
+    src: "/images/landing/assignments.png?height=600&width=1200&text=gradeIT+Editor",
+    alt: "gradeIT Dashboard",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/class.png?height=600&width=1200&text=Code+Editor",
+    alt: "Code Editor Interface",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/home.png?height=600&width=1200&text=Grading+Analytics",
+    alt: "Grading Analytics",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/codingEnv.png?height=600&width=1200&text=Grading+Analytics",
+    alt: "Grading Analytics",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/forceFullScreen.png?height=600&width=1200&text=Grading+Analytics",
+    alt: "Grading Analytics",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/peoples.png?height=600&width=1200&text=Grading+Analytics",
+    alt: "Grading Analytics",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/questions.png?height=600&width=1200&text=Grading+Analytics",
+    alt: "Grading Analytics",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/submissionDetail.png?height=600&width=1200&text=Grading+Analytics",
+    alt: "Grading Analytics",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/submissionHistory.png?height=600&width=1200&text=Grading+Analytics",
+    alt: "Grading Analytics",
+    width: 1200,
+    height: 600,
+  },
+  {
+    src: "/images/landing/settings.png?height=600&width=1200&text=Grading+Analytics",
+    alt: "Grading Analytics",
+    width: 1200,
+    height: 600,
+  },
+];

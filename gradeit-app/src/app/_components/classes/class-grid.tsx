@@ -1,38 +1,44 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import { Plus } from "lucide-react"
-import { ClassCard } from "./class-card"
-import { CreateClassDialog } from "./create-class-dialog"
-import { JoinClassDialog } from "./join-class-dialog"
-import { Button } from "@/app/_components/ui/button"
-import { useTheme } from "next-themes"
-import { getCardBgColor } from "@/lib/utils"
-import { UserClassroom } from "@/lib/types/class-types"
-import { Role } from "@prisma/client"
-import { ClassGridSkeleton } from "./class-grid-skeleton"
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
+import { ClassCard } from "./class-card";
+import { CreateClassDialog } from "./create-class-dialog";
+import { JoinClassDialog } from "./join-class-dialog";
+import { Button } from "@/app/_components/ui/button";
+import { useTheme } from "next-themes";
+import { getCardBgColor } from "@/lib/utils";
+import { UserClassroom } from "@/lib/types/class-types";
+import { Role } from "@prisma/client";
+import { ClassGridSkeleton } from "./class-grid-skeleton";
 
-export function ClassGrid({classes,role}:{classes:UserClassroom[],role:Role}) {
-  const [createOpen, setCreateOpen] = useState(false)
-  const [joinOpen, setJoinOpen] = useState(false)
-  const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+export function ClassGrid({
+  classes,
+  role,
+}: {
+  classes: UserClassroom[];
+  role: Role;
+}) {
+  const [createOpen, setCreateOpen] = useState(false);
+  const [joinOpen, setJoinOpen] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   // Wait until the client has mounted to avoid hydration mismatches.
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   const handleAddClick = () => {
     if (role === "FACULTY") {
-      setCreateOpen(true)
+      setCreateOpen(true);
     } else {
-      setJoinOpen(true)
+      setJoinOpen(true);
     }
-  }
+  };
 
-  if (!mounted) return <ClassGridSkeleton/>
+  if (!mounted) return <ClassGridSkeleton />;
 
   return (
     <>
@@ -63,7 +69,10 @@ export function ClassGrid({classes,role}:{classes:UserClassroom[],role:Role}) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.2, delay: index * 0.1 }}
           >
-            <ClassCard {...classItem} backgroundColor={getCardBgColor(resolvedTheme)}/>
+            <ClassCard
+              {...classItem}
+              backgroundColor={getCardBgColor(resolvedTheme)}
+            />
           </motion.div>
         ))}
       </div>
@@ -71,6 +80,5 @@ export function ClassGrid({classes,role}:{classes:UserClassroom[],role:Role}) {
       <CreateClassDialog open={createOpen} onOpenChange={setCreateOpen} />
       <JoinClassDialog open={joinOpen} onOpenChange={setJoinOpen} />
     </>
-  )
+  );
 }
-

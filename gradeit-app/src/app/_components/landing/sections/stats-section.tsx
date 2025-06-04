@@ -1,6 +1,10 @@
-import React from 'react'
+"use client";
+import { stats } from "@/config/landingPageData";
+import AnimatedSection from "../../animations/AnimatedSection";
+import StaggeredItem from "../../animations/StaggeredItem";
+import { motion } from "framer-motion";
 
-const StatsSection = ({ stats, AnimatedSection, motion }:any) => {
+export default function StatsSection() {
   return (
     <section className="py-24 flex justify-center bg-background">
       <div className="container px-6">
@@ -8,16 +12,9 @@ const StatsSection = ({ stats, AnimatedSection, motion }:any) => {
           <div className="mx-auto max-w-5xl">
             <div className="rounded-2xl border border-border bg-secondary p-12 shadow-lg">
               <div className="grid gap-8 md:grid-cols-4">
-                {stats.map((stat:any, index:number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    viewport={{ once: true, amount: 0.6 }}
-                    className="flex flex-col items-center justify-center text-center"
-                  >
-                    <motion.span 
+                {stats.map((stat: any, index: number) => (
+                  <StaggeredItem key={index} index={index}>
+                    <motion.span
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
@@ -26,8 +23,10 @@ const StatsSection = ({ stats, AnimatedSection, motion }:any) => {
                     >
                       {stat.value}
                     </motion.span>
-                    <span className="mt-2 text-sm text-muted-foreground">{stat.label}</span>
-                  </motion.div>
+                    <span className="mt-2 text-sm text-muted-foreground">
+                      {stat.label}
+                    </span>
+                  </StaggeredItem>
                 ))}
               </div>
             </div>
@@ -35,7 +34,5 @@ const StatsSection = ({ stats, AnimatedSection, motion }:any) => {
         </AnimatedSection>
       </div>
     </section>
-  )
+  );
 }
-
-export default StatsSection

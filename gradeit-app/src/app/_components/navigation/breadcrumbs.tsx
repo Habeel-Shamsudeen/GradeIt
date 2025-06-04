@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Breadcrumb,
@@ -6,10 +6,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/app/_components/ui/breadcrumb';
-import { generateBreadcrumbs } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
-import { Fragment, useEffect, useState } from 'react';
+} from "@/app/_components/ui/breadcrumb";
+import { generateBreadcrumbs } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import { Fragment, useEffect, useState } from "react";
 
 interface BreadcrumbItem {
   href: string;

@@ -7,7 +7,6 @@ import { cookies } from "next/headers";
 
 export async function pollJudge0Submissions(submissionId: string) {
   try {
-    
     const pendingResults = await prisma.testCaseResult.findMany({
       where: {
         submissionId,
@@ -23,7 +22,6 @@ export async function pollJudge0Submissions(submissionId: string) {
       return;
     }
 
-    
     const updatePromises = pendingResults.map(async (result) => {
       if (!result.judge0Token) {
         console.error(`Missing Judge0 token for test case result ${result.id}`);
@@ -39,7 +37,7 @@ export async function pollJudge0Submissions(submissionId: string) {
               "x-rapidapi-key": process.env.JUDGE0_API_KEY || "",
               "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
             },
-          }
+          },
         );
 
         const judgeResult = await response.json();
@@ -50,12 +48,11 @@ export async function pollJudge0Submissions(submissionId: string) {
           return;
         }
 
-        
         await processJudgeResult(result.id, judgeResult);
       } catch (error) {
         console.error(
           `Error polling Judge0 for token ${result.judge0Token}:`,
-          error
+          error,
         );
       }
     });
@@ -66,15 +63,14 @@ export async function pollJudge0Submissions(submissionId: string) {
   } catch (error) {
     console.error(
       `Error polling Judge0 submissions for submission ${submissionId}:`,
-      error
+      error,
     );
   }
 }
 
-
 export async function processJudgeResult(
   testCaseResultId: string,
-  judgeResult: any
+  judgeResult: any,
 ) {
   try {
     let testCaseStatus: TestCaseStatus;
@@ -105,7 +101,7 @@ export async function processJudgeResult(
       testCaseStatus = TestCaseStatus.ERROR;
       errorMessage = Buffer.from(
         judgeResult.compile_output,
-        "base64"
+        "base64",
       ).toString();
     } else if (judgeResult.stderr) {
       // Runtime Error
@@ -116,7 +112,6 @@ export async function processJudgeResult(
       errorMessage = `Execution failed: ${judgeResult.status.description}`;
     }
 
-    
     await prisma.testCaseResult.update({
       where: { id: testCaseResultId },
       data: {
@@ -129,7 +124,7 @@ export async function processJudgeResult(
   } catch (error) {
     console.error(
       `Error processing Judge0 result for test case result ${testCaseResultId}:`,
-      error
+      error,
     );
   }
 }
@@ -142,17 +137,16 @@ export async function updateSubmissionStatus(submissionId: string) {
     });
 
     const allProcessed = testCaseResults.every(
-      (result) => result.status !== TestCaseStatus.PENDING
+      (result) => result.status !== TestCaseStatus.PENDING,
     );
 
     if (allProcessed) {
-
-      await gradeSubmission(submissionId)
+      await gradeSubmission(submissionId);
     }
   } catch (error) {
     console.error(
       `Error updating submission status for submission ${submissionId}:`,
-      error
+      error,
     );
   }
 }
@@ -162,7 +156,7 @@ export async function getSubmissions(assignmentId: string) {
   if (!session?.user) {
     throw new Error("Unauthorized");
   }
-  const cookieStore =await cookies();
+  const cookieStore = await cookies();
   const studentId = cookieStore.get("student")?.value;
   try {
     const assignment = await prisma.assignment.findFirst({
@@ -183,7 +177,7 @@ export async function getSubmissions(assignmentId: string) {
 
     const submissions = await prisma.submission.findMany({
       where: {
-        studentId: studentId? studentId : session.user.id,
+        studentId: studentId ? studentId : session.user.id,
         questionId: {
           in: assignment.questions.map((ques) => ques.id),
         },
@@ -218,7 +212,7 @@ export async function getSubmissionsById(submissionId: string) {
   if (!session?.user) {
     throw new Error("Unauthorized");
   }
-  const cookieStore =await cookies();
+  const cookieStore = await cookies();
   const studentId = cookieStore.get("student")?.value || session.user.id;
   try {
     const submission = await prisma.submission.findUnique({
@@ -228,11 +222,11 @@ export async function getSubmissionsById(submissionId: string) {
       },
       include: {
         question: true,
-        testCaseResults:{
-          include:{
-            testCase:true
-          }
-        }
+        testCaseResults: {
+          include: {
+            testCase: true,
+          },
+        },
       },
     });
 
@@ -262,7 +256,10 @@ export async function getSubmissionsById(submissionId: string) {
   }
 }
 
-export async function getStudentAssignmentProgress(assignmentId: string, classCode: string) {
+export async function getStudentAssignmentProgress(
+  assignmentId: string,
+  classCode: string,
+) {
   // 1. Get the classroom with its enrolled students
   const classroom = await prisma.classroom.findUnique({
     where: { code: classCode },
@@ -271,72 +268,83 @@ export async function getStudentAssignmentProgress(assignmentId: string, classCo
       assignments: {
         where: { id: assignmentId },
         include: {
-          questions: true
-        }
-      }
-    }
-  })
+          questions: true,
+        },
+      },
+    },
+  });
 
   if (!classroom || !classroom.assignments[0]) {
-    throw new Error("Classroom or assignment not found")
+    throw new Error("Classroom or assignment not found");
   }
 
-  const assignment = classroom.assignments[0]
-  const questionIds = assignment.questions.map(q => q.id)
-  
+  const assignment = classroom.assignments[0];
+  const questionIds = assignment.questions.map((q) => q.id);
+
   // 2. Get all submissions for this assignment's questions
   const submissions = await prisma.submission.findMany({
     where: {
       questionId: { in: questionIds },
-      studentId: { in: classroom.students.map(s => s.id) }
+      studentId: { in: classroom.students.map((s) => s.id) },
     },
     include: {
-      testCaseResults: true
-    }
-  })
+      testCaseResults: true,
+    },
+  });
 
   // 3. Process student data
   const studentsProgress = classroom.students.map((student) => {
     // Get this student's submissions for this assignment
-    const studentSubmissions = submissions.filter(s => s.studentId === student.id)
-    
+    const studentSubmissions = submissions.filter(
+      (s) => s.studentId === student.id,
+    );
+
     // Count questions completed (has submission)
-    const questionsCompleted = new Set(studentSubmissions.map(s => s.questionId)).size
-    
+    const questionsCompleted = new Set(
+      studentSubmissions.map((s) => s.questionId),
+    ).size;
+
     // Determine status
-    let status = "not_started"
+    let status = "not_started";
     if (questionsCompleted > 0) {
-      status = questionsCompleted === assignment.questions.length ? "completed" : "in_progress"
+      status =
+        questionsCompleted === assignment.questions.length
+          ? "completed"
+          : "in_progress";
     }
-    
+
     // Calculate average score if completed
-    let score = null
+    let score = null;
     if (status === "completed") {
-      const scores = studentSubmissions.map(s => s.score).filter(Boolean) as number[]
+      const scores = studentSubmissions
+        .map((s) => s.score)
+        .filter(Boolean) as number[];
       if (scores.length > 0) {
-        score = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+        score = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
       }
     }
-    
+
     return {
       id: student.id,
       name: student.name,
       email: student.email || "",
       avatar: student.image || "",
       status,
-      submittedAt: studentSubmissions.length > 0 
-        ? new Date(Math.max(...studentSubmissions.map(s => s.createdAt.getTime()))).toISOString()
-        : null,
+      submittedAt:
+        studentSubmissions.length > 0
+          ? new Date(
+              Math.max(...studentSubmissions.map((s) => s.createdAt.getTime())),
+            ).toISOString()
+          : null,
       score,
       questionsCompleted,
-      submissions: studentSubmissions.map(sub => ({
+      submissions: studentSubmissions.map((sub) => ({
         questionId: sub.questionId,
         status: sub.status,
         score: sub.score,
-      }))
-    }
-  })
+      })),
+    };
+  });
 
-  return studentsProgress
+  return studentsProgress;
 }
-

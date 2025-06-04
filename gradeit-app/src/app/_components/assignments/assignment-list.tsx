@@ -1,19 +1,23 @@
-"use client"
-import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { Plus } from "lucide-react"
-import { AssignmentCard } from "./assignment-card"
-import { Button } from "@/app/_components/ui/button"
-import { Role } from "@prisma/client"
-import { Assignment } from "@/lib/types/assignment-tyes"
+"use client";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
+import { AssignmentCard } from "./assignment-card";
+import { Button } from "@/app/_components/ui/button";
+import { Role } from "@prisma/client";
+import { Assignment } from "@/lib/types/assignment-tyes";
 
 interface AssignmentListProps {
-  classCode: string
-  role:Role
-  assignments: Assignment[]
+  classCode: string;
+  role: Role;
+  assignments: Assignment[];
 }
 
-export function AssignmentList({ classCode, role, assignments }: AssignmentListProps) {
+export function AssignmentList({
+  classCode,
+  role,
+  assignments,
+}: AssignmentListProps) {
   const router = useRouter();
   const handleCreateAssignment = () => {
     router.push(`/classes/${classCode}/create`);
@@ -62,4 +66,3 @@ export function AssignmentList({ classCode, role, assignments }: AssignmentListP
     </div>
   );
 }
-

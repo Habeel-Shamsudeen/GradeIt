@@ -1,6 +1,6 @@
-import { Progress } from '@/app/_components/ui/progress';
-import type React from 'react';
-import type { ReactNode } from 'react';
+import { Progress } from "@/app/_components/ui/progress";
+import type React from "react";
+import type { ReactNode } from "react";
 
 interface UsageMetricProps {
   title: string;

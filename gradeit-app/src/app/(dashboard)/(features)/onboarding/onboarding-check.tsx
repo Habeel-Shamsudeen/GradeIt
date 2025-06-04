@@ -9,8 +9,7 @@ import OnboardingPopup from "./onboarding-popup";
 
 export default function OnboardingCheck() {
   const session = useClientSession();
-  const [isOnboardingComplete, setIsOnboardingComplete] =
-    useState(false);
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -31,12 +30,8 @@ export default function OnboardingCheck() {
       }
 
       try {
-        
-
         console.log("Checking onboarding status");
-        const onboarded = await isUserOnboarded(
-          session.user.id
-        );
+        const onboarded = await isUserOnboarded(session.user.id);
         setIsOnboardingComplete(onboarded);
         console.log("Onboarding complete:", onboarded);
       } catch (error) {
@@ -48,11 +43,7 @@ export default function OnboardingCheck() {
     };
 
     checkOnboarding();
-  }, [
-    session?.user?.id,
-    setIsOnboardingComplete,
-    isOnboardingComplete,
-  ]);
+  }, [session?.user?.id, setIsOnboardingComplete, isOnboardingComplete]);
 
   // Don't show anything while loading or if we don't have complete information
   if (isLoading || !session?.user?.id || isOnboardingComplete === null)

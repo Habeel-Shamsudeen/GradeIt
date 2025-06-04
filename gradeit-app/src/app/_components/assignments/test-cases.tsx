@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Check, X, Clock, AlertCircle } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { TestCase } from "@/lib/types/assignment-tyes"
+import { motion } from "framer-motion";
+import { Check, X, Clock, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { TestCase } from "@/lib/types/assignment-tyes";
 
 interface TestResult {
-  id: string
-  status: "passed" | "failed" | "running"
-  runtime?: string
-  memory?: string
-  output?: string
-  error?: string
+  id: string;
+  status: "passed" | "failed" | "running";
+  runtime?: string;
+  memory?: string;
+  output?: string;
+  error?: string;
 }
 
 interface TestCasesProps {
-  testCases: TestCase[]
-  results: TestResult[]
+  testCases: TestCase[];
+  results: TestResult[];
 }
 
 export function TestCases({ testCases, results }: TestCasesProps) {
@@ -44,26 +44,38 @@ export function TestCases({ testCases, results }: TestCasesProps) {
                   result.status === "running" && "bg-[#F1E6D0]",
                 )}
               >
-                {result.status === "passed" && <Check className="h-3.5 w-3.5 text-white" />}
-                {result.status === "failed" && <X className="h-3.5 w-3.5 text-white" />}
-                {result.status === "running" && <Clock className="h-3.5 w-3.5 text-[#3A3935]" />}
+                {result.status === "passed" && (
+                  <Check className="h-3.5 w-3.5 text-white" />
+                )}
+                {result.status === "failed" && (
+                  <X className="h-3.5 w-3.5 text-white" />
+                )}
+                {result.status === "running" && (
+                  <Clock className="h-3.5 w-3.5 text-[#3A3935]" />
+                )}
               </div>
               <div>
                 <p className="text-sm text-white">
-                  {result.status === "running" ? "Running code..." : `Test Case ${index + 1}`}
+                  {result.status === "running"
+                    ? "Running code..."
+                    : `Test Case ${index + 1}`}
                 </p>
-                {result.status !== "running" && result.runtime && result.memory && (
-                  <p className="text-xs text-[#A1A1A1]">
-                    Runtime: {result.runtime} | Memory: {result.memory}
-                  </p>
-                )}
+                {result.status !== "running" &&
+                  result.runtime &&
+                  result.memory && (
+                    <p className="text-xs text-[#A1A1A1]">
+                      Runtime: {result.runtime} | Memory: {result.memory}
+                    </p>
+                  )}
               </div>
             </div>
 
             {/* Output Section */}
             {result.status !== "running" && result.output && (
               <div className="mt-3 rounded-md bg-[#2A2A2A] p-3">
-                <p className="mb-1 text-xs font-medium text-[#A1A1A1]">Output:</p>
+                <p className="mb-1 text-xs font-medium text-[#A1A1A1]">
+                  Output:
+                </p>
                 <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs text-white font-mono">
                   {result.output}
                 </pre>
@@ -92,5 +104,5 @@ export function TestCases({ testCases, results }: TestCasesProps) {
         )}
       </div>
     </div>
-  )
+  );
 }
