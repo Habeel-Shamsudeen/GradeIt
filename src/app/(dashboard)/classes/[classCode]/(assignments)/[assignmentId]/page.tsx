@@ -11,13 +11,17 @@ export const metadata: Metadata = {
   description: "Complete your coding assignment",
 };
 
-export default async function AssignmentPage({ params }: { params: any }) {
+export default async function AssignmentPage({
+  params,
+}: {
+  params: Promise<{ assignmentId: string; classCode: string }>;
+}) {
   const { assignmentId, classCode } = await params;
   const { assignment } = await getAssignmentById(assignmentId);
   const { role } = await getUserRole();
   const initialStudentData = await getStudentAssignmentProgress(
     assignmentId,
-    classCode,
+    classCode
   );
 
   if (!assignment) {

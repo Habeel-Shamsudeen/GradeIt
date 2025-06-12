@@ -26,7 +26,11 @@ export const metadata: Metadata = {
   description: "View your submission history",
 };
 
-export default async function SubmissionsPage({ params }: { params: any }) {
+export default async function SubmissionsPage({
+  params,
+}: {
+  params: Promise<{ assignmentId: string; classCode: string }>;
+}) {
   const { assignmentId, classCode } = await params;
   const { assignment } = await getAssignmentById(assignmentId);
   if (!assignment) {
@@ -42,7 +46,7 @@ export default async function SubmissionsPage({ params }: { params: any }) {
   // Group submissions by question
   const submissionsByQuestion = assignment.questions.map((question) => {
     const questionSubmissions = submissions.filter(
-      (s) => s.questionId === question.id,
+      (s) => s.questionId === question.id
     );
     return {
       question,
@@ -116,7 +120,7 @@ export default async function SubmissionsPage({ params }: { params: any }) {
                             submission.status === "PARTIAL" &&
                               "bg-[#F1E6D0]/10 text-[#3A3935]",
                             submission.status === "PENDING" &&
-                              "bg-[#E6E4DD]/50 text-[#605F5B]",
+                              "bg-[#E6E4DD]/50 text-[#605F5B]"
                           )}
                         >
                           {submission.status === "COMPLETED" && (
@@ -137,7 +141,7 @@ export default async function SubmissionsPage({ params }: { params: any }) {
                           <div className="flex items-center gap-2">
                             <p className="font-medium text-[#141413]">
                               {new Date(
-                                submission.submittedAt,
+                                submission.submittedAt
                               ).toLocaleString()}
                             </p>
                             <Badge
@@ -160,7 +164,7 @@ export default async function SubmissionsPage({ params }: { params: any }) {
                                       "text-[#D2886F]",
                                     submission.plagiarismScore > 15 &&
                                       submission.plagiarismScore <= 30 &&
-                                      "text-[#F1E6D0]/90",
+                                      "text-[#F1E6D0]/90"
                                   )}
                                 >
                                   Similarity:{" "}
@@ -170,7 +174,7 @@ export default async function SubmissionsPage({ params }: { params: any }) {
                               <span>
                                 {
                                   submission.testCaseResults.filter(
-                                    (tc) => tc.status === "PASSED",
+                                    (tc) => tc.status === "PASSED"
                                   ).length
                                 }
                                 /{submission.testCaseResults.length} tests
