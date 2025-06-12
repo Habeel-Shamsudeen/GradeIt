@@ -26,26 +26,89 @@ GradeIT is an automated online coding platform designed for college-level progra
 
 ## 🚀 Installation & Setup
 
-### 1️⃣ Clone the Repository
+### 1️⃣ Prerequisites
+
+Before you begin, ensure you have **Node.js** installed locally on your machine. You can download it from [nodejs.org](https://nodejs.org/).
+
+---
+
+### 2️⃣ Clone the Repository
 
 ```sh
 git clone https://github.com/habeel-shamsudeen/CodeGrade.git
 cd CodeGrade
 ```
 
-### 2️⃣ Install Dependencies
+---
+
+### 3️⃣ Install Dependencies
+
 ```sh
 npm install
 ```
 
-### 3️⃣ Set Up Environment Variables
+---
 
-Create a `.env` file in the root directory and configure the necessary environment variables.
+### 4️⃣ Set Up Environment Variables
 
-### 4️⃣ Start the Development Server
+A template file, `.env.example`, is provided in the root directory of this project. It outlines all the necessary environment variables.
+
+To set up your environment variables:
+
+1.  **Duplicate the `.env.example` file** in the root directory.
+2.  **Rename the duplicated file to `.env`**.
+3.  **Open the new `.env` file** and replace the placeholder values with your actual credentials.
+
+**Do not commit your `.env` file to Git**, as it contains sensitive information. It's usually already ignored by a `.gitignore` file, but it's good to be aware.
+
+#### Where to get the API Keys:
+
+- **`AUTH_SECRET`**: This is a random string used to sign session cookies. You can generate a strong, random string using an online tool or a command like `openssl rand -base64 32` in your terminal.
+- **Google OAuth Credentials (`AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`)**:
+  1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
+  2.  Create a new project (if you don't have one).
+  3.  Navigate to **APIs & Services \> Credentials**.
+  4.  Click **+ CREATE CREDENTIALS** and choose **OAuth client ID**.
+  5.  Select "Web application" as the application type.
+  6.  Set "Authorized JavaScript origins" to `http://localhost:3000` (for local development).
+  7.  Set "Authorized redirect URIs" to `http://localhost:3000/api/auth/callback/google` (this is crucial for NextAuth.js).
+  8.  After creation, your Client ID and Client Secret will be displayed. These are your `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` respectively.
+- **Judge0 API (`JUDGE0_API_KEY`, `RAPID_API_HOST`)**:
+  1.  Go to [RapidAPI Hub](https://www.google.com/search?q=https://rapidapi.com/judge0/api/judge0-ce).
+  2.  Sign up or log in.
+  3.  Subscribe to the Judge0 API (even the free tier will give you an API key).
+  4.  On the API details page, you'll find your `X-RapidAPI-Key` (which is your `JUDGE0_API_KEY`) and `X-RapidAPI-Host` (which is your `RAPID_API_HOST`).
+
+---
+
+### 5️⃣ Database Setup
+
+For local development, you'll need a PostgreSQL database running. You can use Docker, set up PostgreSQL directly on your machine, or use a cloud provider for testing. Ensure your `DATABASE_URL` is correctly formatted to connect to your instance.
+
+Example format: `postgresql://username:password@localhost:5432/mydatabase?sslmode=disable` (note `sslmode=disable` for local development, or `require` for production environments).
+
+---
+
+### 6️⃣ Run Database Migrations
+
+After setting up your `DATABASE_URL`, apply the database schema:
+
+```sh
+npx prisma migrate dev --name init
+```
+
+This command will create the necessary tables in your PostgreSQL database.
+
+---
+
+### 7️⃣ Start the Development Server
+
 ```sh
 npm run dev
 ```
+
+Your application should now be running at `http://localhost:3000`.
+
 ---
 
 ## 📌 Project Overview
