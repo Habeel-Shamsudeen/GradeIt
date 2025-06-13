@@ -42,7 +42,7 @@ Before you begin, ensure you have **Node.js** installed locally on your machine.
 
 ```sh
 git clone https://github.com/Habeel-Shamsudeen/GradeIt.git
-cd CodeGrade
+cd GradeIt
 ```
 
 ---
