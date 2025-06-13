@@ -10,6 +10,8 @@ import AuthPopup from "../_components/auth/auth-popup";
 import { SessionProvider } from "next-auth/react";
 import { AppBreadcrumbs } from "../_components/navigation/breadcrumbs";
 import OnboardingCheck from "./(features)/onboarding/onboarding-check";
+import { getNavigationConfig } from "@/config/navigation";
+import { isUserOnboarded } from "@/server/utils";
 
 export default async function DashboardLayout({
   children,
@@ -17,14 +19,19 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const sessionData = await auth();
+  const {navGroups} = await getNavigationConfig();
+  let isoOnboarded = false;
+  if (sessionData?.user) {
+    isoOnboarded = await isUserOnboarded(sessionData.user.id);
+  }
 
   return (
     <>
       <SessionProvider>
         {!sessionData && <AuthPopup />}
-        {sessionData && <OnboardingCheck />}
+        {sessionData && <OnboardingCheck onboarded={isoOnboarded}/>}
         <SidebarProvider>
-          <AppSidebar />
+          <AppSidebar navGroups={navGroups}/>
           <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
               <div className="flex items-center gap-2 px-4">

@@ -3,19 +3,6 @@ import { getAssigmentTitleFromId, getClassNameFromCode } from "@/server/utils";
 import { type ClassValue, clsx } from "clsx";
 import { randomUUID } from "crypto";
 import { twMerge } from "tailwind-merge";
-import {
-  HugeiconsIcon,
-  Settings02Icon,
-  UserAccountIcon,
-  CalculatorIcon,
-  TestTubeIcon,
-  SchoolIcon,
-  UniversityIcon,
-  LibraryIcon,
-  NotebookIcon,
-  Atom01Icon,
-  Chemistry01Icon,
-} from "hugeicons-react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -181,19 +168,19 @@ export const exportToCSV = (students: any[]) => {
   URL.revokeObjectURL(url);
 };
 
-export const getRandomEducationIcon = (): HugeiconsIcon => {
+export const getRandomEducationIcon = (): string => {
   const educationIcons = [
-    CalculatorIcon,
-    Atom01Icon,
-    TestTubeIcon,
-    Chemistry01Icon,
-    SchoolIcon,
-    UniversityIcon,
-    LibraryIcon,
-    NotebookIcon,
-    UserAccountIcon,
+    "CalculatorIcon",
+    "Atom01Icon",
+    "TestTubeIcon",
+    "Chemistry01Icon",
+    "SchoolIcon",
+    "UniversityIcon",
+    "LibraryIcon",
+    "NotebookIcon",
+    "UserAccountIcon",
   ];
 
   const randomIndex = Math.floor(Math.random() * educationIcons.length);
-  return educationIcons[randomIndex] as HugeiconsIcon;
+  return educationIcons[randomIndex];
 };

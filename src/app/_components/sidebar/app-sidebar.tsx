@@ -14,19 +14,19 @@ import {
 } from "@/app/_components/ui/sidebar";
 import { LOGO_LIGHT } from "@/config/constants";
 import { LOGO_DARK } from "@/config/constants";
-import { LOGO_LIGHT_SQUARE } from "@/config/constants";
-import { LOGO_DARK_SQUARE } from "@/config/constants";
 import { isValidUrl, titleCase } from "@/lib/utils";
 import { useTheme } from "next-themes";
-import { getNavigationConfig } from "@/config/navigation";
 import { useClientSession } from "@/hooks/use-auth-session";
 import Image from "next/image";
+import { NavGroupInterface } from "@/lib/types/config-types";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  navGroups: NavGroupInterface[];
+}
+export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
   const { resolvedTheme } = useTheme();
   const { open, isMobile } = useSidebar();
   const { user: sessionUser } = useClientSession();
-  const { loading, navGroup2, navGroup3 } = getNavigationConfig();
 
   const userProfile = sessionUser
     ? {
@@ -90,11 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          {loading ? (
-            <p className="text-center text-gray-500">Loading classes...</p>
-          ) : (
-            <NavMain items={navGroup2} label="Classes" />
-          )}
+          <NavMain items={navGroups} label="Classes" />
         </SidebarContent>
         <SidebarFooter className="flex flex-col gap-2">
           {userProfile && (

@@ -14,7 +14,10 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from "@/app/_components/ui/sidebar";
-import { ArrowRight01Icon, type HugeiconsIcon } from "hugeicons-react";
+import { getIconComponent } from "@/config/icons";
+import {
+  ArrowRight01Icon,
+} from "hugeicons-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -25,7 +28,7 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: HugeiconsIcon;
+    icon?: string;
     isActive?: boolean;
     items?: {
       title: string;
@@ -48,8 +51,11 @@ export function NavMain({
           {label || "Overview"}
         </SidebarGroupLabel>
         <SidebarMenu className="text-sidebar-primary-foreground">
-          {items.map((item) =>
-            item.items?.length ? (
+          {items.map((item) => {
+            const IconComponent = getIconComponent(
+              item.icon || "UserAccountIcon"
+            );
+            return item.items?.length ? (
               <Collapsible
                 key={item.title}
                 defaultOpen
@@ -58,7 +64,7 @@ export function NavMain({
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton tooltip={item.title}>
-                      {item.icon && <item.icon size={20} />}
+                      {item.icon && <IconComponent size={20} />}
                       <span className="ml-1 text-sm font-medium">
                         {item.title}
                       </span>
@@ -96,15 +102,15 @@ export function NavMain({
                   onClick={() => setActiveItem(item.url)}
                 >
                   <a href={item.url}>
-                    {item.icon && <item.icon size={20} />}
+                    {item.icon && <IconComponent size={20} />}
                     <span className="ml-1 text-sm font-medium">
                       {item.title}
                     </span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            ),
-          )}
+            );
+          })}
         </SidebarMenu>
       </SidebarGroup>
     </>

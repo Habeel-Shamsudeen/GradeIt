@@ -56,7 +56,8 @@ export const getUserClasses = async () => {
   const session = await auth();
 
   if (!session?.user) {
-    throw new Error("Unauthorized");
+    console.error("Unauthorized access attempt to get user classes");
+    return { status: "Unauthorized" };
   }
 
   try {
