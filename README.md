@@ -24,6 +24,12 @@ GradeIT is an automated online coding platform designed for college-level progra
 
 ---
 
+That's a very clear and comprehensive setup guide\! To seamlessly integrate Docker Compose, we'll add a new section for it, making it an alternative (and often preferred) method for local setup.
+
+Here's how you can include the Docker Compose setup:
+
+---
+
 ## 🚀 Installation & Setup
 
 ### 1️⃣ Prerequisites
@@ -41,15 +47,17 @@ cd CodeGrade
 
 ---
 
-### 3️⃣ Install Dependencies
+### **3️⃣ Option A: Local Setup (without Docker Compose)**
+
+If you prefer to run services directly on your machine:
+
+#### 3.1 Install Dependencies
 
 ```sh
 npm install
 ```
 
----
-
-### 4️⃣ Set Up Environment Variables
+#### 3.2 Set Up Environment Variables
 
 A template file, `.env.example`, is provided in the root directory of this project. It outlines all the necessary environment variables.
 
@@ -61,7 +69,7 @@ To set up your environment variables:
 
 **Do not commit your `.env` file to Git**, as it contains sensitive information. It's usually already ignored by a `.gitignore` file, but it's good to be aware.
 
-#### Where to get the API Keys:
+##### Where to get the API Keys:
 
 - **`AUTH_SECRET`**: This is a random string used to sign session cookies. You can generate a strong, random string using an online tool or a command like `openssl rand -base64 32` in your terminal.
 - **Google OAuth Credentials (`AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`)**:
@@ -79,17 +87,13 @@ To set up your environment variables:
   3.  Subscribe to the Judge0 API (even the free tier will give you an API key).
   4.  On the API details page, you'll find your `X-RapidAPI-Key` (which is your `JUDGE0_API_KEY`) and `X-RapidAPI-Host` (which is your `RAPID_API_HOST`).
 
----
-
-### 5️⃣ Database Setup
+#### 3.3 Database Setup
 
 For local development, you'll need a PostgreSQL database running. You can use Docker, set up PostgreSQL directly on your machine, or use a cloud provider for testing. Ensure your `DATABASE_URL` is correctly formatted to connect to your instance.
 
 Example format: `postgresql://username:password@localhost:5432/mydatabase?sslmode=disable` (note `sslmode=disable` for local development, or `require` for production environments).
 
----
-
-### 6️⃣ Run Database Migrations
+#### 3.4 Run Database Migrations
 
 After setting up your `DATABASE_URL`, apply the database schema:
 
@@ -99,15 +103,57 @@ npx prisma migrate dev --name init
 
 This command will create the necessary tables in your PostgreSQL database.
 
----
-
-### 7️⃣ Start the Development Server
+#### 3.5 Start the Development Server
 
 ```sh
 npm run dev
 ```
 
 Your application should now be running at `http://localhost:3000`.
+
+---
+
+### **3️⃣ Option B: Docker Compose Setup (Recommended)**
+
+This method simplifies setup by running the application and its database inside Docker containers.
+
+#### 3.1 Prerequisites for Docker Compose
+
+Ensure you have **Docker Desktop** installed and running on your machine. You can download it from [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/).
+
+#### 3.2 Set Up Environment Variables
+
+Follow the same steps as in Option A for creating and populating your **`.env`** file.
+**Important:** When using Docker Compose for the database, your `DATABASE_URL` in `.env` should point to the Docker service name (e.g., `postgresql://gradeitDB:mypassword@db:5432/gradeit`) instead of `localhost`. The `db` hostname will be resolved by Docker Compose.
+
+#### 3.3 Build and Run Services with Docker Compose
+
+1.  **Build the Docker images and start all services:**
+
+    ```sh
+    docker-compose up --build
+    ```
+
+    This command will:
+
+    - Build the application Docker image based on the `Dockerfile`.
+    - Start a PostgreSQL database container.
+    - Start the application container.
+    - Automatically apply database migrations (as defined in `docker-compose.yml`).
+
+2.  **Access the Application:**
+    Your application should now be running at `http://localhost:3000`.
+
+#### 3.4 Useful Docker Compose Commands
+
+- **Stop services:** `docker-compose down`
+- **Stop and remove containers, networks, and volumes:** `docker-compose down -v`
+- **Run migrations manually (if needed, inside the app container):**
+  ```sh
+  docker-compose exec app npx prisma migrate dev --name your_migration_name
+  ```
+- **View logs for all services:** `docker-compose logs -f`
+- **View logs for a specific service (e.g., `app`):** `docker-compose logs -f app`
 
 ---
 
