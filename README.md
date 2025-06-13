@@ -41,7 +41,7 @@ Before you begin, ensure you have **Node.js** installed locally on your machine.
 ### 2️⃣ Clone the Repository
 
 ```sh
-git clone https://github.com/habeel-shamsudeen/CodeGrade.git
+git clone https://github.com/Habeel-Shamsudeen/GradeIt.git
 cd CodeGrade
 ```
 
