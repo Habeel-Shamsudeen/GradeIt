@@ -17,7 +17,7 @@ export const getNavigationConfig = async (): Promise<{
       navGroups: classes.map((classroom) => ({
         title: classroom.name,
         url: `/classes/${classroom.code}`,
-        icon: iconMap[classroom.code] || ("UserAccountIcon"),
+        icon: iconMap[classroom.code] || "UserAccountIcon",
         isActive: false,
       })),
     };

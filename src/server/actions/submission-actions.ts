@@ -5,72 +5,9 @@ import { TestCaseStatus } from "@prisma/client";
 import { gradeSubmission } from "./grading-actions";
 import { cookies } from "next/headers";
 
-// export async function pollJudge0Submissions(submissionId: string) {
-//   try {
-//     const pendingResults = await prisma.testCaseResult.findMany({
-//       where: {
-//         submissionId,
-//         status: TestCaseStatus.PENDING,
-//       },
-//       include: {
-//         submission: true,
-//       },
-//     });
-
-//     if (pendingResults.length === 0) {
-//       await updateSubmissionStatus(submissionId);
-//       return;
-//     }
-
-//     const updatePromises = pendingResults.map(async (result) => {
-//       if (!result.judge0Token) {
-//         console.error(`Missing Judge0 token for test case result ${result.id}`);
-//         return;
-//       }
-
-//       try {
-//         const response = await fetch(
-//           `https://judge0-ce.p.rapidapi.com/submissions/${result.judge0Token}?base64_encoded=true&fields=*`,
-//           {
-//             method: "GET",
-//             headers: {
-//               "x-rapidapi-key": process.env.JUDGE0_API_KEY || "",
-//               "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
-//             },
-//           }
-//         );
-
-//         const judgeResult = await response.json();
-
-//         // Skip if the result is still being processed
-//         if (judgeResult.status && judgeResult.status.id <= 2) {
-//           // 1=In Queue, 2=Processing
-//           return;
-//         }
-
-//         await processJudgeResult(result.id, judgeResult);
-//       } catch (error) {
-//         console.error(
-//           `Error polling Judge0 for token ${result.judge0Token}:`,
-//           error
-//         );
-//       }
-//     });
-
-//     await Promise.all(updatePromises);
-
-//     await updateSubmissionStatus(submissionId);
-//   } catch (error) {
-//     console.error(
-//       `Error polling Judge0 submissions for submission ${submissionId}:`,
-//       error
-//     );
-//   }
-// }
-
 export async function processJudgeResult(
   testCaseResultId: string,
-  judgeResult: any
+  judgeResult: any,
 ) {
   try {
     let testCaseStatus: TestCaseStatus;
@@ -101,7 +38,7 @@ export async function processJudgeResult(
       testCaseStatus = TestCaseStatus.ERROR;
       errorMessage = Buffer.from(
         judgeResult.compile_output,
-        "base64"
+        "base64",
       ).toString();
     } else if (judgeResult.stderr) {
       // Runtime Error
@@ -124,7 +61,7 @@ export async function processJudgeResult(
   } catch (error) {
     console.error(
       `Error processing Judge0 result for test case result ${testCaseResultId}:`,
-      error
+      error,
     );
   }
 }
@@ -132,7 +69,7 @@ export async function processJudgeResult(
 export async function processJudgeResultWebhook(
   testCaseId: string,
   submissionId: string,
-  judgeResult: any
+  judgeResult: any,
 ) {
   try {
     let testCaseStatus: TestCaseStatus;
@@ -159,7 +96,7 @@ export async function processJudgeResultWebhook(
       testCaseStatus = TestCaseStatus.ERROR;
       errorMessage = Buffer.from(
         judgeResult.compile_output,
-        "base64"
+        "base64",
       ).toString();
     } else if (judgeResult.stderr) {
       testCaseStatus = TestCaseStatus.ERROR;
@@ -186,7 +123,7 @@ export async function processJudgeResultWebhook(
   } catch (error) {
     console.error(
       `Error processing Judge0 result for test case result ${testCaseId}:`,
-      error
+      error,
     );
   }
 }
@@ -199,7 +136,7 @@ export async function updateSubmissionStatus(submissionId: string) {
     });
 
     const allProcessed = testCaseResults.every(
-      (result) => result.status !== TestCaseStatus.PENDING
+      (result) => result.status !== TestCaseStatus.PENDING,
     );
 
     if (allProcessed) {
@@ -208,7 +145,7 @@ export async function updateSubmissionStatus(submissionId: string) {
   } catch (error) {
     console.error(
       `Error updating submission status for submission ${submissionId}:`,
-      error
+      error,
     );
   }
 }
@@ -320,7 +257,7 @@ export async function getSubmissionsById(submissionId: string) {
 
 export async function getStudentAssignmentProgress(
   assignmentId: string,
-  classCode: string
+  classCode: string,
 ) {
   // 1. Get the classroom with its enrolled students
   const classroom = await prisma.classroom.findUnique({
@@ -358,12 +295,12 @@ export async function getStudentAssignmentProgress(
   const studentsProgress = classroom.students.map((student) => {
     // Get this student's submissions for this assignment
     const studentSubmissions = submissions.filter(
-      (s) => s.studentId === student.id
+      (s) => s.studentId === student.id,
     );
 
     // Count questions completed (has submission)
     const questionsCompleted = new Set(
-      studentSubmissions.map((s) => s.questionId)
+      studentSubmissions.map((s) => s.questionId),
     ).size;
 
     // Determine status
@@ -395,7 +332,7 @@ export async function getStudentAssignmentProgress(
       submittedAt:
         studentSubmissions.length > 0
           ? new Date(
-              Math.max(...studentSubmissions.map((s) => s.createdAt.getTime()))
+              Math.max(...studentSubmissions.map((s) => s.createdAt.getTime())),
             ).toISOString()
           : null,
       score,
@@ -410,3 +347,69 @@ export async function getStudentAssignmentProgress(
 
   return studentsProgress;
 }
+
+/*
+legacy polling mechanism
+export async function pollJudge0Submissions(submissionId: string) {
+  try {
+    const pendingResults = await prisma.testCaseResult.findMany({
+      where: {
+        submissionId,
+        status: TestCaseStatus.PENDING,
+      },
+      include: {
+        submission: true,
+      },
+    });
+
+    if (pendingResults.length === 0) {
+      await updateSubmissionStatus(submissionId);
+      return;
+    }
+
+    const updatePromises = pendingResults.map(async (result) => {
+      if (!result.judge0Token) {
+        console.error(`Missing Judge0 token for test case result ${result.id}`);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `https://judge0-ce.p.rapidapi.com/submissions/${result.judge0Token}?base64_encoded=true&fields=*`,
+          {
+            method: "GET",
+            headers: {
+              "x-rapidapi-key": process.env.JUDGE0_API_KEY || "",
+              "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+            },
+          }
+        );
+
+        const judgeResult = await response.json();
+
+        // Skip if the result is still being processed
+        if (judgeResult.status && judgeResult.status.id <= 2) {
+          // 1=In Queue, 2=Processing
+          return;
+        }
+
+        await processJudgeResult(result.id, judgeResult);
+      } catch (error) {
+        console.error(
+          `Error polling Judge0 for token ${result.judge0Token}:`,
+          error
+        );
+      }
+    });
+
+    await Promise.all(updatePromises);
+
+    await updateSubmissionStatus(submissionId);
+  } catch (error) {
+    console.error(
+      `Error polling Judge0 submissions for submission ${submissionId}:`,
+      error
+    );
+  }
+}
+*/

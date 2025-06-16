@@ -19,7 +19,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const sessionData = await auth();
-  const {navGroups} = await getNavigationConfig();
+  const { navGroups } = await getNavigationConfig();
   let isoOnboarded = false;
   if (sessionData?.user) {
     isoOnboarded = await isUserOnboarded(sessionData.user.id);
@@ -29,9 +29,9 @@ export default async function DashboardLayout({
     <>
       <SessionProvider>
         {!sessionData && <AuthPopup />}
-        {sessionData && <OnboardingCheck onboarded={isoOnboarded}/>}
+        {sessionData && <OnboardingCheck onboarded={isoOnboarded} />}
         <SidebarProvider>
-          <AppSidebar navGroups={navGroups}/>
+          <AppSidebar navGroups={navGroups} />
           <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
               <div className="flex items-center gap-2 px-4">

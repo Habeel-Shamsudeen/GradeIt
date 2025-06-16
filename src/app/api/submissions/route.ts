@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!code || !questionId || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     if (!question) {
       return NextResponse.json(
         { error: "Question not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -60,13 +60,13 @@ export async function POST(req: NextRequest) {
       };
 
       const encodedPayload = Buffer.from(
-        JSON.stringify(webhookPayload)
+        JSON.stringify(webhookPayload),
       ).toString("base64");
       const webhookUrl = `${process.env.APP_URL}/api/webhook/judge0?payload=${encodedPayload}`;
 
       const response = await fetch(
         `https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*&callback_url=${encodeURIComponent(
-          webhookUrl
+          webhookUrl,
         )}`,
         {
           method: "POST",
@@ -82,12 +82,12 @@ export async function POST(req: NextRequest) {
             source_code: Buffer.from(code).toString("base64"),
             stdin: Buffer.from(testCase.input).toString("base64"),
             expected_output: Buffer.from(testCase.expectedOutput).toString(
-              "base64"
+              "base64",
             ),
             cpu_time_limit: 2, // 2 seconds
             memory_limit: 128000, // 128MB
           }),
-        }
+        },
       );
 
       const judgeData = await response.json();
@@ -118,7 +118,6 @@ export async function POST(req: NextRequest) {
         submissionId: submission.id,
         message: "Submission created and test cases queued",
       });
-
     } catch (error) {
       await prisma.submission.update({
         where: { id: submission.id },
@@ -131,7 +130,7 @@ export async function POST(req: NextRequest) {
     console.error("Error in submission:", error);
     return NextResponse.json(
       { error: error.message || "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

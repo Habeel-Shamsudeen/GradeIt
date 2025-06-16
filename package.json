@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "docker:start": "npx prisma migrate deploy && npm run dev"
+    "docker:start": "npx prisma migrate deploy && npm run dev",
+    "format": "npx prettier --write ."
   },
   "dependencies": {
     "@auth/core": "^0.37.4",

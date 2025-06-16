@@ -15,9 +15,7 @@ import {
   SidebarMenuSubItem,
 } from "@/app/_components/ui/sidebar";
 import { getIconComponent } from "@/config/icons";
-import {
-  ArrowRight01Icon,
-} from "hugeicons-react";
+import { ArrowRight01Icon } from "hugeicons-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -53,7 +51,7 @@ export function NavMain({
         <SidebarMenu className="text-sidebar-primary-foreground">
           {items.map((item) => {
             const IconComponent = getIconComponent(
-              item.icon || "UserAccountIcon"
+              item.icon || "UserAccountIcon",
             );
             return item.items?.length ? (
               <Collapsible

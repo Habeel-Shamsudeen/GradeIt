@@ -5,7 +5,6 @@ export interface NavGroupInterface {
   isActive: boolean;
 }
 
-
 export interface WebhookPayload {
   submissionId: string;
   testCaseId: string;

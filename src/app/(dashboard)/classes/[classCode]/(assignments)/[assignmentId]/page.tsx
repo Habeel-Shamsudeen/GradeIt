@@ -21,7 +21,7 @@ export default async function AssignmentPage({
   const { role } = await getUserRole();
   const initialStudentData = await getStudentAssignmentProgress(
     assignmentId,
-    classCode
+    classCode,
   );
 
   if (!assignment) {

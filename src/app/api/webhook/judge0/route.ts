@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { WebhookPayload } from "@/lib/types/config-types";
-import { processJudgeResultWebhook, updateSubmissionStatus } from "@/server/actions/submission-actions";
+import {
+  processJudgeResultWebhook,
+  updateSubmissionStatus,
+} from "@/server/actions/submission-actions";
 
 export async function PUT(req: NextRequest) {
   try {
-    // Extract payload from query parameter
     const url = new URL(req.url);
     const payloadParam = url.searchParams.get("payload");
 
@@ -17,11 +19,13 @@ export async function PUT(req: NextRequest) {
       Buffer.from(payloadParam, "base64").toString(),
     );
 
-    console.log("webhook payload", payload);
-
     const judgeResult = await req.json();
 
-    await processJudgeResultWebhook(payload.submissionId,payload.testCaseId,judgeResult)
+    await processJudgeResultWebhook(
+      payload.testCaseId,
+      payload.submissionId,
+      judgeResult,
+    );
 
     await updateSubmissionStatus(payload.submissionId);
 

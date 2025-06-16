@@ -25,11 +25,10 @@ export function AssignmentLayout({
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [code, setCode] = useState("");
-  const [isRunning, setIsRunning] = useState(false);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
   const [testResults, setTestResults] = useState<any[]>([]);
   const [customInput, setCustomInput] = useState("");
-  const [submissionStatus, setSubmissionStatus] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [codeStatus, setCodeStatus] = useState<string>("");
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -50,12 +49,7 @@ export function AssignmentLayout({
 
   const handleRun = async () => {
     setIsRunning(true);
-    setTestResults([]);
-    const runningResult = {
-      id: "running-test",
-      status: "running" as const,
-    };
-    setTestResults([runningResult]);
+    setCodeStatus("Running");
 
     try {
       const response = await fetch("/api/compile", {
@@ -89,10 +83,14 @@ export function AssignmentLayout({
   };
 
   const handleSubmit = async () => {
-    if (isRunning) return;
-
-    setIsSubmitting(true);
-    setSubmissionStatus("Submitting your solution...");
+    if (isRunning) {
+      toast.warning("Submission already in progress");
+      return;
+    }
+    setIsRunning(true);
+    setTestResults([]);
+    toast.success("Submitting your solution...");
+    setCodeStatus("Submitting your solution...");
 
     try {
       const response = await fetch("/api/submissions", {
@@ -116,16 +114,17 @@ export function AssignmentLayout({
       const submissionId = data.submissionId;
 
       // Start polling for submission status
-      setSubmissionStatus("Running test cases...");
+      setCodeStatus("Running test cases...");
+      toast.success("Running test cases...");
       await pollSubmissionStatus(submissionId);
     } catch (error: any) {
       console.error("Submission error:", error);
-      setSubmissionStatus(`Submission failed: ${error.message}`);
+      setCodeStatus(`Submission failed: ${error.message}`);
       toast.error(
         error.message || "An error occurred while submitting your solution",
       );
     } finally {
-      setIsSubmitting(false);
+      setIsRunning(false);
     }
   };
 
@@ -169,31 +168,26 @@ export function AssignmentLayout({
 
           // Show appropriate message
           if (submissionData.status === "COMPLETED") {
-            setSubmissionStatus("All tests passed successfully!");
+            setCodeStatus("All tests passed successfully!");
             toast.success("Your solution passed all test cases");
           } else {
-            setSubmissionStatus(
-              "Some tests failed. Check the results for details.",
-            );
+            setCodeStatus("Some tests failed. Check the results for details.");
             toast.error("Your solution didn't pass all test cases");
           }
 
-          //exit polling
           break;
         }
 
         // await pollJudge0Submissions(submissionId);
 
-        setSubmissionStatus(
-          `Running test cases (${attempts}/${maxAttempts})...`,
-        );
+        setCodeStatus(`Running test cases (${attempts}/${maxAttempts})...`);
       } catch (error) {
         console.error("Error polling submission status:", error);
       }
     }
 
     if (!completed) {
-      setSubmissionStatus(
+      setCodeStatus(
         "Submission is taking longer than expected. You can check results later.",
       );
     }
@@ -308,6 +302,7 @@ export function AssignmentLayout({
                   onCustomInputChange={setCustomInput}
                   onRunCode={handleRun}
                   isRunning={isRunning}
+                  codeStatus={codeStatus}
                 />
               </div>
             </motion.div>
