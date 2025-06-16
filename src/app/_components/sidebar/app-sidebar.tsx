@@ -55,7 +55,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
                       size={40}
                       className="ml-1.5 button-primary p-1 rounded-xl"
                     />
-                    <p className="font-inter font-bold from-neutral-950">
+                    <p className="font-inter font-bold font-neutral-950">
                       {" "}
                       GradeIT
                     </p>
@@ -66,7 +66,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
                       size={40}
                       className="ml-1.5 bg-cyan-700 p-1 rounded-xl"
                     />
-                    <p className="font-inter font-bold from-neutral-950">
+                    <p className="font-inter font-bold font-neutral-950">
                       {" "}
                       GradeIT
                     </p>

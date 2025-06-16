@@ -43,7 +43,7 @@ export default async function ClassPage({
       <ClassHeader classData={classroom} />
       <div className="mx-auto max-w-6xl w-full px-6 pt-6">
         <Tabs defaultValue="assignments" className="w-full">
-          <TabsList className="bg-[#F0EFEA] mb-6">
+          <TabsList className="mb-6">
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
             <TabsTrigger value="people">People</TabsTrigger>
             <TabsTrigger value="grades">Grades</TabsTrigger>

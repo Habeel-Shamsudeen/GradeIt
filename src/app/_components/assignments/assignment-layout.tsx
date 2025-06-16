@@ -214,9 +214,9 @@ export function AssignmentLayout({
             width: isDescriptionExpanded ? "100%" : "40%",
           }}
           transition={{ duration: 0.2 }}
-          className="relative flex h-full flex-col border-r border-[#E6E4DD] bg-white"
+          className="relative flex h-full flex-col border-r border-border"
         >
-          <div className="flex items-center justify-between overflow-x-auto border-b border-[#E6E4DD] px-4 py-2">
+          <div className="flex items-center justify-between overflow-x-auto border-b border-border px-4 py-2">
             <QuestionNav
               questions={assignment.questions}
               currentIndex={currentQuestionIndex}
@@ -226,7 +226,7 @@ export function AssignmentLayout({
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5 border-[#E6E4DD]"
+                className="gap-1.5 border-border"
                 onClick={() =>
                   (window.location.href = `/classes/${classCode}/${assignment.id}/submissions`)
                 }
@@ -265,7 +265,7 @@ export function AssignmentLayout({
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsDescriptionExpanded(true)}
-                  className="h-12 w-12 rounded-full bg-white shadow-md"
+                  className="h-12 w-12 rounded-full bg-slate-800 shadow-md hover:shadow-xl hover:bg-muted"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>

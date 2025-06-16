@@ -62,10 +62,10 @@ export function CodeEditor({
           <SelectTrigger className="w-32 border-[#2D2D2D] bg-transparent text-white">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            {Object.keys(LANGUAGE_ID_MAP).map((language) => (
-              <SelectItem key={language} value={language}>
-                {language}
+          <SelectContent defaultValue={language}>
+            {Object.keys(LANGUAGE_ID_MAP).map((lang) => (
+              <SelectItem key={lang} value={lang}>
+                {lang}
               </SelectItem>
             ))}
           </SelectContent>

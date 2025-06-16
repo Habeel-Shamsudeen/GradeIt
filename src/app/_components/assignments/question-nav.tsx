@@ -25,10 +25,10 @@ export function QuestionNav({
           onClick={() => onSelect(index)}
           className={cn(
             "h-8 gap-1.5 rounded-full px-3 text-sm",
-            currentIndex === index && "bg-[#F0EFEA]",
+            currentIndex === index && "bg-accent",
           )}
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E6E4DD] text-xs">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-xs">
             {index + 1}
           </span>
           <span className="hidden sm:inline">{question.title}</span>
