@@ -49,7 +49,7 @@ export default async function SubmissionDetailPage({
   // Calculate test case statistics
   const totalTestCases = submission.testCaseResults.length;
   const passedTestCases = submission.testCaseResults.filter(
-    (tc) => tc.status === "PASSED"
+    (tc) => tc.status === "PASSED",
   ).length;
   const passRate =
     totalTestCases > 0 ? (passedTestCases / totalTestCases) * 100 : 0;
@@ -120,7 +120,7 @@ export default async function SubmissionDetailPage({
                             result.status === "FAILED" &&
                               "bg-[#D2886F]/10 text-[#D2886F]",
                             result.status === "PENDING" &&
-                              "bg-[#E6E4DD]/50 text-[#605F5B]"
+                              "bg-[#E6E4DD]/50 text-[#605F5B]",
                           )}
                         >
                           {result.status === "PASSED" && (
@@ -144,7 +144,7 @@ export default async function SubmissionDetailPage({
                           result.status === "FAILED" &&
                             "bg-[#D2886F] hover:bg-[#C27A63]",
                           result.status === "PENDING" &&
-                            "bg-[#E6E4DD] text-[#605F5B]"
+                            "bg-[#E6E4DD] text-[#605F5B]",
                         )}
                       >
                         {result.status}
@@ -217,7 +217,7 @@ export default async function SubmissionDetailPage({
                         submission.status === "PARTIAL" &&
                           "bg-[#F1E6D0]/10 text-[#3A3935]",
                         submission.status === "PENDING" &&
-                          "bg-[#E6E4DD]/50 text-[#605F5B]"
+                          "bg-[#E6E4DD]/50 text-[#605F5B]",
                       )}
                     >
                       {submission.status === "COMPLETED" && (
@@ -321,7 +321,8 @@ export default async function SubmissionDetailPage({
                             submission.plagiarismScore > 15 &&
                               submission.plagiarismScore <= 30 &&
                               "text-[#F1E6D0]/90",
-                            submission.plagiarismScore <= 15 && "text-[#141413]"
+                            submission.plagiarismScore <= 15 &&
+                              "text-[#141413]",
                           )}
                         >
                           {submission.plagiarismScore.toFixed(1)}%
@@ -330,8 +331,8 @@ export default async function SubmissionDetailPage({
                           {submission.plagiarismScore > 30
                             ? "High"
                             : submission.plagiarismScore > 15
-                            ? "Medium"
-                            : "Low"}
+                              ? "Medium"
+                              : "Low"}
                         </p>
                       </div>
                       <Progress

@@ -39,6 +39,7 @@ interface CombinedTestingProps {
   onCustomInputChange: (value: string) => void;
   onRunCode: () => void;
   isRunning: boolean;
+  codeStatus: string;
 }
 
 export function CombinedTesting({
@@ -48,6 +49,7 @@ export function CombinedTesting({
   onCustomInputChange,
   onRunCode,
   isRunning,
+  codeStatus,
 }: CombinedTestingProps) {
   const [isCustomInputOpen, setIsCustomInputOpen] = useState(false);
 
@@ -286,7 +288,7 @@ export function CombinedTesting({
             {isRunning ? (
               <div className="flex flex-col items-center justify-center">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#A1A1A1] border-t-transparent mb-2"></div>
-                <span>Running tests...</span>
+                <span>{codeStatus}</span>
               </div>
             ) : (
               "Run your code to see test results"

@@ -23,7 +23,11 @@ export const metadata: Metadata = {
   description: "View and manage assignments for this class",
 };
 
-export default async function ClassPage({ params }: {params: Promise<{classCode:string}>}) {
+export default async function ClassPage({
+  params,
+}: {
+  params: Promise<{ classCode: string }>;
+}) {
   const { classCode } = await params;
   const { classroom } = await getClassbyCode(classCode);
   const { role } = await getUserRole();
