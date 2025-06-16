@@ -8,11 +8,10 @@ import { QuestionDescription } from "./question-description";
 import { CodeEditor } from "./code-editor";
 import { QuestionNav } from "./question-nav";
 import { AssignmentById } from "@/lib/types/assignment-tyes";
-import { LANGUAGE_ID_MAP } from "@/config/constants";
 import { FullscreenAlert } from "./fullscreen-alert";
 import { CombinedTesting } from "./combined-testing-component";
 import { toast } from "sonner";
-import { pollJudge0Submissions } from "@/server/actions/submission-actions";
+//import { pollJudge0Submissions } from "@/server/actions/submission-actions";
 
 interface AssignmentLayoutProps {
   assignment: AssignmentById;
@@ -183,7 +182,7 @@ export function AssignmentLayout({
           break;
         }
 
-        await pollJudge0Submissions(submissionId);
+        // await pollJudge0Submissions(submissionId);
 
         setSubmissionStatus(
           `Running test cases (${attempts}/${maxAttempts})...`,

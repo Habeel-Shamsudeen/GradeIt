@@ -3,7 +3,8 @@ import { auth } from "@/lib/auth";
 import { TestCaseStatus, Status } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
-import { pollJudge0Submissions } from "@/server/actions/submission-actions";
+// import { pollJudge0Submissions } from "@/server/actions/submission-actions";
+import { WebhookPayload } from "@/lib/types/config-types";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!code || !questionId || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
     if (!question) {
       return NextResponse.json(
         { error: "Question not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -52,14 +53,28 @@ export async function POST(req: NextRequest) {
     });
 
     const testCasePromises = question.testCases.map(async (testCase) => {
+      const webhookPayload: WebhookPayload = {
+        submissionId: submission.id,
+        testCaseId: testCase.id,
+        questionId,
+      };
+
+      const encodedPayload = Buffer.from(
+        JSON.stringify(webhookPayload)
+      ).toString("base64");
+      const webhookUrl = `${process.env.APP_URL}/api/webhook/judge0?payload=${encodedPayload}`;
+
       const response = await fetch(
-        "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*",
+        `https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*&callback_url=${encodeURIComponent(
+          webhookUrl
+        )}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "x-rapidapi-key": process.env.JUDGE0_API_KEY || "",
-            "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+            "x-rapidapi-host":
+              process.env.RAPID_API_HOST || "judge0-ce.p.rapidapi.com",
           },
           body: JSON.stringify({
             language_id:
@@ -67,16 +82,15 @@ export async function POST(req: NextRequest) {
             source_code: Buffer.from(code).toString("base64"),
             stdin: Buffer.from(testCase.input).toString("base64"),
             expected_output: Buffer.from(testCase.expectedOutput).toString(
-              "base64",
+              "base64"
             ),
             cpu_time_limit: 2, // 2 seconds
             memory_limit: 128000, // 128MB
           }),
-        },
+        }
       );
 
       const judgeData = await response.json();
-      console.log(judgeData);
       if (!judgeData.token) {
         throw new Error(`Failed to submit test case ${testCase.id}`);
       }
@@ -98,13 +112,13 @@ export async function POST(req: NextRequest) {
 
     try {
       await Promise.all(testCasePromises);
-
-      await pollJudge0Submissions(submission.id);
+      //await pollJudge0Submissions(submission.id);
 
       return NextResponse.json({
         submissionId: submission.id,
         message: "Submission created and test cases queued",
       });
+
     } catch (error) {
       await prisma.submission.update({
         where: { id: submission.id },
@@ -117,7 +131,7 @@ export async function POST(req: NextRequest) {
     console.error("Error in submission:", error);
     return NextResponse.json(
       { error: error.message || "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

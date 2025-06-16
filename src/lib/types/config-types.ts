@@ -4,3 +4,10 @@ export interface NavGroupInterface {
   icon: string;
   isActive: boolean;
 }
+
+
+export interface WebhookPayload {
+  submissionId: string;
+  testCaseId: string;
+  questionId: string;
+}
