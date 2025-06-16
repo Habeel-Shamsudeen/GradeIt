@@ -38,7 +38,6 @@ interface ClassSettingsTabProps {
 export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
   const [name, setName] = useState(classData.name);
   const [section, setSection] = useState(classData.section);
-  // const [backgroundColor, setBackgroundColor] = useState(classData.backgroundColor)
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCopy = (text: string) => {
@@ -58,7 +57,7 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
 
   return (
     <div className="space-y-8">
-      <Card className="rounded-2xl border-[#E6E4DD]">
+      <Card className="rounded-2xl border-border">
         <CardHeader>
           <CardTitle>Class Information</CardTitle>
           <CardDescription>
@@ -72,7 +71,8 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border-[#E6E4DD]"
+              className="border-input"
+              disabled={role === ("STUDENT" as Role)}
             />
           </div>
 
@@ -82,7 +82,8 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
               id="section"
               value={section}
               onChange={(e) => setSection(e.target.value)}
-              className="border-[#E6E4DD]"
+              className="border-input"
+              disabled={role === ("STUDENT" as Role)}
             />
           </div>
 
@@ -114,17 +115,19 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
             </div>
           </div> */}
         </CardContent>
-        <CardFooter className="flex justify-end gap-3">
-          <Button variant="outline" className="border-[#E6E4DD]">
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save Changes"}
-          </Button>
-        </CardFooter>
+        {role !== ("STUDENT" as Role) && (
+          <CardFooter className="flex justify-end gap-3">
+            <Button variant="outline" className="border-border">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={isLoading}>
+              {isLoading ? "Saving..." : "Save Changes"}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
 
-      <Card className="rounded-2xl border-[#E6E4DD]">
+      <Card className="rounded-2xl">
         <CardHeader>
           <CardTitle>Class Access</CardTitle>
           <CardDescription>
@@ -147,7 +150,7 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 border-[#E6E4DD]"
+                  className="h-8 w-8"
                   onClick={() => handleCopy(classData.code)}
                 >
                   <Copy className="h-4 w-4" />
@@ -170,7 +173,7 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
-                  className="gap-1 border-[#E6E4DD]"
+                  className="gap-1"
                   onClick={() => handleCopy(classData.inviteLink)}
                 >
                   <Link className="h-4 w-4" />

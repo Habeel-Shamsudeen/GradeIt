@@ -75,9 +75,9 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
         </Button>
       </div>
 
-      <div className="rounded-2xl border border-[#E6E4DD] bg-white overflow-hidden">
-        <div className="p-6 border-b border-[#E6E4DD]">
-          <h3 className="text-lg font-medium text-[#141413]">Teachers</h3>
+      <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h3 className="text-lg font-medium">Teachers</h3>
         </div>
         <div className="divide-y divide-[#E6E4DD]">
           {filteredTeachers.length === 0 ? (
@@ -88,7 +88,7 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
             filteredTeachers.map((teacher) => (
               <div
                 key={teacher.id}
-                className="flex items-center justify-between p-4 hover:bg-[#FAFAF8]"
+                className="flex items-center justify-between p-4 hover:bg-neutral-900 hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-[#E6E4DD]">
@@ -99,8 +99,8 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium text-[#141413]">{teacher.name}</p>
-                    <p className="text-sm text-[#605F5B]">{teacher.email}</p>
+                    <p className="font-medium">{teacher.name}</p>
+                    <p className="text-sm text-muted">{teacher.email}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -139,12 +139,12 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#E6E4DD] bg-white overflow-hidden">
-        <div className="p-6 border-b border-[#E6E4DD]">
-          <h3 className="text-lg font-medium text-[#141413]">Students</h3>
+      <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h3 className="text-lg font-medium">Students</h3>
           <p className="text-sm text-[#605F5B]">{students.length} students</p>
         </div>
-        <div className="divide-y divide-[#E6E4DD]">
+        <div className="divide-y divide-border">
           {filteredStudents.length === 0 ? (
             <div className="p-6 text-center text-[#605F5B]">
               No students found
@@ -153,10 +153,10 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
             filteredStudents.map((student) => (
               <div
                 key={student.id}
-                className="flex items-center justify-between p-4 hover:bg-[#FAFAF8]"
+                className="flex items-center justify-between p-4 hover:bg-zinc-900"
               >
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border border-[#E6E4DD]">
+                  <Avatar className="h-10 w-10 border border-border">
                     <AvatarImage src={student.image || ""} alt={student.name} />
                     <AvatarFallback>
                       {student.name.charAt(0)}
@@ -164,7 +164,7 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium text-[#141413]">{student.name}</p>
+                    <p className="font-medium">{student.name}</p>
                     <p className="text-sm text-[#605F5B]">{student.email}</p>
                   </div>
                 </div>

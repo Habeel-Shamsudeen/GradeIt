@@ -10,9 +10,7 @@ export function QuestionDescription({ question }: QuestionDescriptionProps) {
   return (
     <div className="prose prose-slate max-w-none">
       <div className="flex items-center justify-between">
-        <h1 className="m-0 text-2xl font-medium text-[#141413]">
-          {question.title}
-        </h1>
+        <h1 className="m-0 text-2xl font-medium">{question.title}</h1>
         {/* <Badge
           className={cn(
             "px-3 py-1",
@@ -36,9 +34,9 @@ export function QuestionDescription({ question }: QuestionDescriptionProps) {
         </div>
       </div> */}
 
-      <Separator className="my-4 bg-[#E6E4DD]" />
+      <Separator className="my-4" />
 
-      <div className="[&>h2]:text-lg [&>h2]:font-medium [&>h2]:text-[#141413] [&>p]:text-[#605F5B] [&>pre]:bg-[#F0EFEA] [&>pre]:p-4 [&>pre]:rounded-lg">
+      <div className="[&>h2]:text-lg [&>h2]:font-medium [&>p]:text-[#605F5B] [&>pre]:bg-[#F0EFEA] [&>pre]:p-4 [&>pre]:rounded-lg">
         <div dangerouslySetInnerHTML={{ __html: question.description }} />
 
         <h2>Example Test Cases:</h2>
@@ -47,21 +45,19 @@ export function QuestionDescription({ question }: QuestionDescriptionProps) {
           .map((testCase) => (
             <div
               key={testCase.id}
-              className="mb-6 rounded-lg border border-[#E6E4DD] p-4"
+              className="mb-6 rounded-lg border border-border p-4"
             >
               <div className="mb-2">
-                <strong className="text-sm font-medium text-[#141413]">
-                  Input:
-                </strong>
-                <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-sm">
+                <strong className="text-sm font-medium ">Input:</strong>
+                <pre className="mt-1 rounded bg-muted p-2 text-sm">
                   {testCase.input}
                 </pre>
               </div>
               <div>
-                <strong className="text-sm font-medium text-[#141413]">
+                <strong className="text-sm font-medium">
                   Expected Output:
                 </strong>
-                <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-sm">
+                <pre className="mt-1 rounded bg-muted p-2 text-sm">
                   {testCase.expectedOutput}
                 </pre>
               </div>
