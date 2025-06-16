@@ -2,11 +2,6 @@ export const APP_TITLE = "GradeIT - Revolutionize Coding Education";
 export const APP_DESCRIPTION =
   "GradeIT provides educators with an intuitive platform to create, manage, and monitor coding assignments, while offering students a dynamic environment for writing, testing, and submitting code with built-in plagiarism detection.";
 
-export const LOGO_DARK = "/images/logo/logo-dark.svg";
-export const LOGO_LIGHT = "/images/logo/loader.svg";
-export const LOGO_DARK_SQUARE = "/images/logo/zs-logo-sq.svg";
-export const LOGO_LIGHT_SQUARE = "/images/logo/zs-logo-sq.svg";
-
 export const MAX_REQUESTS = 25;
 
 export const lightCardColors = [

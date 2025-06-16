@@ -12,13 +12,11 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/app/_components/ui/sidebar";
-import { LOGO_LIGHT } from "@/config/constants";
-import { LOGO_DARK } from "@/config/constants";
 import { isValidUrl, titleCase } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { useClientSession } from "@/hooks/use-auth-session";
-import Image from "next/image";
 import { NavGroupInterface } from "@/lib/types/config-types";
+import { Code } from "lucide-react";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   navGroups: NavGroupInterface[];
@@ -52,40 +50,34 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
             {isMobile || open ? (
               <>
                 {resolvedTheme === "light" ? (
-                  <Image
-                    src={LOGO_DARK}
-                    alt="Logo"
-                    className="ml-2"
-                    width={100}
-                    height={10}
-                  />
+                  <div className="flex justify-start items-center gap-2">
+                    <Code
+                      size={40}
+                      className="ml-1.5 button-primary p-1 rounded-xl"
+                    />
+                    <p className="font-inter font-bold from-neutral-950">
+                      {" "}
+                      GradeIT
+                    </p>
+                  </div>
                 ) : (
-                  <Image
-                    src={LOGO_DARK}
-                    alt="Logo"
-                    className="ml-2"
-                    width={100}
-                    height={10}
-                  />
+                  <div className="flex justify-start items-center gap-2">
+                    <Code
+                      size={40}
+                      className="ml-1.5 bg-cyan-700 p-1 rounded-xl"
+                    />
+                    <p className="font-inter font-bold from-neutral-950">
+                      {" "}
+                      GradeIT
+                    </p>
+                  </div>
                 )}
                 <ModeToggle />
               </>
             ) : resolvedTheme === "light" ? (
-              <Image
-                src={LOGO_LIGHT}
-                alt="Logo"
-                className="mb-4"
-                width={50}
-                height={10}
-              />
+              <Code size={40} className="ml-1 button-primary p-1 rounded-xl" />
             ) : (
-              <Image
-                src={LOGO_LIGHT}
-                alt="Logo"
-                className="mb-4"
-                width={50}
-                height={10}
-              />
+              <Code size={40} className="ml-1 bg-cyan-700 p-1 rounded-xl" />
             )}
           </div>
         </SidebarHeader>

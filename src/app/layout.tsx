@@ -108,6 +108,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <meta name="apple-mobile-web-app-title" content="GradeIT" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
