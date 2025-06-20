@@ -2,6 +2,9 @@
 
 GradeIT is an automated online coding platform designed for college-level programming lab assignments. It simplifies grading by automatically executing student submissions, checking correctness against test cases, and providing instant feedback.
 
+🔗 [Live Demo](https://gradeit.habeel.live/)  
+📘 Student Classroom Join Code: `8e343e`
+
 ## 🎯 Features
 
 - ✅ **Automated Code Execution & Grading** - Runs submissions and checks correctness.
