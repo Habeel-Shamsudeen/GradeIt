@@ -17,8 +17,7 @@ import { Card, CardContent } from "@/app/_components/ui/card";
 import { Separator } from "@/app/_components/ui/separator";
 import { Question, TestCase } from "@/lib/types/assignment-tyes";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
-import { useState } from "react";
-import { toast } from "sonner";
+import TestCaseGenarationDialog from "../testcase/Test-Case-Gen-dialog";
 
 interface QuestionFormProps {
   question: Question;
@@ -26,7 +25,6 @@ interface QuestionFormProps {
 }
 
 export function QuestionForm({ question, onChange }: QuestionFormProps) {
-  const [isGenerating, setIsGenerating] = useState(false);
   const updateField = (field: keyof Question, value: any) => {
     onChange({
       ...question,
@@ -62,50 +60,6 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
       [field]: value,
     };
     updateField("testCases", newTestCases);
-  };
-
-  const generateTestCases = async () => {
-    if (!question.title || !question.description) {
-      toast.warning("Please fill in the question title and description first");
-      return;
-    }
-
-    setIsGenerating(true);
-
-    try {
-      const response = await fetch("/api/generate-testcases", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          questionTitle: question.title,
-          questionDescription: question.description,
-          language: question.language,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to generate test cases");
-      }
-
-      const { testCases } = await response.json();
-
-      const newTestCases = testCases.map((tc: any, index: number) => ({
-        ...tc,
-        id: `generated-${index + 1}`, // Ensure unique IDs
-      }));
-
-      updateField("testCases", newTestCases);
-
-      console.log(newTestCases);
-      toast.success("Test cases generated successfully!");
-    } catch (error) {
-      console.error("Error generating test cases:", error);
-      toast.error("Failed to generate test cases. Please try again.");
-    } finally {
-      setIsGenerating(false);
-    }
   };
 
   return (
@@ -172,26 +126,13 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
             <Beaker className="h-4 w-4 text-[#605F5B]" />
             Test Cases
           </h3>
-          <div className="space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={generateTestCases}
-              disabled={isGenerating}
-              className="gap-1 border-[#E6E4DD]"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Wand2 className="h-4 w-4" />
-                  Auto-Generate Test Cases
-                </>
-              )}
-            </Button>
+          <div className="flex gap-2">
+            <TestCaseGenarationDialog
+              title={question.title}
+              description={question.description}
+              language={question.language}
+              updateField={updateField}
+            />
             <Button
               type="button"
               variant="outline"
