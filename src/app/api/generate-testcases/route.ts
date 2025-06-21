@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { buildPrompt, generateTestCases } from "@/lib/services/llm-service";
+import { TestCase } from "@/lib/types/assignment-tyes";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,6 +16,7 @@ export async function POST(req: NextRequest) {
       language,
       sampleInput,
       sampleOutput,
+      noOfTCRequired,
     } = await req.json();
 
     if (!questionTitle || !questionDescription || !language) {
@@ -23,13 +25,6 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    console.log(
-      questionTitle,
-      questionDescription,
-      language,
-      sampleInput,
-      sampleOutput,
-    );
 
     const prompt = buildPrompt(
       questionTitle,
@@ -37,8 +32,9 @@ export async function POST(req: NextRequest) {
       language,
       sampleInput,
       sampleOutput,
+      noOfTCRequired,
     );
-    const testCases = await generateTestCases(prompt);
+    const testCases: Omit<TestCase, "id">[] = await generateTestCases(prompt);
 
     return NextResponse.json({ testCases });
   } catch (error: any) {
