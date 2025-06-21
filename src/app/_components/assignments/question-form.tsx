@@ -132,6 +132,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
               description={question.description}
               language={question.language}
               updateField={updateField}
+              existingTestCases={question.testCases}
             />
             <Button
               type="button"

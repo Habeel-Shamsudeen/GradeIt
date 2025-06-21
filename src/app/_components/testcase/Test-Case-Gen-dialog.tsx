@@ -23,6 +23,7 @@ interface TestCaseGenDialogProps {
   description: string;
   language: string;
   updateField: <K extends keyof Question>(field: K, value: Question[K]) => void;
+  existingTestCases: TestCase[];
 }
 
 export default function TestCaseGenarationDialog({
@@ -30,6 +31,7 @@ export default function TestCaseGenarationDialog({
   description,
   language,
   updateField,
+  existingTestCases,
 }: TestCaseGenDialogProps) {
   const [number, SetNumber] = useState(5);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -82,11 +84,12 @@ export default function TestCaseGenarationDialog({
       const newTestCases = testCases.map(
         (tc: Omit<TestCase, "id">, index: number) => ({
           ...tc,
-          id: `generated-${index + 1}`,
+          id: `generated-${existingTestCases.length + index + 1}`, // unique ID
         }),
       );
 
-      updateField("testCases", newTestCases);
+      updateField("testCases", [...existingTestCases, ...newTestCases]);
+
       toast.success("Test cases generated successfully!");
     } catch (error) {
       console.error("Error generating test cases:", error);
