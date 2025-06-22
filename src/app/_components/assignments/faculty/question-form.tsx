@@ -17,7 +17,7 @@ import { Card, CardContent } from "@/app/_components/ui/card";
 import { Separator } from "@/app/_components/ui/separator";
 import { Question, TestCase } from "@/lib/types/assignment-tyes";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
-import TestCaseGenarationDialog from "../testcase/Test-Case-Gen-dialog";
+import TestCaseGenarationDialog from "../../testcase/Test-Case-Gen-dialog";
 
 interface QuestionFormProps {
   question: Question;

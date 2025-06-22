@@ -21,7 +21,7 @@ import { QuestionForm } from "./question-form";
 import { createAssignment } from "@/server/actions/assignment-actions";
 import { Question } from "@/lib/types/assignment-tyes";
 import { toast } from "sonner";
-import { Switch } from "../ui/switch";
+import { Switch } from "../../ui/switch";
 
 interface CreateAssignmentFormProps {
   classCode: string;

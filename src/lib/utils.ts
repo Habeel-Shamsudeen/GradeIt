@@ -1,5 +1,8 @@
 import { darkCardColors, lightCardColors } from "@/config/constants";
-import { getAssigmentTitleFromId, getClassNameFromCode } from "@/server/utils";
+import {
+  getAssigmentTitleFromId,
+  getClassNameFromCode,
+} from "@/server/actions/utility-actions";
 import { type ClassValue, clsx } from "clsx";
 import { randomUUID } from "crypto";
 import { twMerge } from "tailwind-merge";

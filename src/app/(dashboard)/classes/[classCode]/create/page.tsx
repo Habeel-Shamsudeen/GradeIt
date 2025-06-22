@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CreateAssignmentForm } from "@/app/_components/assignments/create-assignment-form";
+import { CreateAssignmentForm } from "@/app/_components/assignments/faculty/create-assignment-form";
 import { PageHeader } from "@/app/_components/page-header";
 import { auth } from "@/lib/auth";
 import { getUserRole } from "@/server/actions/user-actions";

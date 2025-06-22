@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { assignmentSchema, AssignmentSchema } from "@/lib/validators/schema";
 import { revalidatePath } from "next/cache";
-import { getClassIdFromCode } from "../utils";
+import { getClassIdFromCode } from "./utility-actions";
 
 export const createAssignment = async (formData: AssignmentSchema) => {
   const session = await auth();
@@ -94,6 +94,9 @@ export const getAssignments = async (classroomId: string) => {
             Submission: true,
           },
         },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 

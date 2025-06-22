@@ -9,7 +9,6 @@ import {
 import { AssignmentList } from "@/app/_components/assignments/assignment-list";
 import { ClassHeader } from "@/app/_components/classes/class-header";
 import { PeopleTab } from "@/app/_components/classes/people-tab";
-import { GradesTab } from "@/app/_components/classes/grades-tab";
 import { ClassSettingsTab } from "@/app/_components/classes/settings-tab";
 import {
   getClassbyCode,
@@ -46,7 +45,6 @@ export default async function ClassPage({
           <TabsList className="mb-6">
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
             <TabsTrigger value="people">People</TabsTrigger>
-            <TabsTrigger value="grades">Grades</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -64,10 +62,6 @@ export default async function ClassPage({
               teachers={teachers || []}
               students={students || []}
             />
-          </TabsContent>
-
-          <TabsContent value="grades">
-            <GradesTab />
           </TabsContent>
 
           <TabsContent value="settings">

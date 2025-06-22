@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AssignmentLayout } from "@/app/_components/assignments/assignment-layout";
-import { FacultyView } from "@/app/_components/assignments/faculty-view";
+import { AssignmentLayout } from "@/app/_components/assignments/student/assignment-layout";
+import { FacultyView } from "@/app/_components/assignments/faculty/faculty-view";
 import { getUserRole } from "@/server/actions/user-actions";
 import { getAssignmentById } from "@/server/actions/assignment-actions";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";

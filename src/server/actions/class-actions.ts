@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { classCreation, UserClassroom } from "@/lib/types/class-types";
 import { generateClassroomCode } from "@/lib/utils";
-import { isCodeUnique } from "../utils";
+import { isCodeUnique } from "./utility-actions";
 import { getUserRole } from "./user-actions";
 
 export const createClass = async (data: classCreation) => {

@@ -4,6 +4,7 @@ import {
   processJudgeResultWebhook,
   updateSubmissionStatus,
 } from "@/server/actions/submission-actions";
+import { judgeResult } from "@/lib/types/assignment-tyes";
 
 export async function PUT(req: NextRequest) {
   try {
@@ -19,7 +20,7 @@ export async function PUT(req: NextRequest) {
       Buffer.from(payloadParam, "base64").toString(),
     );
 
-    const judgeResult = await req.json();
+    const judgeResult: judgeResult = await req.json();
 
     await processJudgeResultWebhook(
       payload.testCaseId,

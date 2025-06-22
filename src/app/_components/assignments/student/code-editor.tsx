@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
 import { Play, Send } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
+import { useDebounce } from "@uidotdev/usehooks";
 import {
   Select,
   SelectContent,
@@ -34,6 +35,22 @@ export function CodeEditor({
   disableCopyPaste,
 }: CodeEditorProps) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const codeRef = useRef<string>(code);
+  const [liveCode, setLiveCode] = useState(code);
+
+  const debouncedCode = useDebounce(liveCode, 400);
+
+  useEffect(() => {
+    if (debouncedCode !== code) {
+      onChange(debouncedCode);
+    }
+  }, [debouncedCode, onChange]);
+
+  const handleEditorChange = (value: string | undefined) => {
+    const updatedCode = value || "";
+    codeRef.current = updatedCode;
+    setLiveCode(updatedCode);
+  };
 
   const onMount = (
     editor: monaco.editor.IStandaloneCodeEditor,
@@ -96,9 +113,9 @@ export function CodeEditor({
         height="100%"
         defaultLanguage={language.toLowerCase()}
         defaultValue=""
-        onChange={(value) => onChange(value ?? "")}
+        onChange={handleEditorChange}
         className="flex-1"
-        value={code}
+        value={liveCode}
         language={language.toLowerCase()}
         theme="vs-dark"
         options={{

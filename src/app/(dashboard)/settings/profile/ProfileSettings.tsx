@@ -15,7 +15,7 @@ import {
   accountUpdateSchema,
 } from "@/lib/validators/auth";
 import { updateUserName } from "@/server/actions/user-actions";
-import { getLoginMethod } from "@/server/utils";
+import { getLoginMethod } from "@/server/actions/utility-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loading03Icon } from "hugeicons-react";
 import { User } from "next-auth";
