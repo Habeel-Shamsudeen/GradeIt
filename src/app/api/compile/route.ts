@@ -1,6 +1,5 @@
 import { LANGUAGE_ID_MAP } from "@/config/constants";
 import { auth } from "@/lib/auth";
-import { judgeResult } from "@/lib/types/assignment-tyes";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -64,16 +63,19 @@ export async function POST(req: NextRequest) {
     const newResult = {
       input: input,
       runtime: `${0}s`,
-      memory: `${0 / 1000} MB`,
+      memory: `${0} MB`,
       status: "failed",
       output: "",
       error: "",
+      hidden: false,
     };
     if (resultData.status.id === 3) {
       newResult.status = "passed";
       newResult.output = resultData.stdout
         ? atob(resultData.stdout)
         : "No output";
+      newResult.runtime = `${resultData.time}s`;
+      newResult.memory = `${resultData.memory / 1000} MB`;
     } else if (resultData.compile_output) {
       newResult.error = atob(resultData.compile_output);
     } else if (resultData.stderr) {
@@ -85,7 +87,6 @@ export async function POST(req: NextRequest) {
     } else {
       newResult.error = `Execution failed: ${resultData.status.description}`;
     }
-    console.log("hre");
     return NextResponse.json({
       status: 200,
       output: newResult,
@@ -95,11 +96,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       staus: 400,
       output: {
-        id: "error",
-        status: "failed" as const,
-        error: e || "Failed to run code. Please try again.",
-        runtime: "0s",
-        memory: "0 MB",
+        input: "",
+        runtime: `${0}s`,
+        memory: `${0} MB`,
+        status: "failed",
+        output: "",
+        error: "Failed to run code. Please try again.",
+        hidden: false,
       },
     });
   }

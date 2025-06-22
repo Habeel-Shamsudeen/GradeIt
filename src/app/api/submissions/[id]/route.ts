@@ -49,8 +49,6 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
       const testCase = testCaseMap.get(result.testCaseId);
 
       return {
-        id: result.id,
-        testCaseId: result.testCaseId,
         status: mapStatus(result.status),
         runtime: result.executionTime ? `${result.executionTime}ms` : "N/A",
         memory: "N/A",

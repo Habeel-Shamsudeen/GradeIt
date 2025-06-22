@@ -11,10 +11,6 @@ import {
   CardTitle,
 } from "@/app/_components/ui/card";
 
-interface FullscreenAlertProps {
-  onEnterFullscreen: () => void;
-}
-
 export function FullscreenAlert() {
   const handleEnterFullscreen = () => {
     if (document.documentElement.requestFullscreen) {
