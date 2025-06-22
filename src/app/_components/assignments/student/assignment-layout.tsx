@@ -11,6 +11,7 @@ import { AssignmentById } from "@/lib/types/assignment-tyes";
 import { FullscreenAlert } from "./fullscreen-alert";
 import { CombinedTesting } from "./combined-testing-component";
 import { toast } from "sonner";
+import { useFullScreen } from "@/hooks/use-fullscreen";
 //import { pollJudge0Submissions } from "@/server/actions/submission-actions";
 
 interface AssignmentLayoutProps {
@@ -29,21 +30,7 @@ export function AssignmentLayout({
   const [testResults, setTestResults] = useState<any[]>([]);
   const [customInput, setCustomInput] = useState("");
   const [codeStatus, setCodeStatus] = useState<string>("");
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-
-    setIsFullscreen(!!document.fullscreenElement);
-
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-    };
-  }, []);
+  const { isFullscreen } = useFullScreen();
 
   const currentQuestion = assignment.questions[currentQuestionIndex];
 
@@ -195,17 +182,11 @@ export function AssignmentLayout({
     return completed;
   };
 
-  const handleEnterFullscreen = () => {
-    setIsFullscreen(true);
-  };
-
   const showFullscreenAlert = assignment.fullScreenEnforcement && !isFullscreen;
 
   return (
     <>
-      {showFullscreenAlert && (
-        <FullscreenAlert onEnterFullscreen={handleEnterFullscreen} />
-      )}
+      {showFullscreenAlert && <FullscreenAlert />}
       <div className="flex h-[calc(100vh-5rem)] overflow-hidden">
         {/* Left Panel */}
         <motion.div
