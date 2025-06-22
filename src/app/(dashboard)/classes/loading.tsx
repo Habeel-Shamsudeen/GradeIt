@@ -1,4 +1,4 @@
-import { ClassGridSkeleton } from "@/app/_components/classes/class-grid-skeleton";
+import { ClassGridSkeleton } from "@/app/_components/classes/skeleton/class-grid-skeleton";
 import { PageHeader } from "@/app/_components/page-header";
 
 export default function Loading() {
