@@ -23,7 +23,6 @@ import {
 import { CodeRunner } from "@/lib/types/code-types";
 
 interface CombinedTestingProps {
-  testCases: TestCase[];
   results: CodeRunner[];
   customInput: string;
   onCustomInputChange: (value: string) => void;
@@ -33,7 +32,6 @@ interface CombinedTestingProps {
 }
 
 export function CombinedTesting({
-  testCases,
   results,
   customInput,
   onCustomInputChange,
@@ -142,11 +140,6 @@ export function CombinedTesting({
                       ? "Running code..."
                       : `Test Case ${index + 1}`}
                   </p>
-                  {testCases[index] && testCases[index].hidden && (
-                    <span className="ml-2 inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                      Hidden
-                    </span>
-                  )}
                   {result?.status !== "running" &&
                     result?.runtime &&
                     result?.memory && (

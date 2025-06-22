@@ -131,7 +131,6 @@ export function AssignmentLayout({
 
               <div className="border-t border-[#2D2D2D]">
                 <CombinedTesting
-                  testCases={currentQuestion.testCases}
                   results={testResults}
                   customInput={customInput}
                   onCustomInputChange={setCustomInput}
