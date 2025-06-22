@@ -16,21 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/app/_components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/app/_components/ui/tabs";
 import { Members } from "@/lib/types/class-types";
+import InvitePeopleDialog from "./Invite-dialog";
 
 interface PeopleTabProps {
   classCode: string;
@@ -88,7 +75,7 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
             filteredTeachers.map((teacher) => (
               <div
                 key={teacher.id}
-                className="flex items-center justify-between p-4 hover:bg-neutral-900 hover:shadow-md"
+                className="flex items-center justify-between p-4 hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-[#E6E4DD]">
@@ -100,7 +87,9 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                   </Avatar>
                   <div>
                     <p className="font-medium">{teacher.name}</p>
-                    <p className="text-sm text-muted">{teacher.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {teacher.email}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -153,7 +142,7 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
             filteredStudents.map((student) => (
               <div
                 key={student.id}
-                className="flex items-center justify-between p-4 hover:bg-zinc-900"
+                className="flex items-center justify-between p-4"
               >
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-border">
@@ -210,171 +199,5 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
         classCode={classCode}
       />
     </div>
-  );
-}
-
-interface InvitePeopleDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  classCode: string;
-}
-
-function InvitePeopleDialog({
-  open,
-  onOpenChange,
-  classCode,
-}: InvitePeopleDialogProps) {
-  const [activeTab, setActiveTab] = useState("email");
-  const [emails, setEmails] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      onOpenChange(false);
-    }, 1000);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Invite People</DialogTitle>
-          <DialogDescription>
-            Add students or teachers to your class.
-          </DialogDescription>
-        </DialogHeader>
-
-        <Tabs
-          defaultValue="email"
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="mt-4"
-        >
-          <TabsList className="grid w-full grid-cols-2 bg-[#F0EFEA]">
-            <TabsTrigger value="email">Email Addresses</TabsTrigger>
-            <TabsTrigger value="link">Invite Link</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="email" className="mt-4">
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <label htmlFor="emails" className="text-sm font-medium">
-                    Email Addresses
-                  </label>
-                  <textarea
-                    id="emails"
-                    value={emails}
-                    onChange={(e) => setEmails(e.target.value)}
-                    placeholder="Enter email addresses separated by commas"
-                    className="min-h-[100px] w-full rounded-md border border-[#E6E4DD] p-3 text-sm"
-                    required
-                  />
-                  <p className="text-xs text-[#605F5B]">
-                    Recipients will receive an email with a link to join your
-                    class.
-                  </p>
-                </div>
-
-                <div className="grid gap-2">
-                  <label className="text-sm font-medium">Role</label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="role"
-                        value="student"
-                        defaultChecked
-                        className="h-4 w-4"
-                      />
-                      <span>Student</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="role"
-                        value="teacher"
-                        className="h-4 w-4"
-                      />
-                      <span>Teacher</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <DialogFooter className="mt-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  className="border-[#E6E4DD]"
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Sending..." : "Send Invitations"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="link" className="mt-4">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <label className="text-sm font-medium">Class Invite Link</label>
-                <div className="flex">
-                  <Input
-                    readOnly
-                    value={`https://gradeit.app/join?code=${classCode}`}
-                    className="rounded-r-none border-[#E6E4DD]"
-                  />
-                  <Button className="rounded-l-none">Copy</Button>
-                </div>
-                <p className="text-xs text-[#605F5B]">
-                  Anyone with this link can join your class. The link expires in
-                  7 days.
-                </p>
-              </div>
-
-              <div className="grid gap-2">
-                <label className="text-sm font-medium">Class Code</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-medium tracking-wider">
-                    {classCode}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 border-[#E6E4DD]"
-                  >
-                    Copy
-                  </Button>
-                </div>
-                <p className="text-xs text-[#605F5B]">
-                  Students can use this code to join your class.
-                </p>
-              </div>
-            </div>
-
-            <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                className="border-[#E6E4DD]"
-              >
-                Close
-              </Button>
-              <Button type="button">Generate New Link</Button>
-            </DialogFooter>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
   );
 }

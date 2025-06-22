@@ -91,7 +91,6 @@ export async function gradeSubmission(submissionId: string) {
 function generateFeedback(testResults: TestResults[], score: number) {
   const feedback = [];
 
-  // General score feedback
   if (score >= 90) {
     feedback.push("Excellent work! Your solution performs well.");
   } else if (score >= 70) {

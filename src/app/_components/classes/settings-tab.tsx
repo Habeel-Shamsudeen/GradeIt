@@ -86,34 +86,6 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
               disabled={role === ("STUDENT" as Role)}
             />
           </div>
-
-          {/* <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="min-h-[100px] resize-y border-[#E6E4DD]"
-            />
-          </div> */}
-
-          {/* <div className="grid gap-2">
-            <Label htmlFor="color">Theme Color</Label>
-            <div className="flex gap-3">
-              {["#61AAF2", "#7EBF8E", "#D2886F", "#9C89B8", "#F0A202", "#141413"].map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={`h-8 w-8 rounded-full border-2 ${
-                    backgroundColor === color ? "border-[#141413]" : "border-transparent"
-                  }`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => setBackgroundColor(color)}
-                  aria-label={`Select ${color} as theme color`}
-                />
-              ))}
-            </div>
-          </div> */}
         </CardContent>
         {role !== ("STUDENT" as Role) && (
           <CardFooter className="flex justify-end gap-3">

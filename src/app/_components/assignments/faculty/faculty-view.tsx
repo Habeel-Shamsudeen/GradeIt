@@ -36,7 +36,7 @@ import {
 } from "@/app/_components/ui/dropdown-menu";
 import { AssignmentById } from "@/lib/types/assignment-tyes";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
-import { setStudentCookie } from "@/server/utils";
+import { setStudentCookie } from "@/server/actions/utility-actions";
 interface FacultyViewProps {
   assignment: AssignmentById;
   classCode: string;

@@ -4,74 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { TestCaseStatus } from "@prisma/client";
 import { gradeSubmission } from "./grading-actions";
 import { cookies } from "next/headers";
-
-export async function processJudgeResult(
-  testCaseResultId: string,
-  judgeResult: any,
-) {
-  try {
-    let testCaseStatus: TestCaseStatus;
-    let actualOutput = null;
-    let errorMessage = null;
-    const executionTime = judgeResult.time
-      ? Math.round(parseFloat(judgeResult.time) * 1000)
-      : null; // Convert to ms
-
-    if (judgeResult.status.id === 3) {
-      // Accepted
-      testCaseStatus = TestCaseStatus.PASSED;
-      if (judgeResult.stdout) {
-        actualOutput = Buffer.from(judgeResult.stdout, "base64").toString();
-      }
-    } else if (judgeResult.status.id === 4) {
-      // Wrong Answer
-      testCaseStatus = TestCaseStatus.FAILED;
-      if (judgeResult.stdout) {
-        actualOutput = Buffer.from(judgeResult.stdout, "base64").toString();
-      }
-    } else if (judgeResult.status.id === 5) {
-      // Time Limit Exceeded
-      testCaseStatus = TestCaseStatus.TIMEOUT;
-      errorMessage = "Time limit exceeded";
-    } else if (judgeResult.compile_output) {
-      // Compilation Error
-      testCaseStatus = TestCaseStatus.ERROR;
-      errorMessage = Buffer.from(
-        judgeResult.compile_output,
-        "base64",
-      ).toString();
-    } else if (judgeResult.stderr) {
-      // Runtime Error
-      testCaseStatus = TestCaseStatus.ERROR;
-      errorMessage = Buffer.from(judgeResult.stderr, "base64").toString();
-    } else {
-      testCaseStatus = TestCaseStatus.ERROR;
-      errorMessage = `Execution failed: ${judgeResult.status.description}`;
-    }
-
-    await prisma.testCaseResult.update({
-      where: { id: testCaseResultId },
-      data: {
-        status: testCaseStatus,
-        actualOutput,
-        errorMessage,
-        executionTime,
-      },
-    });
-  } catch (error) {
-    console.error(
-      `Error processing Judge0 result for test case result ${testCaseResultId}:`,
-      error,
-    );
-  }
-}
+import { judgeResult } from "@/lib/types/assignment-tyes";
 
 export async function processJudgeResultWebhook(
   testCaseId: string,
   submissionId: string,
-  judgeResult: any,
+  judgeResult: judgeResult,
 ) {
   try {
+    console.log(judgeResult);
     let testCaseStatus: TestCaseStatus;
     let actualOutput = null;
     let errorMessage = null;
@@ -130,7 +71,6 @@ export async function processJudgeResultWebhook(
 
 export async function updateSubmissionStatus(submissionId: string) {
   try {
-    // Check if all test cases for this submission have been processed
     const testCaseResults = await prisma.testCaseResult.findMany({
       where: { submissionId },
     });
@@ -409,6 +349,67 @@ export async function pollJudge0Submissions(submissionId: string) {
     console.error(
       `Error polling Judge0 submissions for submission ${submissionId}:`,
       error
+    );
+  }
+}
+
+export async function processJudgeResult(
+  testCaseResultId: string,
+  judgeResult: any,
+) {
+  try {
+    let testCaseStatus: TestCaseStatus;
+    let actualOutput = null;
+    let errorMessage = null;
+    const executionTime = judgeResult.time
+      ? Math.round(parseFloat(judgeResult.time) * 1000)
+      : null; // Convert to ms
+
+    if (judgeResult.status.id === 3) {
+      // Accepted
+      testCaseStatus = TestCaseStatus.PASSED;
+      if (judgeResult.stdout) {
+        actualOutput = Buffer.from(judgeResult.stdout, "base64").toString();
+      }
+    } else if (judgeResult.status.id === 4) {
+      // Wrong Answer
+      testCaseStatus = TestCaseStatus.FAILED;
+      if (judgeResult.stdout) {
+        actualOutput = Buffer.from(judgeResult.stdout, "base64").toString();
+      }
+    } else if (judgeResult.status.id === 5) {
+      // Time Limit Exceeded
+      testCaseStatus = TestCaseStatus.TIMEOUT;
+      errorMessage = "Time limit exceeded";
+    } else if (judgeResult.compile_output) {
+      // Compilation Error
+      testCaseStatus = TestCaseStatus.ERROR;
+      errorMessage = Buffer.from(
+        judgeResult.compile_output,
+        "base64",
+      ).toString();
+    } else if (judgeResult.stderr) {
+      // Runtime Error
+      testCaseStatus = TestCaseStatus.ERROR;
+      errorMessage = Buffer.from(judgeResult.stderr, "base64").toString();
+    } else {
+      testCaseStatus = TestCaseStatus.ERROR;
+      errorMessage = `Execution failed: ${judgeResult.status.description}`;
+    }
+
+    await prisma.testCaseResult.update({
+      where: { id: testCaseResultId },
+      data: {
+        status: testCaseStatus,
+        actualOutput,
+        errorMessage,
+        executionTime,
+      },
+    });
+  } catch (error) {
+    console.error(
+      `Error processing Judge0 result for test case result ${testCaseResultId}:`,
+      error,
     );
   }
 }

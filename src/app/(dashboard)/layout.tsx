@@ -11,7 +11,7 @@ import { SessionProvider } from "next-auth/react";
 import { AppBreadcrumbs } from "../_components/navigation/breadcrumbs";
 import OnboardingCheck from "./(features)/onboarding/onboarding-check";
 import { getNavigationConfig } from "@/config/navigation";
-import { isUserOnboarded } from "@/server/utils";
+import { isUserOnboarded } from "@/server/actions/utility-actions";
 
 export default async function DashboardLayout({
   children,

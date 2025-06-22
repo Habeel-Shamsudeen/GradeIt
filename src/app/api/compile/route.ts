@@ -1,5 +1,6 @@
 import { LANGUAGE_ID_MAP } from "@/config/constants";
 import { auth } from "@/lib/auth";
+import { judgeResult } from "@/lib/types/assignment-tyes";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -35,12 +36,10 @@ export async function POST(req: NextRequest) {
         }),
       },
     );
-    console.log("here 2");
     const judgeData = await response.json();
     if (!judgeData.token) {
       throw new Error(`Failed to compile code`);
     }
-    console.log(judgeData);
     let resultData;
     for (let i = 0; i < 10; i++) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -71,22 +70,17 @@ export async function POST(req: NextRequest) {
       error: "",
     };
     if (resultData.status.id === 3) {
-      // Accepted - code ran successfully
       newResult.status = "passed";
       newResult.output = resultData.stdout
         ? atob(resultData.stdout)
         : "No output";
     } else if (resultData.compile_output) {
-      // Compilation error
       newResult.error = atob(resultData.compile_output);
     } else if (resultData.stderr) {
-      // Runtime error
       newResult.error = atob(resultData.stderr);
     } else if (resultData.status.id === 5) {
-      // Time limit exceeded
       newResult.error = "Time limit exceeded";
     } else if (resultData.status.id === 6) {
-      // Memory limit exceeded
       newResult.error = "Memory limit exceeded";
     } else {
       newResult.error = `Execution failed: ${resultData.status.description}`;
