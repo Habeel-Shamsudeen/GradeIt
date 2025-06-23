@@ -10,13 +10,10 @@ export function ClassHeader({ classData }: ClassHeaderProps) {
   const { resolvedTheme } = useTheme();
   return (
     <div className="relative">
-      {/* Banner */}
       <div
         className="relative h-44 w-full rounded-2xl"
         style={{ backgroundColor: getCardBgColor(resolvedTheme) }}
       ></div>
-
-      {/* Class Info */}
       <div className="relative mx-auto max-w-6xl px-6">
         <div className="absolute -top-16 flex w-full flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1 text-white">
@@ -26,8 +23,6 @@ export function ClassHeader({ classData }: ClassHeaderProps) {
             </p>
           </div>
         </div>
-
-        {/* Tabs */}
       </div>
     </div>
   );

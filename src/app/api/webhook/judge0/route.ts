@@ -4,7 +4,7 @@ import {
   processJudgeResultWebhook,
   updateSubmissionStatus,
 } from "@/server/actions/submission-actions";
-import { judgeResult } from "@/lib/types/assignment-tyes";
+import { judgeResult } from "@/lib/types/code-types";
 
 export async function PUT(req: NextRequest) {
   try {

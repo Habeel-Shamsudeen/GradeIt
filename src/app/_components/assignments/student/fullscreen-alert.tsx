@@ -11,23 +11,12 @@ import {
   CardTitle,
 } from "@/app/_components/ui/card";
 
-interface FullscreenAlertProps {
-  onEnterFullscreen: () => void;
-}
-
-export function FullscreenAlert({ onEnterFullscreen }: FullscreenAlertProps) {
+export function FullscreenAlert() {
   const handleEnterFullscreen = () => {
     if (document.documentElement.requestFullscreen) {
-      document.documentElement
-        .requestFullscreen()
-        .then(() => {
-          onEnterFullscreen();
-        })
-        .catch((err) => {
-          console.error(
-            `Error attempting to enable fullscreen: ${err.message}`,
-          );
-        });
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
     }
   };
 

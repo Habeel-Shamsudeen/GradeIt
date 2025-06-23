@@ -11,29 +11,7 @@ export function QuestionDescription({ question }: QuestionDescriptionProps) {
     <div className="prose prose-slate max-w-none">
       <div className="flex items-center justify-between">
         <h1 className="m-0 text-2xl font-medium">{question.title}</h1>
-        {/* <Badge
-          className={cn(
-            "px-3 py-1",
-            question.difficulty === "Easy" && "bg-[#7EBF8E] hover:bg-[#6CAF7E]",
-            question.difficulty === "Medium" && "bg-[#F1E6D0] text-[#3A3935] hover:bg-[#EBDBBC]",
-            question.difficulty === "Hard" && "bg-[#D2886F] hover:bg-[#C27A63]",
-          )}
-        >
-          {question.difficulty}
-        </Badge> */}
       </div>
-
-      {/* <div className="mt-4 flex gap-4 text-sm text-[#605F5B]">
-        <div className="flex items-center gap-1.5">
-          <Clock className="h-4 w-4" />
-          <span>Time Limit: {question.timeLimit}ms</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <HardDrive className="h-4 w-4" />
-          <span>Memory Limit: {question.memoryLimit}MB</span>
-        </div>
-      </div> */}
-
       <Separator className="my-4" />
 
       <div className="[&>h2]:text-lg [&>h2]:font-medium [&>p]:text-[#605F5B] [&>pre]:bg-[#F0EFEA] [&>pre]:p-4 [&>pre]:rounded-lg">

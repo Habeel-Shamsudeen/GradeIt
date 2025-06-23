@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { TestResults } from "@/lib/types/assignment-tyes";
+import { TestResults } from "@/lib/types/code-types";
 import { Status, TestCaseStatus } from "@prisma/client";
 
 export async function gradeSubmission(submissionId: string) {

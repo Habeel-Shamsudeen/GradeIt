@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { TestCaseStatus } from "@prisma/client";
 import { gradeSubmission } from "./grading-actions";
 import { cookies } from "next/headers";
-import { judgeResult } from "@/lib/types/assignment-tyes";
+import { judgeResult } from "@/lib/types/code-types";
 
 export async function processJudgeResultWebhook(
   testCaseId: string,
