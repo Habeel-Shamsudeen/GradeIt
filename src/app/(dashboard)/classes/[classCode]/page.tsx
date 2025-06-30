@@ -61,6 +61,7 @@ export default async function ClassPage({
               classCode={classCode}
               teachers={teachers || []}
               students={students || []}
+              role={role || "STUDENT"}
             />
           </TabsContent>
 

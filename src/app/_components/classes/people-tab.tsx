@@ -18,14 +18,23 @@ import {
 } from "@/app/_components/ui/dropdown-menu";
 import { Members } from "@/lib/types/class-types";
 import InvitePeopleDialog from "./Invite-dialog";
+import { Role } from "@prisma/client";
+import { removeStudentFromClass } from "@/server/actions/class-actions";
+import { toast } from "sonner";
 
 interface PeopleTabProps {
   classCode: string;
   teachers: Members[];
   students: Members[];
+  role: Role;
 }
 
-export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
+export function PeopleTab({
+  classCode,
+  teachers,
+  students,
+  role,
+}: PeopleTabProps) {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -40,6 +49,19 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
       student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       student.email?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  const handleRemoveFromClass = async (studentId: string) => {
+    try {
+      const response = await removeStudentFromClass(classCode, studentId);
+      if (response.status === "success") {
+        toast.success("Student removed from class");
+      } else {
+        toast.error("Failed to remove student from class");
+      }
+    } catch (error) {
+      toast.error("An error occurred while removing the student");
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -114,11 +136,6 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>View profile</DropdownMenuItem>
-                      <DropdownMenuItem>Change role</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive">
-                        Remove from class
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -180,10 +197,18 @@ export function PeopleTab({ classCode, teachers, students }: PeopleTabProps) {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>View profile</DropdownMenuItem>
                       <DropdownMenuItem>View submissions</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive">
-                        Remove from class
-                      </DropdownMenuItem>
+                      {role === "FACULTY" && (
+                        <>
+                          <DropdownMenuSeparator />
+
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => handleRemoveFromClass(student.id)}
+                          >
+                            Remove from class
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
