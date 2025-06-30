@@ -29,6 +29,8 @@ import { UserClassroom } from "@/lib/types/class-types";
 import { copyToClipboard } from "@/lib/utils";
 import { toast } from "sonner";
 import { Role } from "@prisma/client";
+import { deleteClass } from "@/server/actions/class-actions";
+import { redirect, useRouter } from "next/navigation";
 
 interface ClassSettingsTabProps {
   classData: UserClassroom;
@@ -39,6 +41,7 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
   const [name, setName] = useState(classData.name);
   const [section, setSection] = useState(classData.section);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleCopy = (text: string) => {
     copyToClipboard(text);
@@ -53,6 +56,24 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
       setIsLoading(false);
       // Show success message or redirect
     }, 1000);
+  };
+
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      const response = await deleteClass(classData.code);
+      if (response.status === "failed") {
+        toast.error("Failed to delete class");
+        return;
+      }
+      toast.success("Class deleted successfully");
+    } catch (error) {
+      console.error("Error deleting class:", error);
+      toast.error("Failed to delete class");
+    } finally {
+      setIsLoading(false);
+      router.push("/classes");
+    }
   };
 
   return (
@@ -153,14 +174,6 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
                 </Button>
               </div>
             </div>
-
-            {/* <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium">Allow Join Requests</h4>
-                <p className="text-xs text-[#605F5B]">Students can request to join your class</p>
-              </div>
-              <Switch defaultChecked />
-            </div> */}
           </div>
         </CardContent>
       </Card>
@@ -214,7 +227,9 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
                     <AlertDialogCancel className="border-[#E6E4DD]">
                       Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction>Delete</AlertDialogAction>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Delete
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

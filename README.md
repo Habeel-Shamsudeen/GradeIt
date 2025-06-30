@@ -138,7 +138,6 @@ Follow the same steps as in Option A for creating and populating your **`.env`**
     ```
 
     This command will:
-
     - Build the application Docker image based on the `Dockerfile`.
     - Start a PostgreSQL database container.
     - Start the application container.

@@ -255,3 +255,111 @@ export const getMembersByClassId = async (code: string) => {
     return { status: "failed" };
   }
 };
+
+export const deleteClass = async (classCode: string) => {
+  const session = await auth();
+
+  if (!session?.user && session?.user.role !== "FACULTY") {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const classroom = await prisma.classroom.findUnique({
+      where: { code: classCode },
+    });
+
+    if (!classroom) {
+      return { status: "failed", message: "Classroom not found" };
+    }
+
+    if (classroom.facultyId !== session.user.id) {
+      return { status: "failed", message: "Unauthorized to delete this class" };
+    }
+
+    await prisma.classroom.delete({
+      where: { code: classCode },
+    });
+    return { status: "success", message: "Classroom deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting class:", error);
+    return { status: "failed" };
+  }
+};
+
+export const removeStudentFromClass = async (
+  classCode: string,
+  studentId: string,
+) => {
+  const session = await auth();
+
+  if (!session?.user || session?.user.role !== "FACULTY") {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const classroom = await prisma.classroom.findUnique({
+      where: { code: classCode },
+    });
+
+    if (!classroom) {
+      return { status: "failed", message: "Classroom not found" };
+    }
+
+    if (classroom.facultyId !== session.user.id) {
+      return {
+        status: "failed",
+        message: "Unauthorized to remove student from this class",
+      };
+    }
+    await prisma.$transaction(
+      async (tx) => {
+        await tx.user.update({
+          where: { id: studentId },
+          data: {
+            enrolledClasses: {
+              disconnect: { id: classroom.id },
+            },
+          },
+        });
+
+        const assignments = await tx.assignment.findMany({
+          where: {
+            classroomId: classroom.id,
+          },
+          select: {
+            questions: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        const questionIds = assignments.flatMap((assignment) =>
+          assignment.questions.map((q) => q.id),
+        );
+
+        await tx.submission.deleteMany({
+          where: {
+            studentId: studentId,
+            questionId: {
+              in: questionIds,
+            },
+          },
+        });
+      },
+      {
+        maxWait: 5000,
+        timeout: 10000,
+      },
+    );
+
+    return {
+      status: "success",
+      message: "Student removed from class successfully",
+    };
+  } catch (error) {
+    console.error("Error removing student from class:", error);
+    return { status: "failed" };
+  }
+};
