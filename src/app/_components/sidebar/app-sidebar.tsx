@@ -17,6 +17,7 @@ import { useTheme } from "next-themes";
 import { useClientSession } from "@/hooks/use-auth-session";
 import { NavGroupInterface } from "@/lib/types/config-types";
 import { Code } from "lucide-react";
+import Link from "next/link";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   navGroups: NavGroupInterface[];
@@ -46,7 +47,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
     <>
       <Sidebar collapsible="icon" variant="floating" {...props}>
         <SidebarHeader className="mt-3 p-2">
-          <div className="flex items-center justify-between">
+          <Link href={"/classes"} className="flex items-center justify-between">
             {isMobile || open ? (
               <>
                 {resolvedTheme === "light" ? (
@@ -79,7 +80,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
             ) : (
               <Code size={40} className="ml-1 bg-cyan-700 p-1 rounded-xl" />
             )}
-          </div>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={navGroups} label="Classes" />
