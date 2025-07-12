@@ -12,39 +12,40 @@ export default function SiteHeader() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
-        className="sticky top-0 z-50 w-full flex justify-center border-b border-border bg-primary backdrop-blur-md supports-[backdrop-filter]:bg-background/60"
+        className="sticky top-0 z-50 w-full border-b border-border bg-background/70 backdrop-blur-md supports-[backdrop-filter]:bg-background/70"
       >
-        <div className="container flex h-16 w-full items-center justify-between px-6">
+        <div className="container flex h-16 items-center justify-between px-6">
+          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-marine-600 hover:bg-marine-700">
-              <Code className="h-4 w-4 text-primary-foreground" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-marine-600 hover:bg-marine-700 transition">
+              <Code className="h-4 w-4 text-foreground" />
             </div>
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-lg font-medium text-foreground"
+              transition={{ delay: 0.3 }}
+              className="text-lg font-semibold text-foreground"
             >
               gradeIT
             </motion.span>
           </Link>
 
-          <nav className="hidden md:flex md:gap-8 lg:gap-10">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-foreground">
             <Link
               href="#features"
-              className="text-sm font-medium text-text hover:text-accent transition-colors"
+              className="hover:text-marine-600 transition-colors"
             >
               Features
             </Link>
             <Link
               href="#how-it-works"
-              className="text-sm font-medium text-text hover:text-accent transition-colors"
+              className="hover:text-marine-600 transition-colors"
             >
               How It Works
             </Link>
             <Link
               href="#contact"
-              className="text-sm font-medium text-text hover:text-accent transition-colors"
+              className="hover:text-marine-600 transition-colors"
             >
               Contact
             </Link>

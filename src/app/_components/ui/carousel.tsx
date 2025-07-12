@@ -44,7 +44,7 @@ export function Carousel({
     offset: ["start end", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
+  const y = useTransform(scrollYProgress, [0, 1], ["-2%", "2%"]);
 
   const goToNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -60,24 +60,17 @@ export function Carousel({
     setCurrentIndex(index);
   };
 
-  // Auto-play functionality
   useEffect(() => {
     if (!autoPlay || isHovering) return;
-
     const timer = setInterval(goToNext, interval);
     return () => clearInterval(timer);
   }, [autoPlay, interval, isHovering, images.length]);
 
-  // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        goToPrev();
-      } else if (e.key === "ArrowRight") {
-        goToNext();
-      }
+      if (e.key === "ArrowLeft") goToPrev();
+      else if (e.key === "ArrowRight") goToNext();
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
@@ -87,7 +80,10 @@ export function Carousel({
   return (
     <div
       ref={containerRef}
-      className={cn("relative overflow-hidden rounded-2xl", className)}
+      className={cn(
+        "relative overflow-hidden rounded-3xl border border-marine-200 bg-marine-100 dark:bg-marine-900 transition-colors",
+        className,
+      )}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -97,13 +93,13 @@ export function Carousel({
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -100 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="relative h-full w-full"
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="relative w-full aspect-[16/9]" // 👈 16:9 laptop-like ratio
         >
           {parallaxEffect ? (
             <motion.div style={{ y }} className="h-full w-full">
               <Image
-                src={images[currentIndex].src || "/placeholder.svg"}
+                src={images[currentIndex].src}
                 width={images[currentIndex].width}
                 height={images[currentIndex].height}
                 alt={images[currentIndex].alt}
@@ -113,7 +109,7 @@ export function Carousel({
             </motion.div>
           ) : (
             <Image
-              src={images[currentIndex].src || "/placeholder.svg"}
+              src={images[currentIndex].src}
               width={images[currentIndex].width}
               height={images[currentIndex].height}
               alt={images[currentIndex].alt}
@@ -124,22 +120,19 @@ export function Carousel({
         </motion.div>
       </AnimatePresence>
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 " />
-
       {/* Controls */}
       {showControls && images.length > 1 && (
         <>
           <button
             onClick={goToPrev}
-            className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-muted text-white backdrop-blur-sm transition-all hover:bg-white/30"
+            className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-marine-200 text-marine-800 hover:bg-marine-300 transition-all shadow-md"
             aria-label="Previous slide"
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-muted text-white backdrop-blur-sm transition-all hover:bg-white/30"
+            className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-marine-200 text-marine-800 hover:bg-marine-300 transition-all shadow-md"
             aria-label="Next slide"
           >
             <ChevronRight className="h-6 w-6" />
@@ -157,8 +150,8 @@ export function Carousel({
               className={cn(
                 "h-2 w-2 rounded-full transition-all",
                 currentIndex === index
-                  ? "w-6 bg-white"
-                  : "bg-white/50 hover:bg-white/70",
+                  ? "w-6 bg-marine-600"
+                  : "bg-marine-500/40 hover:bg-marine-500",
               )}
               aria-label={`Go to slide ${index + 1}`}
             />

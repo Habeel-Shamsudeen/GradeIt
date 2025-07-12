@@ -22,7 +22,7 @@ export default function HeroSection() {
       <div className="container relative z-10 px-6">
         <motion.div
           style={{ y: heroY }}
-          className="mx-auto max-w-3xl text-center"
+          className="mx-auto max-w-3xl text-center mb-40"
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -83,8 +83,8 @@ export default function HeroSection() {
           transition={{ duration: 0.7, delay: 0.4 }}
           className="relative mx-auto mt-20 max-w-5xl"
         >
-          <div className="rounded-2xl overflow-hidden shadow-lg backdrop-blur-sm bg-card/90 border border-border">
-            <HeroCarousel className="w-full h-64" />
+          <div className="overflow-hiddenbg-card/90">
+            <HeroCarousel className="w-[640px] aspect-[16/9] mx-auto" />
           </div>
         </motion.div>
       </div>
