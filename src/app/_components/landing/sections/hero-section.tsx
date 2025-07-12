@@ -22,14 +22,14 @@ export default function HeroSection() {
       <div className="container relative z-10 px-6">
         <motion.div
           style={{ y: heroY }}
-          className="mx-auto max-w-3xl text-center"
+          className="mx-auto max-w-3xl text-center mb-40"
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block rounded-full hero-color-background px-4 py-1.5 text-sm font-medium">
+            <span className="inline-block rounded-full bg-marine-600 text-white dark:text-marine-900 px-4 py-1.5 text-sm font-medium transition-colors">
               Automated Lab Grading
             </span>
           </motion.div>
@@ -62,7 +62,7 @@ export default function HeroSection() {
           >
             <Button
               size="lg"
-              className="h-12 px-8 button-primary transition-all"
+              className="h-12 px-8 bg-marine-600 hover:bg-marine-700 transition-all text-white"
             >
               Get Started
               <ChevronRight className="ml-2 h-4 w-4" />
@@ -70,9 +70,9 @@ export default function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="h-12 px-8 button-secondary transition-all"
+              className="h-12 px-8 transition-all border-marine-500 text-marine-500 hover:bg-marine-100 hover:text-marine-900"
             >
-              <Link href={"/classes"}>Learn More</Link>
+              <Link href="/classes">Learn More</Link>
             </Button>
           </motion.div>
         </motion.div>
@@ -83,8 +83,8 @@ export default function HeroSection() {
           transition={{ duration: 0.7, delay: 0.4 }}
           className="relative mx-auto mt-20 max-w-5xl"
         >
-          <div className="rounded-2xl overflow-hidden shadow-lg backdrop-blur-sm bg-card/90 border border-border">
-            <HeroCarousel className="w-full h-64" />
+          <div className="overflow-hidden">
+            <HeroCarousel className="w-full max-w-[900px] aspect-[4/3] sm:aspect-[16/9] mx-auto" />
           </div>
         </motion.div>
       </div>

@@ -117,59 +117,74 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <Card className="rounded-2xl border-[#E6E4DD]">
+      <Card className="rounded-2xl border border-border bg-background">
         <CardContent className="pt-6">
           <div className="grid gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="title">Assignment Title</Label>
+              <Label htmlFor="title" className="text-foreground">
+                Assignment Title
+              </Label>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g., Binary Search Trees Implementation"
-                className="border-[#E6E4DD]"
+                className="bg-background border border-border text-foreground placeholder:text-muted-foreground"
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-foreground">
+                Description
+              </Label>
               <Textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Provide detailed instructions for the assignment..."
-                className="min-h-32 resize-y border-[#E6E4DD]"
+                className="min-h-32 resize-y bg-background border border-border text-foreground placeholder:text-muted-foreground"
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="dueDate">Due Date</Label>
+              <Label htmlFor="dueDate" className="text-foreground">
+                Due Date
+              </Label>
               <Input
                 id="dueDate"
                 type="datetime-local"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="border-[#E6E4DD]"
+                className="bg-background border border-border text-foreground"
                 required
               />
             </div>
+
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2">
-                <Label htmlFor="copyPastePrevention">Disable copy paste</Label>
+                <Label
+                  htmlFor="copyPastePrevention"
+                  className="text-foreground"
+                >
+                  Disable copy paste
+                </Label>
                 <Switch
                   checked={copyPastePrevention}
-                  onCheckedChange={(e) => setCopypasteprevention((c) => !c)}
+                  onCheckedChange={() => setCopypasteprevention((c) => !c)}
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Label htmlFor="fullScreenEnforcement">
+                <Label
+                  htmlFor="fullScreenEnforcement"
+                  className="text-foreground"
+                >
                   Full screen enforcement
                 </Label>
                 <Switch
                   checked={fullScreenEnforcement}
-                  onCheckedChange={(e) => setFullScreenEnforcement((c) => !c)}
+                  onCheckedChange={() => setFullScreenEnforcement((c) => !c)}
                 />
               </div>
             </div>
@@ -179,12 +194,12 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-medium text-[#141413]">Questions</h2>
+          <h2 className="text-lg font-medium text-foreground">Questions</h2>
           <Button
             type="button"
             variant="outline"
             onClick={addQuestion}
-            className="gap-1 border-[#E6E4DD]"
+            className="gap-1 border border-border"
           >
             <Plus className="h-4 w-4" />
             Add Question
@@ -203,13 +218,13 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
               <Accordion type="single" collapsible defaultValue={question.id}>
                 <AccordionItem
                   value={question.id}
-                  className="rounded-2xl border border-[#E6E4DD] bg-white"
+                  className="rounded-2xl border border-border bg-background"
                 >
                   <AccordionTrigger className="px-6 py-4 hover:no-underline">
                     <div className="flex flex-1 items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Code className="h-4 w-4 text-[#605F5B]" />
-                        <span className="font-medium">
+                        <Code className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-foreground">
                           {question.title || `Question ${index + 1}`}
                         </span>
                       </div>
@@ -221,7 +236,7 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
                           e.stopPropagation();
                           removeQuestion(index);
                         }}
-                        className="mr-2 h-8 w-8 rounded-full p-0 text-[#605F5B] hover:bg-[#F0EFEA] hover:text-[#141413]"
+                        className="mr-2 h-8 w-8 rounded-full p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
                       >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Remove question</span>
@@ -248,11 +263,15 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
           type="button"
           variant="outline"
           onClick={() => router.back()}
-          className="border-[#E6E4DD]"
+          className="border border-border text-foreground"
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={loading}>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="bg-marine-600 text-white hover:bg-marine-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           {loading ? "Creating..." : "Create Assignment"}
         </Button>
       </div>

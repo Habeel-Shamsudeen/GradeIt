@@ -28,7 +28,10 @@ export function AssignmentList({
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-medium text-foreground">Assignments</h2>
         {role === "FACULTY" && (
-          <Button onClick={handleCreateAssignment} className="gap-1">
+          <Button
+            onClick={handleCreateAssignment}
+            className="gap-1 bg-marine-600 text-white hover:bg-marine-700"
+          >
             <Plus className="h-4 w-4" />
             Create Assignment
           </Button>

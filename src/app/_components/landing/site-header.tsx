@@ -1,50 +1,54 @@
 "use client";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/app/_components/ui/button";
 import { Code } from "lucide-react";
 import ModeToggle from "./mode-toggle";
 
 export default function SiteHeader() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <>
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
-        className="sticky top-0 z-50 w-full flex justify-center border-b border-border bg-primary backdrop-blur-md supports-[backdrop-filter]:bg-background/60"
+        className="sticky top-0 z-50 w-full border-b border-border bg-background/70 backdrop-blur-md supports-[backdrop-filter]:bg-background/70"
       >
-        <div className="container flex h-16 w-full items-center justify-between px-6">
+        <div className="container mx-auto flex h-16 items-center justify-between px-6">
+          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg button-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-marine-600 hover:bg-marine-700">
               <Code className="h-4 w-4 text-primary-foreground" />
             </div>
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-lg font-medium text-foreground"
+              transition={{ delay: 0.3 }}
+              className="text-lg font-semibold text-foreground"
             >
               gradeIT
             </motion.span>
           </Link>
 
-          <nav className="hidden md:flex md:gap-8 lg:gap-10">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-foreground">
             <Link
               href="#features"
-              className="text-sm font-medium text-text hover:text-accent transition-colors"
+              className="hover:text-marine-600 transition-colors"
             >
               Features
             </Link>
             <Link
               href="#how-it-works"
-              className="text-sm font-medium text-text hover:text-accent transition-colors"
+              className="hover:text-marine-600 transition-colors"
             >
               How It Works
             </Link>
             <Link
               href="#contact"
-              className="text-sm font-medium text-text hover:text-accent transition-colors"
+              className="hover:text-marine-600 transition-colors"
             >
               Contact
             </Link>
@@ -64,15 +68,18 @@ export default function SiteHeader() {
               <Button
                 size="sm"
                 asChild
-                className="text-background button-primary hover:button-secondary"
+                className="text-background bg-marine-600 hover:bg-marine-700"
               >
                 <Link href="/classes">Sign up</Link>
               </Button>
             </div>
+
+            {/* Mobile Hamburger_ */}
             <Button
               variant="outline"
               size="icon"
               className="md:hidden border-border"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -94,6 +101,33 @@ export default function SiteHeader() {
             </Button>
           </div>
         </div>
+
+        {/* Mobile hamburger menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden bg-background border-t border-border px-6 pb-4 pt-2 space-y-2"
+            >
+              <Button
+                variant="outline"
+                className="w-full border-border text-text hover:bg-muted hover:text-foreground"
+                asChild
+              >
+                <Link href="/classes">Log in</Link>
+              </Button>
+              <Button
+                className="w-full text-background bg-marine-600 hover:bg-marine-700"
+                asChild
+              >
+                <Link href="/classes">Sign up</Link>
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.header>
     </>
   );
