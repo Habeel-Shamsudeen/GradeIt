@@ -94,7 +94,7 @@ export function Carousel({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -100 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="relative w-full aspect-[16/9]" // 👈 16:9 laptop-like ratio
+          className="relative w-full aspect-[4/3] sm:aspect-[16/9]" // responsive aspect ratio
         >
           {parallaxEffect ? (
             <motion.div style={{ y }} className="h-full w-full">
@@ -125,17 +125,17 @@ export function Carousel({
         <>
           <button
             onClick={goToPrev}
-            className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-marine-200 text-marine-800 hover:bg-marine-300 transition-all shadow-md"
+            className="absolute left-2 sm:left-4 top-1/2 z-10 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-marine-200 text-marine-800 hover:bg-marine-300 transition-all shadow-md"
             aria-label="Previous slide"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-marine-200 text-marine-800 hover:bg-marine-300 transition-all shadow-md"
+            className="absolute right-2 sm:right-4 top-1/2 z-10 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-marine-200 text-marine-800 hover:bg-marine-300 transition-all shadow-md"
             aria-label="Next slide"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
         </>
       )}

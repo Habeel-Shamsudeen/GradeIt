@@ -10,7 +10,7 @@ export default function StatsSection() {
       <div className="container px-6">
         <AnimatedSection>
           <div className="mx-auto max-w-5xl">
-            <div className="rounded-2xl border border-marine-300 bg-marine-300/30 dark:border-marine-700 dark:bg-marine-900/30 p-12 shadow-lg backdrop-blur-md transition-all">
+            <div className="rounded-2xl border border-marine-300 bg-marine-300/30 p-12 shadow-lg backdrop-blur-md transition-all">
               <div className="grid gap-10 md:grid-cols-4">
                 {stats.map((stat: any, index: number) => (
                   <StaggeredItem key={index} index={index}>
@@ -19,11 +19,11 @@ export default function StatsSection() {
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
                       viewport={{ once: true, amount: 0.6 }}
-                      className="text-4xl font-bold text-marine-800 dark:text-marine-100"
+                      className="text-4xl font-bold text-marine-800"
                     >
                       {stat.value}
                     </motion.span>
-                    <span className="mt-2 text-sm text-marine-700 dark:text-marine-100">
+                    <span className="mt-2 text-sm text-marine-700">
                       {stat.label}
                     </span>
                   </StaggeredItem>

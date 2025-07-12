@@ -83,8 +83,8 @@ export default function HeroSection() {
           transition={{ duration: 0.7, delay: 0.4 }}
           className="relative mx-auto mt-20 max-w-5xl"
         >
-          <div className="overflow-hiddenbg-card/90">
-            <HeroCarousel className="w-[640px] aspect-[16/9] mx-auto" />
+          <div className="overflow-hidden">
+            <HeroCarousel className="w-full max-w-[900px] aspect-[4/3] sm:aspect-[16/9] mx-auto" />
           </div>
         </motion.div>
       </div>
