@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function CTASection() {
   return (
-    <section className="py-24 bg-primary text-primary-foreground flex justify-center">
+    <section className="py-24 bg-marine-600 text-primary-foreground flex justify-center">
       <div className="container px-6">
         <AnimatedSection>
           <div className="mx-auto max-w-3xl text-center">
@@ -20,7 +20,8 @@ export default function CTASection() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
                 size="lg"
-                className="h-12 px-8 bg-white text-primary hover:bg-secondary transition-all"
+                variant="outline"
+                className="h-12 px-8 bg-white text-primary hover:bg-marine-300 transition-all"
               >
                 <Link href={"/classes"}> Get Started </Link>
                 <ArrowRight className="ml-2 h-4 w-4" />

@@ -29,7 +29,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block rounded-full hero-color-background px-4 py-1.5 text-sm font-medium">
+            <span className="inline-block rounded-full bg-marine-600 text-white dark:text-marine-900 px-4 py-1.5 text-sm font-medium transition-colors">
               Automated Lab Grading
             </span>
           </motion.div>
@@ -62,7 +62,7 @@ export default function HeroSection() {
           >
             <Button
               size="lg"
-              className="h-12 px-8 button-primary transition-all"
+              className="h-12 px-8 bg-marine-600 hover:bg-marine-700 transition-all text-white"
             >
               Get Started
               <ChevronRight className="ml-2 h-4 w-4" />

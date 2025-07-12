@@ -16,7 +16,7 @@ export default function SiteHeader() {
       >
         <div className="container flex h-16 w-full items-center justify-between px-6">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg button-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-marine-600 hover:bg-marine-700">
               <Code className="h-4 w-4 text-primary-foreground" />
             </div>
             <motion.span
@@ -64,7 +64,7 @@ export default function SiteHeader() {
               <Button
                 size="sm"
                 asChild
-                className="text-background button-primary hover:button-secondary"
+                className="text-background bg-marine-600 hover:bg-marine-700"
               >
                 <Link href="/classes">Sign up</Link>
               </Button>

@@ -50,13 +50,13 @@ export function ClassGrid({
         >
           <Button
             variant="outline"
-            className="group relative flex h-[280px] w-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[hsl(var(--border))] bg-[hsl(var(--card))] dark:bg-[#222222] p-6 text-[hsl(var(--foreground))] shadow-sm transition-all hover:border-[hsl(var(--border-secondary))] hover:shadow-md"
             onClick={handleAddClick}
+            className="group relative flex h-[280px] w-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-marine-300 dark:border-marine-500 bg-marine-300/10 dark:bg-marine-800/20 p-6 text-marine-800 dark:text-white shadow-sm transition-all hover:border-marine-500 hover:shadow-md"
           >
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(var(--muted))] transition-colors group-hover:bg-[hsl(var(--border-secondary))]">
-              <Plus className="h-8 w-8" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-marine-100 dark:bg-marine-700 transition-colors group-hover:bg-marine-600">
+              <Plus className="h-8 w-8 text-marine-700 dark:text-white" />
             </div>
-            <p className="text-base font-medium">
+            <p className="text-base font-semibold">
               {role === "FACULTY" ? "Create Class" : "Join Class"}
             </p>
           </Button>

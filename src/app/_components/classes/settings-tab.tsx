@@ -113,7 +113,11 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
             <Button variant="outline" className="border-border">
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={isLoading}>
+            <Button
+              onClick={handleSave}
+              disabled={isLoading}
+              className="bg-marine-600 text-white hover:bg-marine-700 disabled:opacity-50 transition-colors"
+            >
               {isLoading ? "Saving..." : "Save Changes"}
             </Button>
           </CardFooter>
