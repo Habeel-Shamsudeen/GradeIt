@@ -47,43 +47,32 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
     <>
       <Sidebar collapsible="icon" variant="floating" {...props}>
         <SidebarHeader className="mt-3 p-2">
-          <Link href={"/classes"} className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
             {isMobile || open ? (
               <>
-                {resolvedTheme === "light" ? (
-                  <div className="flex justify-start items-center gap-2">
-                    <Code
-                      size={40}
-                      className="ml-1.5 bg-marine-600 hover:bg-marine-700 p-1 rounded-xl"
-                    />
-                    <p className="font-inter font-bold font-neutral-950">
-                      {" "}
-                      GradeIT
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex justify-start items-center gap-2">
-                    <Code
-                      size={40}
-                      className="ml-1.5 bg-marine-600 p-1 rounded-xl"
-                    />
-                    <p className="font-inter font-bold font-neutral-950">
-                      {" "}
-                      GradeIT
-                    </p>
-                  </div>
-                )}
+                <Link
+                  href="/classes"
+                  className="flex justify-start items-center gap-2"
+                >
+                  <Code
+                    size={40}
+                    className="ml-1.5 bg-marine-600 hover:bg-marine-700 p-1 rounded-xl"
+                  />
+                  <p className="font-inter font-bold text-neutral-950 dark:text-neutral-50">
+                    gradeIT
+                  </p>
+                </Link>
                 <ModeToggle />
               </>
-            ) : resolvedTheme === "light" ? (
-              <Code
-                size={40}
-                className="ml-1 bg-marine-600 hover:bg-marine-700 p-1 rounded-xl"
-              />
-            ) : (
-              <Code size={40} className="ml-1 bg-marine-600 p-1 rounded-xl" />
-            )}
-          </Link>
+            ) : resolvedTheme === "light" || resolvedTheme === "dark" ? (
+              <Link href="/classes">
+                <Code
+                  size={40}
+                  className="ml-1 bg-marine-600 hover:bg-marine-700 p-1 rounded-xl"
+                />
+              </Link>
+            ) : null}
+          </div>
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={navGroups} label="Classes" />
