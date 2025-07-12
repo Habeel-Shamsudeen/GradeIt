@@ -70,9 +70,9 @@ export default function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="h-12 px-8 button-secondary transition-all"
+              className="h-12 px-8 transition-all border-marine-500 text-marine-500 hover:bg-marine-100 hover:text-marine-900"
             >
-              <Link href={"/classes"}>Learn More</Link>
+              <Link href="/classes">Learn More</Link>
             </Button>
           </motion.div>
         </motion.div>

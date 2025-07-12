@@ -23,10 +23,12 @@ export default function CTASection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="h-12 px-8 bg-white text-primary hover:bg-marine-600 transition-all"
+                className="h-12 px-8 bg-marine-100 text-marine-900 hover:bg-marine-600 hover:text-white transition-all"
               >
-                <Link href={"/classes"}> Get Started </Link>
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <Link href="/classes" className="flex items-center">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </div>
