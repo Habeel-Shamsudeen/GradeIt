@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Beaker, Loader2, Wand2 } from "lucide-react";
+import { Plus, Trash2, Beaker } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
@@ -66,7 +66,10 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
     <div className="space-y-6">
       <div className="grid gap-6">
         <div className="grid gap-2">
-          <Label htmlFor={`question-${question.id}-title`}>
+          <Label
+            htmlFor={`question-${question.id}-title`}
+            className="text-foreground"
+          >
             Question Title
           </Label>
           <Input
@@ -74,13 +77,16 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
             value={question.title}
             onChange={(e) => updateField("title", e.target.value)}
             placeholder="e.g., Implement a Binary Search Tree"
-            className="border-[#E6E4DD]"
+            className="bg-background border border-border text-foreground placeholder:text-muted-foreground"
             required
           />
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={`question-${question.id}-description`}>
+          <Label
+            htmlFor={`question-${question.id}-description`}
+            className="text-foreground"
+          >
             Description
           </Label>
           <Textarea
@@ -88,13 +94,16 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
             value={question.description}
             onChange={(e) => updateField("description", e.target.value)}
             placeholder="Provide detailed instructions for this question..."
-            className="min-h-32 resize-y border-[#E6E4DD]"
+            className="min-h-32 resize-y bg-background border border-border text-foreground placeholder:text-muted-foreground"
             required
           />
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={`question-${question.id}-language`}>
+          <Label
+            htmlFor={`question-${question.id}-language`}
+            className="text-foreground"
+          >
             Programming Language
           </Label>
           <Select
@@ -103,7 +112,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
           >
             <SelectTrigger
               id={`question-${question.id}-language`}
-              className="border-[#E6E4DD]"
+              className="bg-background border border-border text-foreground"
             >
               <SelectValue placeholder="Select a language" />
             </SelectTrigger>
@@ -118,12 +127,12 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
         </div>
       </div>
 
-      <Separator className="my-6 bg-[#E6E4DD]" />
+      <Separator className="my-6 bg-border" />
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base font-medium text-[#141413]">
-            <Beaker className="h-4 w-4 text-[#605F5B]" />
+          <h3 className="flex items-center gap-2 text-base font-medium text-foreground">
+            <Beaker className="h-4 w-4 text-muted-foreground" />
             Test Cases
           </h3>
           <div className="flex gap-2">
@@ -138,7 +147,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
               type="button"
               variant="outline"
               onClick={addTestCase}
-              className="gap-1 border-[#E6E4DD]"
+              className="gap-1 border-border"
             >
               <Plus className="h-4 w-4" />
               Add Test Case
@@ -155,10 +164,10 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <Card className="rounded-xl border-[#E6E4DD] bg-[#FAFAF8]">
+              <Card className="rounded-xl border border-border bg-background">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between pb-3">
-                    <h4 className="text-sm font-medium text-[#141413]">
+                    <h4 className="text-sm font-medium text-foreground">
                       Test Case {index + 1}
                     </h4>
                     <div className="flex items-center gap-2">
@@ -172,7 +181,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
                         />
                         <Label
                           htmlFor={`test-case-${question.id}-${testCase.id}-hidden`}
-                          className="text-xs font-normal"
+                          className="text-xs text-foreground"
                         >
                           Hidden from students
                         </Label>
@@ -182,7 +191,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => removeTestCase(index)}
-                        className="h-7 w-7 rounded-full p-0 text-[#605F5B] hover:bg-[#F0EFEA] hover:text-[#141413]"
+                        className="h-7 w-7 rounded-full p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         <span className="sr-only">Remove test case</span>
@@ -194,7 +203,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
                     <div className="grid gap-2">
                       <Label
                         htmlFor={`test-case-${question.id}-${testCase.id}-input`}
-                        className="text-xs"
+                        className="text-xs text-foreground"
                       >
                         Input
                       </Label>
@@ -205,7 +214,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
                           updateTestCase(index, "input", e.target.value)
                         }
                         placeholder="Input for this test case..."
-                        className="h-24 resize-none border-[#E6E4DD] text-sm"
+                        className="h-24 resize-none bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground"
                         required
                       />
                     </div>
@@ -213,7 +222,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
                     <div className="grid gap-2">
                       <Label
                         htmlFor={`test-case-${question.id}-${testCase.id}-output`}
-                        className="text-xs"
+                        className="text-xs text-foreground"
                       >
                         Expected Output
                       </Label>
@@ -228,7 +237,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
                           )
                         }
                         placeholder="Expected output for this test case..."
-                        className="h-24 resize-none border-[#E6E4DD] text-sm"
+                        className="h-24 resize-none bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground"
                         required
                       />
                     </div>

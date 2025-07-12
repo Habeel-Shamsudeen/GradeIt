@@ -77,7 +77,7 @@ export function PeopleTab({
         </div>
         <Button
           onClick={() => setInviteDialogOpen(true)}
-          className="gap-1 whitespace-nowrap"
+          className="gap-1 whitespace-nowrap bg-marine-600 text-white hover:bg-marine-700 transition-colors"
         >
           <UserPlus className="h-4 w-4" />
           Invite People

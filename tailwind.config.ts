@@ -9,9 +9,23 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      boxShadow: {
+        "card-default": "0 10px 30px -15px rgba(var(--shadow-color), 0.05)",
+        "card-hover": "0 15px 40px -15px rgba(var(--shadow-color), 0.1)",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        marine: {
+          100: "hsl(var(--marine-100))",
+          200: "hsl(var(--marine-200))",
+          300: "hsl(var(--marine-300))",
+          500: "hsl(var(--marine-500))",
+          600: "hsl(var(--marine-600))",
+          700: "hsl(var(--marine-700))",
+          800: "hsl(var(--marine-800))",
+          900: "hsl(var(--marine-900))",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

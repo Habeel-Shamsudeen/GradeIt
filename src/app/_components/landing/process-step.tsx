@@ -17,20 +17,20 @@ export default function ProcessStep({
   return (
     <motion.div
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      className="relative rounded-2xl border border-border bg-card p-8 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.05)] transition-all hover:shadow-[0_15px_40px_-15px_rgba(0,0,0,0.1)]"
+      className="relative rounded-2xl border border-marine-300 bg-marine-300/10 p-8 shadow-card-default transition-all hover:shadow-card-hover"
     >
-      <div className="absolute -right-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-medium text-background">
+      <div className="absolute -right-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full bg-marine-600 text-xs font-medium text-white">
         {number}
       </div>
       <div className="mb-6 flex justify-center">
-        <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-muted text-foreground">
-          <Icon className="h-7 w-7 text-primary" />
+        <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-marine-100 text-marine-900">
+          <Icon className="h-7 w-7 text-marine-700" />
         </div>
       </div>
-      <h3 className="mb-3 text-xl font-medium text-center text-foreground">
+      <h3 className="mb-3 text-xl font-medium text-center text-marine-900">
         {title}
       </h3>
-      <p className="text-muted-foreground text-center">{description}</p>
+      <p className="text-marine-700 text-center">{description}</p>
     </motion.div>
   );
 }

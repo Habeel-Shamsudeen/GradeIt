@@ -54,7 +54,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
                   <div className="flex justify-start items-center gap-2">
                     <Code
                       size={40}
-                      className="ml-1.5 button-primary p-1 rounded-xl"
+                      className="ml-1.5 bg-marine-600 hover:bg-marine-700 p-1 rounded-xl"
                     />
                     <p className="font-inter font-bold font-neutral-950">
                       {" "}
@@ -65,7 +65,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
                   <div className="flex justify-start items-center gap-2">
                     <Code
                       size={40}
-                      className="ml-1.5 bg-cyan-700 p-1 rounded-xl"
+                      className="ml-1.5 bg-marine-600 p-1 rounded-xl"
                     />
                     <p className="font-inter font-bold font-neutral-950">
                       {" "}
@@ -76,9 +76,12 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
                 <ModeToggle />
               </>
             ) : resolvedTheme === "light" ? (
-              <Code size={40} className="ml-1 button-primary p-1 rounded-xl" />
+              <Code
+                size={40}
+                className="ml-1 bg-marine-600 hover:bg-marine-700 p-1 rounded-xl"
+              />
             ) : (
-              <Code size={40} className="ml-1 bg-cyan-700 p-1 rounded-xl" />
+              <Code size={40} className="ml-1 bg-marine-600 p-1 rounded-xl" />
             )}
           </Link>
         </SidebarHeader>
