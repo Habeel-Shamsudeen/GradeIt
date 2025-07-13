@@ -14,9 +14,23 @@ const config: Config = {
         "card-hover": "0 15px 40px -15px rgba(var(--shadow-color), 0.1)",
       },
       colors: {
+        //Semantic Button Tokens
+        "primary-button": "hsl(var(--primary-button))",
+        "primary-button-foreground": "hsl(var(--primary-button-foreground))",
+        "primary-button-hover": "hsl(var(--primary-button-hover))",
+
+        "secondary-button": "hsl(var(--secondary-button))",
+        "secondary-button-foreground":
+          "hsl(var(--secondary-button-foreground))",
+        "secondary-button-hover": "hsl(var(--secondary-button-hover))",
+
+        "destructive-button": "hsl(var(--destructive-button))",
+        "destructive-button-foreground":
+          "hsl(var(--destructive-button-foreground))",
+
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        marine: {
+        main: {
           100: "hsl(var(--marine-100))",
           200: "hsl(var(--marine-200))",
           300: "hsl(var(--marine-300))",

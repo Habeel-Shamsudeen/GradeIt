@@ -20,7 +20,7 @@ export default function SiteHeader() {
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-marine-600 hover:bg-marine-700">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg  bg-primary-button  hover:bg-main-700">
               <Code className="h-4 w-4 text-primary-foreground" />
             </div>
             <motion.span
@@ -36,19 +36,19 @@ export default function SiteHeader() {
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-foreground">
             <Link
               href="#features"
-              className="hover:text-marine-600 transition-colors"
+              className="hover:text-main-600 transition-colors"
             >
               Features
             </Link>
             <Link
               href="#how-it-works"
-              className="hover:text-marine-600 transition-colors"
+              className="hover:text-main-600 transition-colors"
             >
               How It Works
             </Link>
             <Link
               href="#contact"
-              className="hover:text-marine-600 transition-colors"
+              className="hover:text-main-600 transition-colors"
             >
               Contact
             </Link>
@@ -68,7 +68,7 @@ export default function SiteHeader() {
               <Button
                 size="sm"
                 asChild
-                className="text-background bg-marine-600 hover:bg-marine-700"
+                className="text-background bg-primary-button hover:bg-main-700"
               >
                 <Link href="/classes">Sign up</Link>
               </Button>
@@ -120,7 +120,7 @@ export default function SiteHeader() {
                 <Link href="/classes">Log in</Link>
               </Button>
               <Button
-                className="w-full text-background bg-marine-600 hover:bg-marine-700"
+                className="w-full text-background  bg-primary-button hover:bg-main-700"
                 asChild
               >
                 <Link href="/classes">Sign up</Link>

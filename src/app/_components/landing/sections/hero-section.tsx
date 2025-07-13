@@ -9,6 +9,7 @@ export default function HeroSection() {
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 300], [0, 100]);
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+
   return (
     <section className="relative overflow-hidden py-24 md:py-32 flex justify-center">
       <div className="absolute inset-0 z-0">
@@ -29,7 +30,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block rounded-full bg-marine-600 text-white dark:text-marine-900 px-4 py-1.5 text-sm font-medium transition-colors">
+            <span className="inline-block rounded-full  bg-primary-button  text-white dark:text-main-900 px-4 py-1.5 text-sm font-medium transition-colors">
               Automated Lab Grading
             </span>
           </motion.div>
@@ -60,17 +61,20 @@ export default function HeroSection() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
+            {/* Primary Button */}
             <Button
               size="lg"
-              className="h-12 px-8 bg-marine-600 hover:bg-marine-700 transition-all text-white"
+              className="gap-1 bg-primary-button text-white hover:bg-main-700 "
             >
               Get Started
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
+
+            {/* Secondary Button */}
             <Button
               size="lg"
               variant="outline"
-              className="h-12 px-8 transition-all border-marine-500 text-marine-500 hover:bg-marine-100 hover:text-marine-900"
+              className="h-12 px-8 transition-all border-main-500 text-secondary-button-foreground hover:bg-secondary-button-hover hover:text-main-900"
             >
               <Link href="/classes">Learn More</Link>
             </Button>

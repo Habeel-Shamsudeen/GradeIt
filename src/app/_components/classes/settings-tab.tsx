@@ -116,7 +116,7 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
             <Button
               onClick={handleSave}
               disabled={isLoading}
-              className="bg-marine-600 text-white hover:bg-marine-700 disabled:opacity-50 transition-colors"
+              className=" bg-primary-button text-white hover:bg-primary-button-hover disabled:opacity-50 transition-colors"
             >
               {isLoading ? "Saving..." : "Save Changes"}
             </Button>

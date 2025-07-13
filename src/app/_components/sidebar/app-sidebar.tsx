@@ -56,7 +56,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
                 >
                   <Code
                     size={40}
-                    className="ml-1.5 bg-marine-600 hover:bg-marine-700 p-1 rounded-xl"
+                    className="ml-1.5  bg-primary-button hover:bg-primary-button-hover p-1 rounded-xl"
                   />
                   <p className="font-inter font-bold text-neutral-950 dark:text-neutral-50">
                     gradeIT
@@ -68,7 +68,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
               <Link href="/classes">
                 <Code
                   size={40}
-                  className="ml-1 bg-marine-600 hover:bg-marine-700 p-1 rounded-xl"
+                  className="ml-1  bg-primary-button  hover:bg-primary-button-hover p-1 rounded-xl"
                 />
               </Link>
             ) : null}

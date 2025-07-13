@@ -270,7 +270,7 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
         <Button
           type="submit"
           disabled={loading}
-          className="bg-marine-600 text-white hover:bg-marine-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className=" bg-primary-button text-white hover:bg-primary-button-hover disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Creating..." : "Create Assignment"}
         </Button>

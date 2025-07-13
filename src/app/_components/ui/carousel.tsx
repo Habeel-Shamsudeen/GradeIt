@@ -81,7 +81,7 @@ export function Carousel({
     <div
       ref={containerRef}
       className={cn(
-        "relative overflow-hidden rounded-3xl border border-marine-200 bg-marine-100 dark:bg-marine-900 transition-colors",
+        "relative overflow-hidden rounded-3xl border border-main-200 bg-main-100 dark:bg-main-900 transition-colors",
         className,
       )}
       onMouseEnter={() => setIsHovering(true)}
@@ -125,14 +125,14 @@ export function Carousel({
         <>
           <button
             onClick={goToPrev}
-            className="absolute left-2 sm:left-4 top-1/2 z-10 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-marine-200 text-marine-800 hover:bg-marine-300 transition-all shadow-md"
+            className="absolute left-2 sm:left-4 top-1/2 z-10 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-main-200 text-main-800 hover:bg-main-300 transition-all shadow-md"
             aria-label="Previous slide"
           >
             <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-2 sm:right-4 top-1/2 z-10 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-marine-200 text-marine-800 hover:bg-marine-300 transition-all shadow-md"
+            className="absolute right-2 sm:right-4 top-1/2 z-10 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-main-200 text-main-800 hover:bg-main-300 transition-all shadow-md"
             aria-label="Next slide"
           >
             <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -150,8 +150,8 @@ export function Carousel({
               className={cn(
                 "h-2 w-2 rounded-full transition-all",
                 currentIndex === index
-                  ? "w-6 bg-marine-600"
-                  : "bg-marine-500/40 hover:bg-marine-500",
+                  ? "w-6  bg-primary-button "
+                  : "bg-main-500/40 hover:bg-main-500",
               )}
               aria-label={`Go to slide ${index + 1}`}
             />
