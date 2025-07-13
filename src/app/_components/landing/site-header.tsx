@@ -68,7 +68,7 @@ export default function SiteHeader() {
               <Button
                 size="sm"
                 asChild
-                className="text-background bg-marine-600 hover:bg-marine-700"
+                className="text-background bg-primary-button hover:bg-marine-700"
               >
                 <Link href="/classes">Sign up</Link>
               </Button>
@@ -120,7 +120,7 @@ export default function SiteHeader() {
                 <Link href="/classes">Log in</Link>
               </Button>
               <Button
-                className="w-full text-background bg-marine-600 hover:bg-marine-700"
+                className="w-full text-background  bg-primary-button hover:bg-marine-700"
                 asChild
               >
                 <Link href="/classes">Sign up</Link>

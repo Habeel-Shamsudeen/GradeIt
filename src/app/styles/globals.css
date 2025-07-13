@@ -4,6 +4,17 @@
 
 @layer base {
   :root {
+    --primary-button: var(--marine-600);
+    --primary-button-foreground: var(--marine-100);
+    --primary-button-hover: var(--marine-700);
+
+    --secondary-button: var(--marine-200);
+    --secondary-button-foreground: var(--marine-900);
+    --secondary-button-hover: var(--marine-100);
+
+    --destructive-button: 0 84.2% 60.2%;
+    --destructive-button-foreground: 0 0% 98%;
+
     --marine-900: 210 100% 15%;
     --marine-800: 210 100% 30%;
     --marine-700: 210 100% 40%;
@@ -70,6 +81,17 @@
   }
 
   .dark {
+    --primary-button: var(--marine-600);
+    --primary-button-foreground: var(--marine-100);
+    --primary-button-hover: var(--marine-700);
+
+    --secondary-button: var(--marine-200);
+    --secondary-button-foreground: var(--marine-900);
+    --secondary-button-hover: var(--marine-100);
+
+    --destructive-button: 0 62.8% 30.6%;
+    --destructive-button-foreground: 0 0% 98%;
+
     --marine-900: 210 100% 95%;
     --marine-800: 210 100% 85%;
     --marine-700: 210 100% 70%;
@@ -134,6 +156,7 @@
     --font-inter: "Inter", sans-serif;
   }
 }
+
 /* * {
   border: 0.1px solid gray;
   box-sizing: border-box;
@@ -183,6 +206,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
