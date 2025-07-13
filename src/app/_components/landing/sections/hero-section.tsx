@@ -30,7 +30,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block rounded-full bg-marine-600 text-white dark:text-marine-900 px-4 py-1.5 text-sm font-medium transition-colors">
+            <span className="inline-block rounded-full  bg-primary-button  text-white dark:text-main-900 px-4 py-1.5 text-sm font-medium transition-colors">
               Automated Lab Grading
             </span>
           </motion.div>
@@ -64,7 +64,7 @@ export default function HeroSection() {
             {/* Primary Button */}
             <Button
               size="lg"
-              className="h-12 px-8 transition-all bg-primary-button text-primary-button-foreground hover:bg-primary-button-hover"
+              className="gap-1 bg-primary-button text-white hover:bg-main-700 "
             >
               Get Started
               <ChevronRight className="ml-2 h-4 w-4" />
@@ -74,7 +74,7 @@ export default function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="h-12 px-8 transition-all border-marine-500 text-secondary-button-foreground hover:bg-secondary-button-hover hover:text-marine-900"
+              className="h-12 px-8 transition-all border-main-500 text-secondary-button-foreground hover:bg-secondary-button-hover hover:text-main-900"
             >
               <Link href="/classes">Learn More</Link>
             </Button>

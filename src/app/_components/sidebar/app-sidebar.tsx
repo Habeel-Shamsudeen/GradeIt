@@ -68,7 +68,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
               <Link href="/classes">
                 <Code
                   size={40}
-                  className="ml-1 bg-marine-600 hover:bg-primary-button-hover p-1 rounded-xl"
+                  className="ml-1  bg-primary-button  hover:bg-primary-button-hover p-1 rounded-xl"
                 />
               </Link>
             ) : null}

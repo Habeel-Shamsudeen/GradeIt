@@ -30,7 +30,7 @@ export function AssignmentList({
         {role === "FACULTY" && (
           <Button
             onClick={handleCreateAssignment}
-            className="gap-1 bg-primary-button text-white hover:bg-marine-700 "
+            className="gap-1 bg-primary-button text-white hover:bg-primary-button-hover"
           >
             <Plus className="h-4 w-4" />
             Create Assignment

@@ -30,7 +30,7 @@ const config: Config = {
 
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        marine: {
+        main: {
           100: "hsl(var(--marine-100))",
           200: "hsl(var(--marine-200))",
           300: "hsl(var(--marine-300))",

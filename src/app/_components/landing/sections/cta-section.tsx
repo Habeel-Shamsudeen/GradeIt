@@ -11,7 +11,7 @@ export default function CTASection() {
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               Ready to transform your{" "}
-              <span className="text-marine-600">coding</span>{" "}
+              <span className="text-main-600">coding</span>{" "}
               <span className="text-foreground">classroom?</span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
@@ -23,7 +23,7 @@ export default function CTASection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="h-12 px-8 bg-marine-100 text-marine-900 hover:bg-marine-600 hover:text-white transition-all"
+                className="h-12 px-8 bg-main-100 text-main-900 hover:bg-main-600 hover:text-white transition-all"
               >
                 <Link href="/classes" className="flex items-center">
                   Get Started
