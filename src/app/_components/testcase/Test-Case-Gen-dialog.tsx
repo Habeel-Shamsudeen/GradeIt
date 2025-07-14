@@ -101,7 +101,10 @@ export default function TestCaseGenarationDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-1 border-[#E6E4DD]">
+        <Button
+          variant="outline"
+          className="gap-1 border-border text-foreground hover:bg-muted"
+        >
           <Wand2 className="h-4 w-4" />
           Generate Test Cases
         </Button>
@@ -121,9 +124,7 @@ export default function TestCaseGenarationDialog({
               max={10}
               step={1}
               value={[number]}
-              onValueChange={(value) => {
-                SetNumber(() => value[0]);
-              }}
+              onValueChange={(value) => SetNumber(value[0])}
             />
           </div>
           <div className="grid gap-3">
@@ -132,13 +133,15 @@ export default function TestCaseGenarationDialog({
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" className="border-border">
+              Cancel
+            </Button>
           </DialogClose>
           <Button
             type="button"
             onClick={generateTestCases}
             disabled={isGenerating}
-            className="gap-1 bg-primary-button text-white hover:bg-primary-button-hover disabled:opacity-50 disabled:cursor-not-allowed"
+            className="gap-1 bg-primary-button text-primary-button-foreground hover:bg-primary-button-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isGenerating ? (
               <>

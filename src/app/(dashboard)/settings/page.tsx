@@ -24,12 +24,14 @@ export default async function Settings() {
 
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="profile">
+          <TabsTrigger
+            value="profile"
+            className="text-main-600 border-b-2 border-transparent data-[state=active]:border-main-700 data-[state=active]:text-main-700"
+          >
             <UserAccountIcon className="h-5 w-5" />
             Profile
           </TabsTrigger>
         </TabsList>
-
         <TabsContent value="profile">
           <div className="p-6 rounded-2xl border-2 border-accent">
             <Suspense fallback={<SettingsFormSkeleton />}>

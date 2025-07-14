@@ -64,25 +64,28 @@ export default async function SubmissionsPage({
           className="h-8 w-8 rounded-full"
         >
           <Link href={`/classes/${classCode}/${assignmentId}`}>
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 text-muted-foreground" />
             <span className="sr-only">Back to assignment</span>
           </Link>
         </Button>
 
         <div>
-          <h1 className="text-2xl font-medium text-[#141413]">
+          <h1 className="text-2xl font-medium text-foreground">
             Submission History
           </h1>
-          <p className="text-[#605F5B]">{assignment.title}</p>
+          <p className="text-muted-foreground">{assignment.title}</p>
         </div>
       </div>
 
       <div className="space-y-6">
         {submissionsByQuestion.map(({ question, submissions }, index) => (
-          <Card key={question.id} className="rounded-2xl border-[#E6E4DD]">
+          <Card
+            key={question.id}
+            className="rounded-xl border border-border bg-background text-foreground"
+          >
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg">
-                <span className="mr-2">Question {index + 1}:</span>{" "}
+              <CardTitle className="text-base font-medium">
+                <span className="mr-2">Question {index + 1}:</span>
                 {question.title}
               </CardTitle>
               {/* <Badge
@@ -99,11 +102,11 @@ export default async function SubmissionsPage({
 
             <CardContent>
               {submissions.length === 0 ? (
-                <div className="py-6 text-center text-[#605F5B]">
+                <div className="py-6 text-center text-muted-foreground">
                   No submissions yet for this question
                 </div>
               ) : (
-                <div className="divide-y divide-[#E6E4DD]">
+                <div className="divide-y divide-border">
                   {submissions.map((submission) => (
                     <div
                       key={submission.id}
@@ -114,13 +117,13 @@ export default async function SubmissionsPage({
                           className={cn(
                             "flex h-10 w-10 items-center justify-center rounded-full",
                             submission.status === "COMPLETED" &&
-                              "bg-[#7EBF8E]/10 text-[#7EBF8E]",
+                              "bg-green-500/10 text-green-500",
                             submission.status === "FAILED" &&
-                              "bg-[#D2886F]/10 text-[#D2886F]",
+                              "bg-destructive/10 text-destructive",
                             submission.status === "PARTIAL" &&
-                              "bg-[#F1E6D0]/10 text-[#3A3935]",
+                              "bg-muted/20 text-muted-foreground",
                             submission.status === "PENDING" &&
-                              "bg-[#E6E4DD]/50 text-[#605F5B]",
+                              "bg-muted text-muted-foreground",
                           )}
                         >
                           {submission.status === "COMPLETED" && (
@@ -139,21 +142,21 @@ export default async function SubmissionsPage({
 
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-medium text-[#141413]">
+                            <p className="font-medium text-foreground">
                               {new Date(
                                 submission.submittedAt,
                               ).toLocaleString()}
                             </p>
                             <Badge
                               variant="outline"
-                              className="border-[#E6E4DD] text-[#605F5B]"
+                              className="border-border text-muted-foreground"
                             >
                               {submission.language}
                             </Badge>
                           </div>
 
                           {submission.status !== "PENDING" && (
-                            <div className="flex gap-4 text-sm text-[#605F5B]">
+                            <div className="flex gap-4 text-sm text-muted-foreground">
                               {submission.score !== null && (
                                 <span>Score: {submission.score}%</span>
                               )}
@@ -161,10 +164,10 @@ export default async function SubmissionsPage({
                                 <span
                                   className={cn(
                                     submission.plagiarismScore > 30 &&
-                                      "text-[#D2886F]",
+                                      "text-destructive",
                                     submission.plagiarismScore > 15 &&
                                       submission.plagiarismScore <= 30 &&
-                                      "text-[#F1E6D0]/90",
+                                      "text-yellow-700",
                                   )}
                                 >
                                   Similarity:{" "}
@@ -188,7 +191,7 @@ export default async function SubmissionsPage({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="gap-1.5 border-[#E6E4DD]"
+                        className="gap-1.5 border-border text-foreground"
                         asChild
                       >
                         <Link

@@ -90,7 +90,7 @@ export function FacultyView({
   return (
     <div className="container mx-auto max-w-7xl p-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-medium text-[#141413]">
+        <h1 className="text-2xl font-medium text-foreground">
           {assignment.title}
         </h1>
         <p className="mt-1 text-[#605F5B]">
@@ -109,23 +109,25 @@ export function FacultyView({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-4">
-        <Card className="rounded-2xl border-[#E6E4DD]">
+        <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-[#605F5B]" />
+              <Users className="h-5 w-5 text-muted-foreground" />
               Total Students
             </CardTitle>
             <CardDescription>Number of enrolled students</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-medium">{totalStudents}</p>
+            <p className="text-2xl font-medium text-foreground">
+              {totalStudents}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-[#E6E4DD]">
+        <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-[#7EBF8E]" />
+              <CheckCircle className="h-5 w-5 text-green-600" />
               Completed
             </CardTitle>
             <CardDescription>
@@ -133,41 +135,47 @@ export function FacultyView({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-medium">{completedCount}</p>
+            <p className="text-2xl font-medium text-foreground">
+              {completedCount}
+            </p>
             <Progress
               value={(completedCount / totalStudents) * 100}
-              className="mt-2 "
+              className="mt-2"
             />
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-[#E6E4DD]">
+        <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-[#F1E6D0]" />
+              <Clock className="h-5 w-5 text-yellow-600" />
               In Progress
             </CardTitle>
             <CardDescription>Students currently working</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-medium">{inProgressCount}</p>
+            <p className="text-2xl font-medium text-foreground">
+              {inProgressCount}
+            </p>
             <Progress
               value={(inProgressCount / totalStudents) * 100}
-              className="mt-2 "
+              className="mt-2"
             />
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-[#E6E4DD]">
+        <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-[#D2886F]" />
+              <XCircle className="h-5 w-5 text-red-500" />
               Not Started
             </CardTitle>
             <CardDescription>Students yet to begin</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-medium">{notStartedCount}</p>
+            <p className="text-2xl font-medium text-foreground">
+              {notStartedCount}
+            </p>
             <Progress
               value={(notStartedCount / totalStudents) * 100}
               className="mt-2"
@@ -177,26 +185,23 @@ export function FacultyView({
       </div>
 
       <div className="mt-8">
-        <Card className="rounded-2xl border-[#E6E4DD]">
+        <Card className="rounded-2xl border-border">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Student Progress</CardTitle>
               <div className="flex gap-2">
                 <div className="relative w-64">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#605F5B]" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Search students..."
-                    className="pl-9 border-[#E6E4DD]"
+                    className="pl-9 border-border"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="gap-1.5 border-[#E6E4DD]"
-                    >
+                    <Button variant="outline" className="gap-1.5 border-border">
                       <Filter className="h-4 w-4" />
                       Filter
                     </Button>
@@ -210,7 +215,7 @@ export function FacultyView({
                 </DropdownMenu>
                 <Button
                   variant="outline"
-                  className="gap-1.5 border-[#E6E4DD]"
+                  className="gap-1.5 border-border"
                   onClick={() => exportToCSV(students)}
                 >
                   <Download className="h-4 w-4" />
@@ -220,7 +225,7 @@ export function FacultyView({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="divide-y divide-[#E6E4DD]">
+            <div className="divide-y divide-border">
               {filteredStudents.map((student) => (
                 <motion.div
                   key={student.id}
@@ -229,26 +234,28 @@ export function FacultyView({
                   className="flex items-center justify-between py-4"
                 >
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-10 w-10 border border-[#E6E4DD]">
+                    <Avatar className="h-10 w-10 border border-border">
                       <AvatarImage src={student.avatar} alt={student.name} />
                       <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-[#141413]">
+                      <p className="font-medium text-foreground">
                         {student.name}
                       </p>
-                      <p className="text-sm text-[#605F5B]">{student.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {student.email}
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                      <p className="text-sm font-medium text-[#141413]">
+                      <p className="text-sm font-medium text-foreground">
                         {student.questionsCompleted} /{" "}
                         {assignment.questions.length} Questions
                       </p>
                       {student.status === "completed" && (
-                        <p className="text-sm text-[#605F5B]">
+                        <p className="text-sm text-muted-foreground">
                           Score: {student.score}%
                         </p>
                       )}
@@ -257,11 +264,11 @@ export function FacultyView({
                       className={cn(
                         "flex h-8 items-center rounded-full px-3 text-sm",
                         student.status === "completed" &&
-                          "bg-[#7EBF8E]/10 text-[#7EBF8E]",
+                          "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400",
                         student.status === "in_progress" &&
-                          "bg-[#F1E6D0]/10 text-[#3A3935]",
+                          "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400",
                         student.status === "not_started" &&
-                          "bg-[#D2886F]/10 text-[#D2886F]",
+                          "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400",
                       )}
                     >
                       {student.status === "completed" && "Completed"}
@@ -271,7 +278,7 @@ export function FacultyView({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2 text-[#605F5B]"
+                      className="h-8 px-2 text-muted-foreground"
                       onClick={async () => {
                         await setStudentCookie(student.id);
                         window.location.href = `/classes/${classCode}/${assignment.id}/submissions`;
@@ -284,7 +291,7 @@ export function FacultyView({
               ))}
 
               {filteredStudents.length === 0 && (
-                <div className="py-8 text-center text-[#605F5B]">
+                <div className="py-8 text-center text-muted-foreground">
                   No students found matching your search
                 </div>
               )}
