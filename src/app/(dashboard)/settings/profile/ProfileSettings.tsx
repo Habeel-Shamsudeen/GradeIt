@@ -99,7 +99,9 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
         <form onSubmit={handleProfileSubmit} className="space-y-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="mb-1 text-2xl font-bold">Personal Info</h2>
+              <h2 className="mb-1 text-2xl font-bold text-foreground">
+                Personal Info
+              </h2>
               <p className="text-sm font-medium text-muted-foreground">
                 Update your personal details here
               </p>
@@ -107,7 +109,7 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
             <Button
               type="submit"
               disabled={!form.formState.isDirty || isSubmitting}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto bg-primary-button text-primary-button-foreground hover:bg-primary-button-hover"
             >
               {isSubmitting ? (
                 <>
@@ -121,7 +123,7 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
           </div>
 
           {form.formState.errors.root && (
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-destructive">
               {form.formState.errors.root.message}
             </p>
           )}
@@ -131,7 +133,7 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
               className="flex flex-col gap-4 sm:flex-row sm:items-center"
               id="name"
             >
-              <FormLabel className="w-full sm:w-1/2 font-medium">
+              <FormLabel className="w-full sm:w-1/2 font-medium text-foreground">
                 Name
               </FormLabel>
               <div className="grid w-full sm:w-1/2 grid-cols-1 sm:grid-cols-2 gap-4">
@@ -143,7 +145,7 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
                       <FormControl>
                         <Input
                           placeholder="First Name"
-                          className="h-12"
+                          className="h-12 border border-input bg-background text-foreground focus-visible:ring-ring"
                           {...field}
                         />
                       </FormControl>
@@ -159,7 +161,7 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
                       <FormControl>
                         <Input
                           placeholder="Last Name"
-                          className="h-12"
+                          className="h-12 border border-input bg-background text-foreground focus-visible:ring-ring"
                           {...field}
                         />
                       </FormControl>
@@ -171,9 +173,9 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
             </div>
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <FormLabel className="w-full sm:w-1/2 font-medium">
+              <FormLabel className="w-full sm:w-1/2 font-medium text-foreground">
                 Email Address
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-muted-foreground">
                   (Logged in with {titleCase(userLoginMethod ?? "Google")})
                 </p>
               </FormLabel>
@@ -197,12 +199,14 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
             </div>
             {/* //profile picture */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <FormLabel className="w-full sm:w-1/2">Profile Photo</FormLabel>
+              <FormLabel className="w-full sm:w-1/2 font-medium text-foreground">
+                Profile Photo
+              </FormLabel>
               <div className="w-full sm:w-1/2">
                 <img
                   src={profileImageUrl}
                   alt="Profile"
-                  className="h-16 w-16 rounded-full border"
+                  className="h-16 w-16 rounded-full border border-border"
                 />
               </div>
             </div>

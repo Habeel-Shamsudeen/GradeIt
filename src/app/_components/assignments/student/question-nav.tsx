@@ -17,7 +17,7 @@ export function QuestionNav({
   onSelect,
 }: QuestionNavProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-wrap">
       {questions.map((question, index) => (
         <Button
           key={question.id}
@@ -28,15 +28,14 @@ export function QuestionNav({
             currentIndex === index && "bg-accent",
           )}
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-xs">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-black dark:bg-black dark:text-white text-xs">
             {index + 1}
           </span>
           <span className="hidden sm:inline">{question.title}</span>
-          {/* Status indicators would be dynamic based on user's progress */}
           {index === 0 ? (
-            <Check className="h-3.5 w-3.5 text-[#7EBF8E]" />
+            <Check className="h-3.5 w-3.5 text-green-500" />
           ) : (
-            <Clock className="h-3.5 w-3.5 text-[#605F5B]" />
+            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
           )}
         </Button>
       ))}

@@ -46,7 +46,6 @@ export default async function SubmissionDetailPage({
     notFound();
   }
 
-  // Calculate test case statistics
   const totalTestCases = submission.testCaseResults.length;
   const passedTestCases = submission.testCaseResults.filter(
     (tc) => tc.status === "PASSED",
@@ -70,16 +69,16 @@ export default async function SubmissionDetailPage({
         </Button>
 
         <div>
-          <h1 className="text-2xl font-medium text-[#141413]">
+          <h1 className="text-2xl font-medium text-foreground">
             Submission Details
           </h1>
-          <p className="text-[#605F5B]">{submission.questionTitle}</p>
+          <p className="text-muted-foreground">{submission.questionTitle}</p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Card className="rounded-2xl border-[#E6E4DD]">
+          <Card className="rounded-2xl border-border">
             <CardHeader>
               <CardTitle>Submitted Code</CardTitle>
               <CardDescription>
@@ -87,15 +86,15 @@ export default async function SubmissionDetailPage({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg bg-[#1E1E1E] p-4">
-                <pre className="overflow-x-auto text-sm text-white">
+              <div className="rounded-lg bg-muted p-4">
+                <pre className="overflow-x-auto text-sm text-muted-foreground">
                   <code>{submission.code}</code>
                 </pre>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="mt-6 rounded-2xl border-[#E6E4DD]">
+          <Card className="mt-6 rounded-2xl border-border">
             <CardHeader>
               <CardTitle>Test Results</CardTitle>
               <CardDescription>
@@ -108,7 +107,7 @@ export default async function SubmissionDetailPage({
                 {submission.testCaseResults.map((result, index) => (
                   <div
                     key={result.id}
-                    className="rounded-lg border border-[#E6E4DD] p-4"
+                    className="rounded-lg border border-border p-4"
                   >
                     <div className="mb-2 flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -116,11 +115,11 @@ export default async function SubmissionDetailPage({
                           className={cn(
                             "flex h-6 w-6 items-center justify-center rounded-full",
                             result.status === "PASSED" &&
-                              "bg-[#7EBF8E]/10 text-[#7EBF8E]",
+                              "bg-status-passed text-status-passed-foreground",
                             result.status === "FAILED" &&
-                              "bg-[#D2886F]/10 text-[#D2886F]",
+                              "bg-destructive/10 text-destructive",
                             result.status === "PENDING" &&
-                              "bg-[#E6E4DD]/50 text-[#605F5B]",
+                              "bg-status-pending text-status-pending-foreground",
                           )}
                         >
                           {result.status === "PASSED" && (
@@ -133,18 +132,18 @@ export default async function SubmissionDetailPage({
                             <Clock className="h-4 w-4" />
                           )}
                         </div>
-                        <p className="font-medium text-[#141413]">
+                        <p className="font-medium text-foreground">
                           Test Case {index + 1}
                         </p>
                       </div>
                       <Badge
                         className={cn(
                           result.status === "PASSED" &&
-                            "bg-[#7EBF8E] hover:bg-[#6CAF7E]",
+                            "bg-status-passed text-status-passed-foreground",
                           result.status === "FAILED" &&
-                            "bg-[#D2886F] hover:bg-[#C27A63]",
+                            "bg-destructive hover:bg-destructive/90",
                           result.status === "PENDING" &&
-                            "bg-[#E6E4DD] text-[#605F5B]",
+                            "bg-status-pending text-status-pending-foreground",
                         )}
                       >
                         {result.status}
@@ -152,30 +151,32 @@ export default async function SubmissionDetailPage({
                     </div>
 
                     {result.executionTime && (
-                      <p className="mb-2 text-xs text-[#605F5B]">
+                      <p className="mb-2 text-xs text-muted-foreground">
                         Execution Time: {result.executionTime}ms
                       </p>
                     )}
 
                     <div className="space-y-2 text-sm">
                       <div>
-                        <p className="text-[#605F5B]">Input:</p>
-                        <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-xs">
+                        <p className="text-muted-foreground">Input:</p>
+                        <pre className="mt-1 rounded bg-muted p-2 text-xs">
                           {result.testCase.input}
                         </pre>
                       </div>
 
                       <div>
-                        <p className="text-[#605F5B]">Expected Output:</p>
-                        <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-xs">
+                        <p className="text-muted-foreground">
+                          Expected Output:
+                        </p>
+                        <pre className="mt-1 rounded bg-muted p-2 text-xs">
                           {result.testCase.expectedOutput}
                         </pre>
                       </div>
 
                       {result.actualOutput && (
                         <div>
-                          <p className="text-[#605F5B]">Your Output:</p>
-                          <pre className="mt-1 rounded bg-[#F0EFEA] p-2 text-xs">
+                          <p className="text-muted-foreground">Your Output:</p>
+                          <pre className="mt-1 rounded bg-muted p-2 text-xs">
                             {result.actualOutput}
                           </pre>
                         </div>
@@ -183,8 +184,8 @@ export default async function SubmissionDetailPage({
 
                       {result.errorMessage && (
                         <div>
-                          <p className="text-[#D2886F]">Error:</p>
-                          <pre className="mt-1 rounded bg-[#D2886F]/10 p-2 text-xs text-[#D2886F]">
+                          <p className="text-destructive">Error:</p>
+                          <pre className="mt-1 rounded bg-destructive/10 p-2 text-xs text-destructive">
                             {result.errorMessage}
                           </pre>
                         </div>
@@ -198,26 +199,26 @@ export default async function SubmissionDetailPage({
         </div>
 
         <div>
-          <Card className="rounded-2xl border-[#E6E4DD]">
+          <Card className="rounded-2xl border-border">
             <CardHeader>
               <CardTitle>Submission Info</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-[#605F5B]">Status</p>
+                  <p className="text-sm text-muted-foreground">Status test D</p>
                   <div className="mt-1 flex items-center gap-2">
                     <div
                       className={cn(
                         "flex h-6 w-6 items-center justify-center rounded-full",
                         submission.status === "COMPLETED" &&
-                          "bg-[#7EBF8E]/10 text-[#7EBF8E]",
+                          "bg-status-passed text-status-passed-foreground",
                         submission.status === "FAILED" &&
-                          "bg-[#D2886F]/10 text-[#D2886F]",
+                          "bg-destructive/10 text-destructive",
                         submission.status === "PARTIAL" &&
-                          "bg-[#F1E6D0]/10 text-[#3A3935]",
+                          "bg-status-partial text-status-partial-foreground",
                         submission.status === "PENDING" &&
-                          "bg-[#E6E4DD]/50 text-[#605F5B]",
+                          "bg-status-pending text-status-pending-foreground",
                       )}
                     >
                       {submission.status === "COMPLETED" && (
@@ -233,22 +234,22 @@ export default async function SubmissionDetailPage({
                         <Clock className="h-4 w-4" />
                       )}
                     </div>
-                    <span className="font-medium text-[#141413]">
+                    <span className="font-medium text-foreground">
                       {submission.status.replace(/_/g, " ")}
                     </span>
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-sm text-[#605F5B]">Submitted At</p>
-                  <p className="font-medium text-[#141413]">
+                  <p className="text-sm text-muted-foreground">Submitted At</p>
+                  <p className="font-medium text-foreground">
                     {new Date(submission.submittedAt).toLocaleString()}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-sm text-[#605F5B]">Language</p>
-                  <p className="font-medium text-[#141413]">
+                  <p className="text-sm text-muted-foreground">Language</p>
+                  <p className="font-medium text-foreground">
                     {submission.language}
                   </p>
                 </div>
@@ -257,46 +258,35 @@ export default async function SubmissionDetailPage({
                   <>
                     {submission.score !== null && (
                       <div>
-                        <p className="text-sm text-[#605F5B]">Score</p>
+                        <p className="text-sm text-muted-foreground">Score</p>
                         <div className="mt-1">
                           <div className="flex items-center justify-between">
-                            <p className="font-medium text-[#141413]">
+                            <p className="font-medium text-foreground">
                               {submission.score}%
                             </p>
                           </div>
                           <Progress
                             value={submission.score}
                             className="mt-1 h-2"
-                            // indicatorClassName={cn(
-                            //   submission.score >= 90 && "bg-[#7EBF8E]",
-                            //   submission.score >= 60 && submission.score < 90 && "bg-[#F1E6D0]",
-                            //   submission.score < 60 && "bg-[#D2886F]",
-                            // )}
                           />
                         </div>
                       </div>
                     )}
 
                     <div>
-                      <p className="text-sm text-[#605F5B]">Test Cases</p>
+                      <p className="text-sm text-muted-foreground">
+                        Test Cases
+                      </p>
                       <div className="mt-1">
                         <div className="flex items-center justify-between">
-                          <p className="font-medium text-[#141413]">
+                          <p className="font-medium text-foreground">
                             {passedTestCases}/{totalTestCases} Passed
                           </p>
-                          <p className="text-sm text-[#605F5B]">
+                          <p className="text-sm text-muted-foreground">
                             {Math.round(passRate)}%
                           </p>
                         </div>
-                        <Progress
-                          value={passRate}
-                          className="mt-1 h-2"
-                          //   indicatorClassName={cn(
-                          //     passRate >= 90 && "bg-[#7EBF8E]",
-                          //     passRate >= 60 && passRate < 90 && "bg-[#F1E6D0]",
-                          //     passRate < 60 && "bg-[#D2886F]",
-                          //   )}
-                        />
+                        <Progress value={passRate} className="mt-1 h-2" />
                       </div>
                     </div>
                   </>
@@ -305,9 +295,11 @@ export default async function SubmissionDetailPage({
                 {submission.plagiarismScore !== null && (
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <p className="text-sm text-[#605F5B]">Similarity Score</p>
+                      <p className="text-sm text-muted-foreground">
+                        Similarity Score
+                      </p>
                       {submission.plagiarismScore > 30 && (
-                        <div className="rounded-full bg-[#D2886F]/10 p-1 text-[#D2886F]">
+                        <div className="rounded-full bg-destructive/10 p-1 text-destructive">
                           <AlertCircle className="h-3.5 w-3.5" />
                         </div>
                       )}
@@ -317,17 +309,18 @@ export default async function SubmissionDetailPage({
                         <p
                           className={cn(
                             "font-medium",
-                            submission.plagiarismScore > 30 && "text-[#D2886F]",
+                            submission.plagiarismScore > 30 &&
+                              "text-destructive",
                             submission.plagiarismScore > 15 &&
                               submission.plagiarismScore <= 30 &&
-                              "text-[#F1E6D0]/90",
+                              "text-yellow-700 dark:text-yellow-300",
                             submission.plagiarismScore <= 15 &&
-                              "text-[#141413]",
+                              "text-foreground",
                           )}
                         >
                           {submission.plagiarismScore.toFixed(1)}%
                         </p>
-                        <p className="text-xs text-[#605F5B]">
+                        <p className="text-xs text-muted-foreground">
                           {submission.plagiarismScore > 30
                             ? "High"
                             : submission.plagiarismScore > 15
@@ -338,15 +331,10 @@ export default async function SubmissionDetailPage({
                       <Progress
                         value={submission.plagiarismScore}
                         className="mt-1 h-2"
-                        // indicatorClassName={cn(
-                        //   submission.plagiarismScore > 30 && "bg-[#D2886F]",
-                        //   submission.plagiarismScore > 15 && submission.plagiarismScore <= 30 && "bg-[#F1E6D0]",
-                        //   submission.plagiarismScore <= 15 && "bg-[#7EBF8E]",
-                        // )}
                       />
                     </div>
                     {submission.plagiarismScore > 30 && (
-                      <p className="mt-1 text-xs text-[#D2886F]">
+                      <p className="mt-1 text-xs text-destructive">
                         High similarity detected. Your submission may be flagged
                         for review.
                       </p>

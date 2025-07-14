@@ -4,6 +4,15 @@
 
 @layer base {
   :root {
+    --status-passed: 145 65% 40%;
+    --status-passed-foreground: 0 0% 100%;
+
+    --status-pending: 210 100% 95%;
+    --status-pending-foreground: 216 100% 39%;
+
+    --status-partial: 48 96% 89%; /* similar to bg-yellow-100 */
+    --status-partial-foreground: 26 100% 27%; /* similar to text-yellow-800 */
+
     --primary-button: var(--marine-600);
     --primary-button-foreground: var(--marine-100);
     --primary-button-hover: var(--marine-700);
@@ -81,6 +90,15 @@
   }
 
   .dark {
+    --status-passed: 145 65% 40%;
+    --status-passed-foreground: 0 0% 100%;
+
+    --status-pending: 216 100% 20%;
+    --status-pending-foreground: 210 100% 85%;
+
+    --status-partial: 48 100% 15%; /* similar to bg-yellow-900 */
+    --status-partial-foreground: 48 100% 85%; /* light yellow for text */
+
     --primary-button: var(--marine-600);
     --primary-button-foreground: var(--marine-100);
     --primary-button-hover: var(--marine-700);

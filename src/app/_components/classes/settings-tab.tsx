@@ -183,7 +183,7 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
       </Card>
 
       {role == "FACULTY" && (
-        <Card className="rounded-2xl border-[#E6E4DD]">
+        <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle>Danger Zone</CardTitle>
             <CardDescription>
@@ -194,44 +194,49 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-sm font-medium">Archive Class</h4>
-                <p className="text-xs text-[#605F5B]">
+                <p className="text-xs text-muted-foreground">
                   Hide this class from active view
                 </p>
               </div>
-              <Button variant="outline" className="border-[#E6E4DD]">
+              <Button variant="outline" className="border-border">
                 Archive
               </Button>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
               <div>
-                <h4 className="text-sm font-medium text-destructive">
+                <h4 className="text-sm font-semibold text-destructive">
                   Delete Class
                 </h4>
-                <p className="text-xs text-[#605F5B]">
+                <p className="text-xs text-muted-foreground">
                   Permanently delete this class and all its data
                 </p>
               </div>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Delete</Button>
+                  <Button variant="destructive" className="text-white">
+                    Delete
+                  </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="bg-background">
                   <AlertDialogHeader>
                     <AlertDialogTitle>
                       Are you absolutely sure?
                     </AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogDescription className="text-muted-foreground">
                       This action cannot be undone. This will permanently delete
                       the class and all associated assignments, questions, and
                       student submissions.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="border-[#E6E4DD]">
+                    <AlertDialogCancel className="border-border text-foreground">
                       Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-destructive text-white hover:bg-destructive/90"
+                    >
                       Delete
                     </AlertDialogAction>
                   </AlertDialogFooter>

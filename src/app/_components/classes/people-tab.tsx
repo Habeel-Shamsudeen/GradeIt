@@ -70,9 +70,9 @@ export function PeopleTab({
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#605F5B]" />
           <Input
             placeholder="Search people..."
-            className="pl-9 border-[#E6E4DD]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 border-border bg-background text-foreground placeholder:text-muted-foreground"
           />
         </div>
         <Button

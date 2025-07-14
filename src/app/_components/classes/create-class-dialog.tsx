@@ -95,7 +95,11 @@ export function CreateClassDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-primary-button text-primary-button-foreground hover:bg-primary-button-hover disabled:opacity-50"
+            >
               {loading ? "Creating..." : "Create Class"}
             </Button>
           </DialogFooter>
