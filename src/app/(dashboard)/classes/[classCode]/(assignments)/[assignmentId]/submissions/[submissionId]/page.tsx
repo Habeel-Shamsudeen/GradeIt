@@ -115,11 +115,11 @@ export default async function SubmissionDetailPage({
                           className={cn(
                             "flex h-6 w-6 items-center justify-center rounded-full",
                             result.status === "PASSED" &&
-                              "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300",
+                              "bg-status-passed text-status-passed-foreground",
                             result.status === "FAILED" &&
                               "bg-destructive/10 text-destructive",
                             result.status === "PENDING" &&
-                              "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+                              "bg-status-pending text-status-pending-foreground",
                           )}
                         >
                           {result.status === "PASSED" && (
@@ -139,11 +139,11 @@ export default async function SubmissionDetailPage({
                       <Badge
                         className={cn(
                           result.status === "PASSED" &&
-                            "bg-green-600 hover:bg-green-700",
+                            "bg-status-passed text-status-passed-foreground",
                           result.status === "FAILED" &&
                             "bg-destructive hover:bg-destructive/90",
                           result.status === "PENDING" &&
-                            "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+                            "bg-status-pending text-status-pending-foreground",
                         )}
                       >
                         {result.status}
@@ -206,19 +206,19 @@ export default async function SubmissionDetailPage({
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Status</p>
+                  <p className="text-sm text-muted-foreground">Status test D</p>
                   <div className="mt-1 flex items-center gap-2">
                     <div
                       className={cn(
                         "flex h-6 w-6 items-center justify-center rounded-full",
                         submission.status === "COMPLETED" &&
-                          "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300",
+                          "bg-status-passed text-status-passed-foreground",
                         submission.status === "FAILED" &&
                           "bg-destructive/10 text-destructive",
                         submission.status === "PARTIAL" &&
-                          "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+                          "bg-status-partial text-status-partial-foreground",
                         submission.status === "PENDING" &&
-                          "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+                          "bg-status-pending text-status-pending-foreground",
                       )}
                     >
                       {submission.status === "COMPLETED" && (

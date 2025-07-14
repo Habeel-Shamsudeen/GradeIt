@@ -117,13 +117,13 @@ export default async function SubmissionsPage({
                           className={cn(
                             "flex h-10 w-10 items-center justify-center rounded-full",
                             submission.status === "COMPLETED" &&
-                              "bg-green-500/10 text-green-500",
+                              "bg-status-passed text-status-passed-foreground",
                             submission.status === "FAILED" &&
                               "bg-destructive/10 text-destructive",
                             submission.status === "PARTIAL" &&
-                              "bg-muted/20 text-muted-foreground",
+                              "bg-status-partial text-status-partial-foreground",
                             submission.status === "PENDING" &&
-                              "bg-muted text-muted-foreground",
+                              "bg-status-pending text-status-pending-foreground",
                           )}
                         >
                           {submission.status === "COMPLETED" && (

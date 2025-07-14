@@ -1,7 +1,6 @@
 "use client";
 
 import { cn, exportToCSV } from "@/lib/utils";
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -37,6 +36,7 @@ import {
 import { AssignmentById } from "@/lib/types/assignment-tyes";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
 import { setStudentCookie } from "@/server/actions/utility-actions";
+
 interface FacultyViewProps {
   assignment: AssignmentById;
   classCode: string;
@@ -49,7 +49,6 @@ export function FacultyView({
   initialStudents,
 }: FacultyViewProps) {
   const [searchQuery, setSearchQuery] = useState("");
-
   const [students, setStudents] = useState(initialStudents);
   const [loading, setLoading] = useState(false);
 
@@ -93,7 +92,7 @@ export function FacultyView({
         <h1 className="text-2xl font-medium text-foreground">
           {assignment.title}
         </h1>
-        <p className="mt-1 text-[#605F5B]">
+        <p className="mt-1 text-muted-foreground">
           Due{" "}
           {assignment.dueDate
             ? new Date(assignment.dueDate).toLocaleDateString("en-US", {
@@ -127,7 +126,7 @@ export function FacultyView({
         <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+              <CheckCircle className="h-5 w-5 text-status-passed" />
               Completed
             </CardTitle>
             <CardDescription>
@@ -148,7 +147,7 @@ export function FacultyView({
         <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-yellow-600" />
+              <Clock className="h-5 w-5 text-status-pending-foreground" />
               In Progress
             </CardTitle>
             <CardDescription>Students currently working</CardDescription>
@@ -167,7 +166,7 @@ export function FacultyView({
         <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-red-500" />
+              <XCircle className="h-5 w-5 text-destructive" />
               Not Started
             </CardTitle>
             <CardDescription>Students yet to begin</CardDescription>
@@ -264,11 +263,11 @@ export function FacultyView({
                       className={cn(
                         "flex h-8 items-center rounded-full px-3 text-sm",
                         student.status === "completed" &&
-                          "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400",
+                          "bg-status-passed text-status-passed-foreground",
                         student.status === "in_progress" &&
-                          "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400",
+                          "bg-status-pending text-status-pending-foreground",
                         student.status === "not_started" &&
-                          "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400",
+                          "bg-destructive text-destructive-foreground",
                       )}
                     >
                       {student.status === "completed" && "Completed"}

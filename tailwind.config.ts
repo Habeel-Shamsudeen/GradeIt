@@ -14,6 +14,14 @@ const config: Config = {
         "card-hover": "0 15px 40px -15px rgba(var(--shadow-color), 0.1)",
       },
       colors: {
+        status: {
+          passed: "hsl(var(--status-passed))",
+          "passed-foreground": "hsl(var(--status-passed-foreground))",
+          pending: "hsl(var(--status-pending))",
+          "pending-foreground": "hsl(var(--status-pending-foreground))",
+          partial: "hsl(var(--status-partial))",
+          "partial-foreground": "hsl(var(--status-partial-foreground))",
+        },
         //Semantic Button Tokens
         "primary-button": "hsl(var(--primary-button))",
         "primary-button-foreground": "hsl(var(--primary-button-foreground))",
