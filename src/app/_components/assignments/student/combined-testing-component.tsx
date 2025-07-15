@@ -44,16 +44,16 @@ export function CombinedTesting({
   console.log("filteredResults", filteredResults);
 
   return (
-    <div className="h-80 overflow-y-auto border-t border-[#2D2D2D] bg-[#1E1E1E]">
-      <div className="sticky top-0 border-b border-[#2D2D2D] bg-[#1E1E1E] px-4 py-3 flex justify-between items-center">
-        <h3 className="text-sm font-medium text-white">Test Results</h3>
+    <div className="h-80 overflow-y-auto border-t border-border bg-background">
+      <div className="sticky top-0 border-b border-border bg-background px-4 py-3 flex justify-between items-center">
+        <h3 className="text-sm font-medium text-foreground">Test Results</h3>
         <div className="flex space-x-2">
           <Button
             size="sm"
             variant="outline"
             className={cn(
-              "border-[#2D2D2D] bg-[#2D2D2D] text-white hover:bg-[#3D3D3D] focus-visible:ring-[#4D4D4D]",
-              isCustomInputOpen && "bg-[#3D3D3D]",
+              "bg-muted text-foreground hover:bg-muted/70 border-border",
+              isCustomInputOpen && "bg-muted/70",
             )}
             onClick={() => setIsCustomInputOpen(!isCustomInputOpen)}
           >
@@ -63,7 +63,7 @@ export function CombinedTesting({
           <Button
             size="sm"
             variant="outline"
-            className="border-[#2D2D2D] bg-[#2D2D2D] text-white hover:bg-[#3D3D3D] focus-visible:ring-[#4D4D4D]"
+            className="bg-muted text-foreground hover:bg-muted/70 border-border"
             onClick={onRunCode}
             disabled={isRunning}
           >
@@ -78,13 +78,13 @@ export function CombinedTesting({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="border-b border-[#2D2D2D] p-4"
+          className="border-b border-border p-4"
         >
           <div className="flex flex-col space-y-3">
             <div>
               <label
                 htmlFor="custom-input"
-                className="mb-2 block text-sm font-medium text-[#A1A1A1]"
+                className="mb-2 block text-sm font-medium text-muted-foreground"
               >
                 Custom Input
               </label>
@@ -93,10 +93,10 @@ export function CombinedTesting({
                 value={customInput}
                 onChange={(e) => onCustomInputChange(e.target.value)}
                 placeholder="Enter your custom test input here..."
-                className="h-24 resize-none border-[#2D2D2D] bg-[#2D2D2D] text-white placeholder:text-[#6D6D6D] focus-visible:ring-[#4D4D4D]"
+                className="h-24 resize-none border-border bg-muted text-foreground placeholder:text-muted-foreground"
                 disabled={isRunning}
               />
-              <p className="mt-1 text-xs text-[#A1A1A1]">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Enter input values separated by line breaks or spaces as
                 required by your code.
               </p>
@@ -105,7 +105,7 @@ export function CombinedTesting({
         </motion.div>
       )}
 
-      <div className="divide-y divide-[#2D2D2D]">
+      <div className="divide-y divide-border">
         {filteredResults.length > 0 ? (
           filteredResults.map((result, index) => (
             <motion.div
@@ -119,23 +119,29 @@ export function CombinedTesting({
                 <div
                   className={cn(
                     "flex h-6 w-6 items-center justify-center rounded-full",
-                    result?.status === "passed" && "bg-[#7EBF8E]",
-                    result?.status === "failed" && "bg-[#D2886F]",
-                    result?.status === "running" && "bg-[#F1E6D0]",
+                    result?.status === "passed" &&
+                      "bg-status-passed text-status-passed-foreground",
+                    result?.status === "failed" &&
+                      "bg-destructive text-destructive-foreground",
+                    result?.status === "running" &&
+                      "bg-status-pending text-status-pending-foreground",
+                    result?.status === "partial" &&
+                      "bg-status-partial text-status-partial-foreground",
                   )}
                 >
                   {result?.status === "passed" && (
-                    <Check className="h-3.5 w-3.5 text-white" />
+                    <Check className="h-3.5 w-3.5" />
                   )}
-                  {result?.status === "failed" && (
-                    <X className="h-3.5 w-3.5 text-white" />
-                  )}
+                  {result?.status === "failed" && <X className="h-3.5 w-3.5" />}
                   {result?.status === "running" && (
-                    <Clock className="h-3.5 w-3.5 text-[#3A3935]" />
+                    <Clock className="h-3.5 w-3.5" />
+                  )}
+                  {result?.status === "partial" && (
+                    <AlertCircle className="h-3.5 w-3.5" />
                   )}
                 </div>
                 <div>
-                  <p className="text-sm text-white">
+                  <p className="text-sm text-foreground">
                     {result?.status === "running"
                       ? "Running code..."
                       : `Test Case ${index + 1}`}
@@ -143,7 +149,7 @@ export function CombinedTesting({
                   {result?.status !== "running" &&
                     result?.runtime &&
                     result?.memory && (
-                      <p className="text-xs text-[#A1A1A1]">
+                      <p className="text-xs text-muted-foreground">
                         Runtime: {result.runtime} | Memory: {result.memory}
                       </p>
                     )}
@@ -152,12 +158,12 @@ export function CombinedTesting({
 
               {result?.input?.length >= 0 && (
                 <Accordion type="single" collapsible className="mt-2">
-                  <AccordionItem value="input" className="border-[#2D2D2D]">
-                    <AccordionTrigger className="py-2 text-xs text-[#A1A1A1] hover:text-white">
+                  <AccordionItem value="input" className="border-border">
+                    <AccordionTrigger className="py-2 text-xs text-muted-foreground hover:text-foreground">
                       Input
                     </AccordionTrigger>
                     <AccordionContent>
-                      <pre className="bg-[#2A2A2A] p-2 rounded text-xs text-white font-mono whitespace-pre-wrap">
+                      <pre className="bg-muted p-2 rounded text-xs text-foreground font-mono whitespace-pre-wrap">
                         {result?.input}
                       </pre>
                     </AccordionContent>
@@ -167,11 +173,11 @@ export function CombinedTesting({
 
               {/* Output Section */}
               {result?.status !== "running" && result?.output && (
-                <div className="mt-3 rounded-md bg-[#2A2A2A] p-3">
-                  <p className="mb-1 text-xs font-medium text-[#A1A1A1]">
+                <div className="mt-3 rounded-md bg-muted p-3">
+                  <p className="mb-1 text-xs font-medium text-muted-foreground">
                     Output:
                   </p>
-                  <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs text-white font-mono">
+                  <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs text-foreground font-mono">
                     {result.output}
                   </pre>
                 </div>
@@ -179,12 +185,14 @@ export function CombinedTesting({
 
               {/* Error Section */}
               {result?.status === "failed" && result?.error && (
-                <div className="mt-3 rounded-md bg-[#2A2A2A] border border-[#D2886F]/20 p-3">
+                <div className="mt-3 rounded-md bg-muted border border-destructive/20 p-3">
                   <div className="flex items-center gap-2 mb-1">
-                    <AlertCircle className="h-3.5 w-3.5 text-[#D2886F]" />
-                    <p className="text-xs font-medium text-[#D2886F]">Error:</p>
+                    <AlertCircle className="h-3.5 w-3.5 text-destructive" />
+                    <p className="text-xs font-medium text-destructive">
+                      Error:
+                    </p>
                   </div>
-                  <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs text-[#D2886F] font-mono">
+                  <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs text-destructive font-mono">
                     {result?.error}
                   </pre>
                 </div>
@@ -192,10 +200,10 @@ export function CombinedTesting({
             </motion.div>
           ))
         ) : (
-          <div className="px-4 py-8 text-center text-sm text-[#A1A1A1]">
+          <div className="px-4 py-8 text-center text-sm text-muted-foreground">
             {isRunning ? (
               <div className="flex flex-col items-center justify-center">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#A1A1A1] border-t-transparent mb-2"></div>
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent mb-2"></div>
                 <span>{codeStatus}</span>
               </div>
             ) : (
