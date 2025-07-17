@@ -6,6 +6,8 @@ import type * as monaco from "monaco-editor";
 import { Play, Send } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { useDebounce } from "@uidotdev/usehooks";
+import { useTheme } from "next-themes";
+
 import {
   Select,
   SelectContent,
@@ -36,6 +38,8 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const codeRef = useRef<string>(code);
+  const { theme } = useTheme();
+
   const [liveCode, setLiveCode] = useState(code);
 
   const debouncedCode = useDebounce(liveCode, 400);
@@ -74,9 +78,10 @@ export function CodeEditor({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-[#2D2D2D] px-4 py-2">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between border-b border-border bg-background px-4 py-2">
         <Select defaultValue={language} disabled>
-          <SelectTrigger className="w-32 border-[#2D2D2D] bg-transparent text-white">
+          <SelectTrigger className="w-32 border-border bg-transparent text-foreground">
             <SelectValue />
           </SelectTrigger>
           <SelectContent defaultValue={language}>
@@ -93,7 +98,7 @@ export function CodeEditor({
             variant="outline"
             onClick={onRun}
             disabled={isRunning}
-            className="gap-1.5 border-[#2D2D2D] bg-transparent text-white hover:bg-[#2D2D2D]"
+            className="gap-1.5 border-border bg-muted text-foreground hover:bg-muted/70"
           >
             <Play className="h-4 w-4" />
             Run
@@ -101,7 +106,7 @@ export function CodeEditor({
           <Button
             onClick={onSubmit}
             disabled={isRunning}
-            className="gap-1.5 bg-[#7EBF8E] text-white hover:bg-[#6CAF7E]"
+            className="gap-1.5 bg-status-passed text-status-passed-foreground hover:bg-status-passed/90"
           >
             <Send className="h-4 w-4" />
             Submit
@@ -109,6 +114,7 @@ export function CodeEditor({
         </div>
       </div>
 
+      {/* Monaco Editor */}
       <Editor
         height="100%"
         defaultLanguage={language.toLowerCase()}
@@ -117,7 +123,7 @@ export function CodeEditor({
         className="flex-1"
         value={liveCode}
         language={language.toLowerCase()}
-        theme="vs-dark"
+        theme={theme === "dark" ? "vs-dark" : "light"}
         options={{
           fontSize: 14,
           fontFamily: "JetBrains Mono, monospace",

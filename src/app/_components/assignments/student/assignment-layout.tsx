@@ -100,9 +100,9 @@ export function AssignmentLayout({
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsDescriptionExpanded(true)}
-                  className="h-12 w-12 rounded-full bg-slate-800 shadow-md hover:shadow-xl hover:bg-muted"
+                  className="h-12 w-12 rounded-full bg-background shadow-md hover:shadow-xl hover:bg-muted transition"
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 text-foreground" />
                 </Button>
               </motion.div>
             )}
