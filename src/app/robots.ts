@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://grade-it-ten.vercel.app/sitemap.xml",
+    sitemap: "https://gradeit.habeel.live/sitemap.xml",
   };
 }

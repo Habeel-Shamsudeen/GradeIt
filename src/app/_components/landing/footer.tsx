@@ -57,6 +57,9 @@ export default function Footer() {
                 <span className="sr-only">Email</span>
               </Link>
             </div>
+            <p className="text-center text-sm text-muted-foreground md:text-left mt-2">
+              &copy; {new Date().getFullYear()} gradeIT. All rights reserved.
+            </p>
           </div>
 
           <div>
@@ -122,25 +125,9 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-
-        <div className="mt-12 border-t border-border pt-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <p className="text-center text-sm text-muted-foreground md:text-left">
-              &copy; {new Date().getFullYear()} gradeIT. All rights reserved.
-            </p>
-            <div className="flex gap-4">
-              {["Privacy", "Terms", "Contact"].map((item) => (
-                <Link
-                  key={item}
-                  href="#"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
+        <p className="text-center mt-20 text-5xl md:text-9xl lg:text-[12rem] xl:text-[13rem] font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 dark:from-neutral-950 to-neutral-200 dark:to-neutral-800 inset-x-0 ">
+          GradeIt
+        </p>
       </div>
     </footer>
   );
