@@ -72,6 +72,7 @@ export function ClassGrid({
             <ClassCard
               {...classItem}
               backgroundColor={getCardBgColor(resolvedTheme)}
+              canEdit={role === "FACULTY"} // Pass canEdit based on role
             />
           </motion.div>
         ))}
