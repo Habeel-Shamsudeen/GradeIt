@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MoreVertical, Users, FolderClosed } from "lucide-react";
+import { MoreVertical, Users, FolderClosed, Copy } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {
   Card,
@@ -17,9 +17,12 @@ import {
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { UserClassroom } from "@/lib/types/class-types";
+import { toast } from "sonner";
+import { copyToClipboard } from "@/lib/utils";
 
 interface ClassCardProps extends UserClassroom {
   backgroundColor: string;
+  canEdit?: boolean; // faculty can edit, students cannot
 }
 
 export function ClassCard({
@@ -28,7 +31,13 @@ export function ClassCard({
   section,
   facultyName,
   backgroundColor,
+  canEdit = false,
 }: ClassCardProps) {
+  const handleCopy = (text: string) => {
+    copyToClipboard(text);
+    toast.success("Copied to clipboard");
+  };
+
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-[#E6E4DD] bg-white transition-all hover:shadow-lg dark:bg-white/[0.02]">
       <Link href={`/classes/${code}`} className="absolute inset-0 z-10">
@@ -55,8 +64,17 @@ export function ClassCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Copy class code</DropdownMenuItem>
-                <DropdownMenuItem>Edit class details</DropdownMenuItem>
+                {/* Copy class code button */}
+                <DropdownMenuItem onClick={() => handleCopy(code)}>
+                  {"Copy class code"}
+                  <Copy className="ml-2 h-4 w-4 opacity-70" />
+                </DropdownMenuItem>
+
+                {/* Edit only for faculty */}
+                {canEdit && (
+                  <DropdownMenuItem>Edit class details</DropdownMenuItem>
+                )}
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive">
                   Archive class
