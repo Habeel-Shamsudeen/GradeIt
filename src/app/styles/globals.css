@@ -3,15 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
   :root {
-    --status-passed: 145 65% 40%;
+    --status-passed: 145 80% 55%;
     --status-passed-foreground: 0 0% 100%;
 
     --status-pending: 210 100% 95%;
-    --status-pending-foreground: 216 100% 39%;
+    --status-pending-foreground: 220 100% 50%;
 
-    --status-partial: 48 96% 89%; /* similar to bg-yellow-100 */
-    --status-partial-foreground: 26 100% 27%; /* similar to text-yellow-800 */
+    --status-partial: 48 96% 89%;
+    --status-partial-foreground: 48 100% 45%;
 
     --primary-button: var(--marine-600);
     --primary-button-foreground: var(--marine-100);
@@ -90,15 +96,14 @@
   }
 
   .dark {
-    --status-passed: 145 65% 40%;
+    --status-passed: 145 80% 30%;
     --status-passed-foreground: 0 0% 100%;
 
-    --status-pending: 216 100% 20%;
-    --status-pending-foreground: 210 100% 85%;
+    --status-pending: 220 100% 20%;
+    --status-pending-foreground: 210 100% 90%;
 
-    --status-partial: 48 100% 15%; /* similar to bg-yellow-900 */
-    --status-partial-foreground: 48 100% 85%; /* light yellow for text */
-
+    --status-partial: 48 100% 20%;
+    --status-partial-foreground: 48 100% 85%;
     --primary-button: var(--marine-600);
     --primary-button-foreground: var(--marine-100);
     --primary-button-hover: var(--marine-700);
@@ -175,61 +180,6 @@
   }
 }
 
-/* * {
-  border: 0.1px solid gray;
-  box-sizing: border-box;
-} */
-
-/* @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-@layer utilities {
-  .font-odin-rounded {
-    font-family: var(--font-odin-rounded);
-  }
-}
-
-@keyframes spin-y {
-  0% {
-    transform: rotateY(0deg);
-  }
-  100% {
-    transform: rotateY(360deg);
-  }
-}
-
-@keyframes spin-x {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-x {
-  animation: spin-x 2s linear infinite;
-}
-.animate-spin-y {
-  animation: spin-y 2s linear infinite;
-} */
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
 .sidebar-gradient {
   background: linear-gradient(
     180deg,
@@ -246,34 +196,4 @@
     rgba(24, 24, 27, 0.96) 100%
   );
   backdrop-filter: blur(8px);
-}
-
-.hero-color {
-  color: #0077b5;
-}
-
-.hero-color-background {
-  background-color: #0077b5;
-  color: #ffffff;
-}
-
-.sub-hero-color {
-  color: #000000;
-}
-
-.button-primary {
-  background-color: #0077b5;
-  color: #ffffff;
-}
-
-.button-secondary {
-  background-color: #ffffff;
-  color: #0077b5;
-  border: 2px solid #0077b5;
-}
-
-.nav-bar {
-  border-radius: 15px;
-  border: 1px solid #262626;
-  background: linear-gradient(180deg, #1e1e1e 0%, #151515 100%);
 }
