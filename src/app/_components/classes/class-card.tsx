@@ -22,7 +22,7 @@ import { copyToClipboard } from "@/lib/utils";
 
 interface ClassCardProps extends UserClassroom {
   backgroundColor: string;
-  canEdit?: boolean; // faculty can edit, students cannot
+  canEdit?: boolean;
 }
 
 export function ClassCard({
@@ -64,21 +64,18 @@ export function ClassCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {/* Copy class code button */}
                 <DropdownMenuItem onClick={() => handleCopy(code)}>
                   {"Copy class code"}
                   <Copy className="ml-2 h-4 w-4 opacity-70" />
                 </DropdownMenuItem>
 
-                {/* Edit only for faculty */}
                 {canEdit && (
-                  <DropdownMenuItem>Edit class details</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href={`/classes/${code}?tab=settings`}>
+                      Edit class details
+                    </Link>
+                  </DropdownMenuItem>
                 )}
-
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive">
-                  Archive class
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
