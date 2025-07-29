@@ -24,10 +24,13 @@ export const metadata: Metadata = {
 
 export default async function ClassPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ classCode: string }>;
+  searchParams: Promise<{ tab?: string }>;
 }) {
   const { classCode } = await params;
+  const { tab } = await searchParams;
   const { classroom } = await getClassbyCode(classCode);
   const { role } = await getUserRole();
   const { assignments } = await getAssignments(classroom?.id || "");
@@ -37,11 +40,14 @@ export default async function ClassPage({
     return notFound();
   }
 
+  const validTabs = ["assignments", "people", "settings"];
+  const activeTab = tab && validTabs.includes(tab) ? tab : "assignments";
+
   return (
     <div className="flex flex-col">
       <ClassHeader classData={classroom} />
       <div className="mx-auto max-w-6xl w-full px-6 pt-6">
-        <Tabs defaultValue="assignments" className="w-full">
+        <Tabs defaultValue={activeTab} className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
             <TabsTrigger value="people">People</TabsTrigger>

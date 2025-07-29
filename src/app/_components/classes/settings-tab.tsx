@@ -191,18 +191,6 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium">Archive Class</h4>
-                <p className="text-xs text-muted-foreground">
-                  Hide this class from active view
-                </p>
-              </div>
-              <Button variant="outline" className="border-border">
-                Archive
-              </Button>
-            </div>
-
             <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
               <div>
                 <h4 className="text-sm font-semibold text-destructive">
