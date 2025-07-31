@@ -24,6 +24,8 @@ import {
   getSubmissions,
   getSubmissionsById,
 } from "@/server/actions/submission-actions";
+import { LanguageIcon } from "@/app/_components/ui/language-icon";
+import { Language } from "@/lib/types/config-types";
 
 export const metadata: Metadata = {
   title: "Submission Details | gradeIT",
@@ -249,9 +251,12 @@ export default async function SubmissionDetailPage({
 
                 <div>
                   <p className="text-sm text-muted-foreground">Language</p>
-                  <p className="font-medium text-foreground">
-                    {submission.language}
-                  </p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <LanguageIcon
+                      size={16}
+                      language={submission.language as Language}
+                    />
+                  </div>
                 </div>
 
                 {submission.status !== "PENDING" && (

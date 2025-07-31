@@ -35,19 +35,45 @@ export const darkCardColors = [
 ];
 
 export const LANGUAGE_ID_MAP = {
-  Assembly: 45, // NASM 2.14.02
-  Bash: 46, // Bash 5.0.0
-  C: 103, // GCC 14.1.0 (latest GCC version)
-  "C++": 105, // GCC 14.1.0 (latest GCC version)
-  Dart: 90, // Dart 2.19.2
-  Go: 107, // Go 1.23.5 (latest version)
-  Java: 91, // JDK 17.0.6 (latest available)
-  JavaScript: 102, // Node.js 22.08.0 (latest available)
-  TypeScript: 101, // TypeScript 5.6.2 (latest available)
-  SQL: 82, // SQLite 3.27.2
-  Rust: 108, // Rust 1.85.0 (latest available)
-  Python: 109, // Python 3.13.2 (latest available)
-  "Python for ML": 32, // Python for ML 3.13.2 (latest ML-specific version)
+  Assembly: 45,
+  Bash: 46,
+  C: 103,
+  "C++": 105,
+  Go: 107,
+  Java: 91,
+  JavaScript: 102,
+  TypeScript: 101,
+  Rust: 108,
+  Python: 109,
+  "Python for ML": 32,
+};
+
+export const LANGUAGE_ICONS = {
+  Assembly: "/svgs/WebAssembly Logo.svg",
+  Bash: "/svgs/Bash Icon.svg",
+  C: "/svgs/C Logo.svg",
+  "C++": "/svgs/C Plus Plus Logo.svg",
+  Go: "/svgs/Gopher Logo.svg",
+  Java: "/svgs/Java Logo.svg",
+  JavaScript: "/svgs/JavaScript Logo.svg",
+  TypeScript: "/svgs/TypeScript Icon.svg",
+  Rust: "/svgs/Rust Logo.svg",
+  Python: "/svgs/Python Logo.svg",
+  "Python for ML": "/svgs/Python Logo.svg",
+};
+
+export const LANGUAGE_COLORS = {
+  Assembly: "#6E4C13",
+  Bash: "#4EAA25",
+  C: "#A8B9CC",
+  "C++": "#00599C",
+  Go: "#00ADD8",
+  Java: "#ED8B00",
+  JavaScript: "#F7DF1E",
+  TypeScript: "#3178C6",
+  Rust: "#CE422B",
+  Python: "#3776AB",
+  "Python for ML": "#3776AB",
 };
 
 export const landingImages = [

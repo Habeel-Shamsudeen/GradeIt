@@ -10,3 +10,17 @@ export interface WebhookPayload {
   testCaseId: string;
   questionId: string;
 }
+
+export enum Language {
+  Assembly = "Assembly",
+  Bash = "Bash",
+  C = "C",
+  "C++" = "C++",
+  Go = "Go",
+  Java = "Java",
+  JavaScript = "JavaScript",
+  TypeScript = "TypeScript",
+  Rust = "Rust",
+  Python = "Python",
+  "Python for ML" = "Python for ML",
+}

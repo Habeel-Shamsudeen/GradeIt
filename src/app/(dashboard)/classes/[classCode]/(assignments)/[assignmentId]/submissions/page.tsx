@@ -20,6 +20,8 @@ import { cn } from "@/lib/utils";
 import { getAssignmentById } from "@/server/actions/assignment-actions";
 import { getSubmissions } from "@/server/actions/submission-actions";
 import NotFound from "@/app/not-found";
+import { LanguageIcon } from "@/app/_components/ui/language-icon";
+import { Language } from "@/lib/types/config-types";
 
 export const metadata: Metadata = {
   title: "Submissions | gradeIT",
@@ -151,7 +153,10 @@ export default async function SubmissionsPage({
                               variant="outline"
                               className="border-border text-muted-foreground"
                             >
-                              {submission.language}
+                              <LanguageIcon
+                                size={12}
+                                language={submission.language as Language}
+                              />
                             </Badge>
                           </div>
 
