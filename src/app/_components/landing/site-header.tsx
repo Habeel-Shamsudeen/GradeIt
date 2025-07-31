@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/app/_components/ui/button";
-import { Code } from "lucide-react";
+import { Code, Menu } from "lucide-react";
 import ModeToggle from "./mode-toggle";
 
 export default function SiteHeader() {
@@ -36,21 +36,36 @@ export default function SiteHeader() {
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-foreground">
             <Link
               href="#features"
-              className="hover:text-main-600 transition-colors"
+              className="relative group px-3 py-2 rounded-md transition-all duration-200 hover:text-main-600 hover:bg-main-50 dark:hover:bg-main-900/20"
             >
-              Features
+              <span className="relative z-10">Features</span>
+              <motion.div
+                className="absolute inset-0 bg-main-100 dark:bg-main-800/30 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                initial={false}
+                transition={{ duration: 0.2 }}
+              />
             </Link>
             <Link
               href="#how-it-works"
-              className="hover:text-main-600 transition-colors"
+              className="relative group px-3 py-2 rounded-md transition-all duration-200 hover:text-main-600 hover:bg-main-50 dark:hover:bg-main-900/20"
             >
-              How It Works
+              <span className="relative z-10">How It Works</span>
+              <motion.div
+                className="absolute inset-0 bg-main-100 dark:bg-main-800/30 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                initial={false}
+                transition={{ duration: 0.2 }}
+              />
             </Link>
             <Link
               href="#contact"
-              className="hover:text-main-600 transition-colors"
+              className="relative group px-3 py-2 rounded-md transition-all duration-200 hover:text-main-600 hover:bg-main-50 dark:hover:bg-main-900/20"
             >
-              Contact
+              <span className="relative z-10">Contact</span>
+              <motion.div
+                className="absolute inset-0 bg-main-100 dark:bg-main-800/30 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                initial={false}
+                transition={{ duration: 0.2 }}
+              />
             </Link>
           </nav>
 
@@ -68,41 +83,24 @@ export default function SiteHeader() {
               <Button
                 size="sm"
                 asChild
-                className="text-background bg-primary-button hover:bg-main-700"
+                className="text-white bg-primary-button hover:bg-main-700"
               >
                 <Link href="/classes">Sign up</Link>
               </Button>
             </div>
 
-            {/* Mobile Hamburger_ */}
             <Button
               variant="outline"
               size="icon"
-              className="md:hidden border-border"
+              className="sm:hidden border-border"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <line x1="4" x2="20" y1="12" y2="12" />
-                <line x1="4" x2="20" y1="6" y2="6" />
-                <line x1="4" x2="20" y1="18" y2="18" />
-              </svg>
+              <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
             </Button>
           </div>
         </div>
 
-        {/* Mobile hamburger menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -110,21 +108,61 @@ export default function SiteHeader() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden bg-background border-t border-border px-6 pb-4 pt-2 space-y-2"
+              className="sm:hidden bg-background border-t border-border px-6 pb-4 pt-2 space-y-3"
             >
-              <Button
-                variant="outline"
-                className="w-full border-border text-text hover:bg-muted hover:text-foreground"
-                asChild
-              >
-                <Link href="/classes">Log in</Link>
-              </Button>
-              <Button
-                className="w-full text-background  bg-primary-button hover:bg-main-700"
-                asChild
-              >
-                <Link href="/classes">Sign up</Link>
-              </Button>
+              <div className="flex flex-col gap-1">
+                <Link
+                  href="#features"
+                  className="group relative px-3 py-2 rounded-md transition-all duration-200 hover:text-main-600 hover:bg-main-50 dark:hover:bg-main-900/20"
+                >
+                  <span className="relative z-10 font-medium">Features</span>
+                  <motion.div
+                    className="absolute inset-0 bg-main-100 dark:bg-main-800/30 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    initial={false}
+                    transition={{ duration: 0.2 }}
+                  />
+                </Link>
+                <Link
+                  href="#how-it-works"
+                  className="group relative px-3 py-2 rounded-md transition-all duration-200 hover:text-main-600 hover:bg-main-50 dark:hover:bg-main-900/20"
+                >
+                  <span className="relative z-10 font-medium">
+                    How It Works
+                  </span>
+                  <motion.div
+                    className="absolute inset-0 bg-main-100 dark:bg-main-800/30 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    initial={false}
+                    transition={{ duration: 0.2 }}
+                  />
+                </Link>
+                <Link
+                  href="#contact"
+                  className="group relative px-3 py-2 rounded-md transition-all duration-200 hover:text-main-600 hover:bg-main-50 dark:hover:bg-main-900/20"
+                >
+                  <span className="relative z-10 font-medium">Contact</span>
+                  <motion.div
+                    className="absolute inset-0 bg-main-100 dark:bg-main-800/30 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    initial={false}
+                    transition={{ duration: 0.2 }}
+                  />
+                </Link>
+              </div>
+
+              <div className="flex flex-col gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  className="w-full border-border text-text hover:bg-muted hover:text-foreground"
+                  asChild
+                >
+                  <Link href="/classes">Log in</Link>
+                </Button>
+                <Button
+                  className="w-full text-white  bg-primary-button hover:bg-main-700"
+                  asChild
+                >
+                  <Link href="/classes">Sign up</Link>
+                </Button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

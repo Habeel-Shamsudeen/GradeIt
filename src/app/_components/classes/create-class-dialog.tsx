@@ -71,7 +71,7 @@ export function CreateClassDialog({
             <Input
               id="name"
               placeholder="e.g., Data Structures and Algorithms"
-              className="border-[#E6E4DD]"
+              className="border-border"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -81,7 +81,7 @@ export function CreateClassDialog({
             <Input
               id="section"
               placeholder="e.g., CS201"
-              className="border-[#E6E4DD]"
+              className="border-border"
               value={section}
               onChange={(e) => setSection(e.target.value)}
             />
@@ -91,14 +91,14 @@ export function CreateClassDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-[#E6E4DD]"
+              className="border-border"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-primary-button text-primary-button-foreground hover:bg-primary-button-hover disabled:opacity-50"
+              className="bg-primary-button text-white hover:bg-primary-button-hover disabled:opacity-50"
             >
               {loading ? "Creating..." : "Create Class"}
             </Button>

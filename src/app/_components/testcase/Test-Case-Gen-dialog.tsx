@@ -141,7 +141,7 @@ export default function TestCaseGenarationDialog({
             type="button"
             onClick={generateTestCases}
             disabled={isGenerating}
-            className="gap-1 bg-primary-button text-primary-button-foreground hover:bg-primary-button-hover disabled:opacity-50 disabled:cursor-not-allowed"
+            className="gap-1 bg-primary-button text-white hover:bg-primary-button-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isGenerating ? (
               <>

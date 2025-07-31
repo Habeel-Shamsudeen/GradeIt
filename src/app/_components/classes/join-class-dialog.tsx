@@ -65,7 +65,7 @@ export function JoinClassDialog({ open, onOpenChange }: JoinClassDialogProps) {
             <Input
               id="code"
               placeholder="Enter 6-digit class code"
-              className="border-[#E6E4DD] text-lg tracking-wider"
+              className="border-border text-lg tracking-wider"
               onChange={(e) => setCode(e.target.value)}
             />
           </div>
@@ -74,14 +74,14 @@ export function JoinClassDialog({ open, onOpenChange }: JoinClassDialogProps) {
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-[#E6E4DD]"
+              className="border-border"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-primary-button text-primary-button-foreground hover:bg-primary-button-hover disabled:opacity-50"
+              className="bg-primary-button text-white hover:bg-primary-button-hover disabled:opacity-50"
             >
               {loading ? "Joining..." : "Join Class"}
             </Button>

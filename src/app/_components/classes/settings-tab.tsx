@@ -136,7 +136,7 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-sm font-medium">Class Code</h4>
-                <p className="text-xs text-[#605F5B]">
+                <p className="text-xs text-muted-foreground">
                   Students can use this code to join your class
                 </p>
               </div>
@@ -153,17 +153,13 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
                   <Copy className="h-4 w-4" />
                   <span className="sr-only">Copy class code</span>
                 </Button>
-                {/* <Button variant="outline" size="icon" className="h-8 w-8 border-[#E6E4DD]">
-                  <RefreshCw className="h-4 w-4" />
-                  <span className="sr-only">Reset class code</span>
-                </Button> */}
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-sm font-medium">Invite Link</h4>
-                <p className="text-xs text-[#605F5B]">
+                <p className="text-xs text-muted-foreground">
                   Share this link to invite people to your class
                 </p>
               </div>
@@ -206,7 +202,7 @@ export function ClassSettingsTab({ classData, role }: ClassSettingsTabProps) {
                     Delete
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="bg-background">
+                <AlertDialogContent className="bg-background border-border">
                   <AlertDialogHeader>
                     <AlertDialogTitle>
                       Are you absolutely sure?

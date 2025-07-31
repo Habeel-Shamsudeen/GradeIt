@@ -51,15 +51,22 @@ export function PeopleTab({
   );
 
   const handleRemoveFromClass = async (studentId: string) => {
+    const toastId = toast.loading("Removing student from class...");
     try {
       const response = await removeStudentFromClass(classCode, studentId);
       if (response.status === "success") {
-        toast.success("Student removed from class");
+        toast.success("Student removed from class", {
+          id: toastId,
+        });
       } else {
-        toast.error("Failed to remove student from class");
+        toast.error("Failed to remove student from class", {
+          id: toastId,
+        });
       }
     } catch (error) {
-      toast.error("An error occurred while removing the student");
+      toast.error("An error occurred while removing the student", {
+        id: toastId,
+      });
     }
   };
 
@@ -67,7 +74,7 @@ export function PeopleTab({
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#605F5B]" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search people..."
             value={searchQuery}
@@ -88,19 +95,19 @@ export function PeopleTab({
         <div className="p-6 border-b border-border">
           <h3 className="text-lg font-medium">Teachers</h3>
         </div>
-        <div className="divide-y divide-[#E6E4DD]">
+        <div className="divide-y divide-border">
           {filteredTeachers.length === 0 ? (
-            <div className="p-6 text-center text-[#605F5B]">
+            <div className="p-6 text-center text-muted-foreground">
               No teachers found
             </div>
           ) : (
             filteredTeachers.map((teacher) => (
               <div
                 key={teacher.id}
-                className="flex items-center justify-between p-4 hover:shadow-md"
+                className="flex items-center justify-between p-4 hover:bg-muted/50"
               >
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border border-[#E6E4DD]">
+                  <Avatar className="h-10 w-10 border border-border">
                     <AvatarImage src={teacher.image || ""} alt={teacher.name} />
                     <AvatarFallback>
                       {teacher.name.charAt(0)}
@@ -118,7 +125,7 @@ export function PeopleTab({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 rounded-full text-[#605F5B]"
+                    className="h-8 w-8 rounded-full text-muted-foreground"
                   >
                     <Mail className="h-4 w-4" />
                     <span className="sr-only">Email</span>
@@ -128,7 +135,7 @@ export function PeopleTab({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-full text-[#605F5B]"
+                        className="h-8 w-8 rounded-full text-muted-foreground"
                       >
                         <MoreVertical className="h-4 w-4" />
                         <span className="sr-only">More options</span>
@@ -148,18 +155,20 @@ export function PeopleTab({
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         <div className="p-6 border-b border-border">
           <h3 className="text-lg font-medium">Students</h3>
-          <p className="text-sm text-[#605F5B]">{students.length} students</p>
+          <p className="text-sm text-muted-foreground">
+            {students.length} students
+          </p>
         </div>
         <div className="divide-y divide-border">
           {filteredStudents.length === 0 ? (
-            <div className="p-6 text-center text-[#605F5B]">
+            <div className="p-6 text-center text-muted-foreground">
               No students found
             </div>
           ) : (
             filteredStudents.map((student) => (
               <div
                 key={student.id}
-                className="flex items-center justify-between p-4"
+                className="flex items-center justify-between p-4 hover:bg-muted/50"
               >
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-border">
@@ -171,14 +180,16 @@ export function PeopleTab({
                   </Avatar>
                   <div>
                     <p className="font-medium">{student.name}</p>
-                    <p className="text-sm text-[#605F5B]">{student.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {student.email}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 rounded-full text-[#605F5B]"
+                    className="h-8 w-8 rounded-full text-muted-foreground"
                   >
                     <Mail className="h-4 w-4" />
                     <span className="sr-only">Email</span>
@@ -188,7 +199,7 @@ export function PeopleTab({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-full text-[#605F5B]"
+                        className="h-8 w-8 rounded-full text-muted-foreground"
                       >
                         <MoreVertical className="h-4 w-4" />
                         <span className="sr-only">More options</span>

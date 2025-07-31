@@ -1,11 +1,12 @@
-# 🚀 GradeIT - Online Code Evaluation & Grading System
+# GradeIT - Online Code Evaluation & Grading System
 
 GradeIT is an automated online coding platform designed for college-level programming lab assignments. It simplifies grading by automatically executing student submissions, checking correctness against test cases, and providing instant feedback.
 
-🔗 [Live Demo](https://gradeit.habeel.live/)  
+🔗 [Live Demo](https://gradeit.habeel.live/)
+🔗 [Alternate Live Link](https://gradeit.habeel.live/)
 📘 Student Classroom Join Code: `8e343e`
 
-## 🎯 Features
+## Features
 
 - ✅ **Automated Code Execution & Grading** - Runs submissions and checks correctness.
 - ✅ **Multiple Language Support** - Supports Python, Java, C++, and more.
@@ -27,13 +28,7 @@ GradeIT is an automated online coding platform designed for college-level progra
 
 ---
 
-That's a very clear and comprehensive setup guide\! To seamlessly integrate Docker Compose, we'll add a new section for it, making it an alternative (and often preferred) method for local setup.
-
-Here's how you can include the Docker Compose setup:
-
----
-
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### 1️⃣ Prerequisites
 
@@ -159,7 +154,7 @@ Follow the same steps as in Option A for creating and populating your **`.env`**
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 GradeIT is a classroom management and coding assignment platform with two primary roles:
 
@@ -230,15 +225,9 @@ In many colleges, computer labs rely on outdated manual systems that require con
 
 ---
 
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](https://chatgpt.com/c/LICENSE) file for details.
-
----
-
 ## 🤝 Contributing
 
-Contributions are welcome! If you find any bugs or want to enhance the project, feel free to submit a pull request.
+Contributions are welcome! If you find any bugs or want to enhance the project, feel free to raise an issue or submit a pull request to the test branch.
 
 ---
 

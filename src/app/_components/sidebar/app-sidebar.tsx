@@ -54,22 +54,20 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
                   href="/classes"
                   className="flex justify-start items-center gap-2"
                 >
-                  <Code
-                    size={40}
-                    className="ml-1.5 text-white bg-primary-button hover:bg-primary-button-hover p-1 rounded-xl"
-                  />
-                  <p className="font-inter font-bold text-neutral-950 dark:text-neutral-50">
+                  <div className="ml-1.5 flex h-8 w-8 items-center justify-center rounded-lg  bg-primary-button  hover:bg-main-700">
+                    <Code className="h-4 w-4 text-primary-foreground" />
+                  </div>
+                  <span className="text-lg font-semibold text-foreground">
                     gradeIT
-                  </p>
+                  </span>
                 </Link>
                 <ModeToggle />
               </>
             ) : resolvedTheme === "light" || resolvedTheme === "dark" ? (
               <Link href="/classes">
-                <Code
-                  size={40}
-                  className="ml-1 text-white  bg-primary-button  hover:bg-primary-button-hover p-1 rounded-xl"
-                />
+                <div className="ml-2 flex h-8 w-8 items-center justify-center rounded-lg  bg-primary-button  hover:bg-main-700">
+                  <Code className="h-4 w-4 text-primary-foreground" />
+                </div>
               </Link>
             ) : null}
           </div>
