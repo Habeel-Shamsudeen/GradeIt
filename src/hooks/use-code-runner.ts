@@ -23,6 +23,10 @@ export function useCodeRunner({
       toast.warning("Code already in process of execution");
       return;
     }
+    if (code.trim() === "") {
+      toast.error("Please enter some code to run");
+      return;
+    }
     setIsRunning(true);
     setCodeStatus("Running");
     toast.success("Running your code...");
@@ -57,6 +61,10 @@ export function useCodeRunner({
   const submitCode = async () => {
     if (isRunning) {
       toast.warning("Submission already in progress");
+      return;
+    }
+    if (code.trim() === "") {
+      toast.error("Please enter some code to submit");
       return;
     }
     setIsRunning(true);

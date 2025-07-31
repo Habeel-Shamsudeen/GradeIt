@@ -41,7 +41,6 @@ export function CombinedTesting({
 }: CombinedTestingProps) {
   const [isCustomInputOpen, setIsCustomInputOpen] = useState(false);
   const filteredResults = results.filter((result) => !result.hidden);
-  console.log("filteredResults", filteredResults);
 
   return (
     <div className="h-80 overflow-y-auto border-t border-border bg-background">
