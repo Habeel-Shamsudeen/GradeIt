@@ -3,10 +3,10 @@ import Link from "next/link";
 import {
   ChevronLeft,
   FileText,
-  CheckCircle,
   XCircle,
   Clock,
   AlertTriangle,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -90,16 +90,6 @@ export default async function SubmissionsPage({
                 <span className="mr-2">Question {index + 1}:</span>
                 {question.title}
               </CardTitle>
-              {/* <Badge
-                className={cn(
-                  "px-3 py-1",
-                  question.difficulty === "Easy" && "bg-[#7EBF8E] hover:bg-[#6CAF7E]",
-                  question.difficulty === "Medium" && "bg-[#F1E6D0] text-[#3A3935] hover:bg-[#EBDBBC]",
-                  question.difficulty === "Hard" && "bg-[#D2886F] hover:bg-[#C27A63]",
-                )}
-              >
-                {question.difficulty}
-              </Badge> */}
             </CardHeader>
 
             <CardContent>
@@ -129,7 +119,7 @@ export default async function SubmissionsPage({
                           )}
                         >
                           {submission.status === "COMPLETED" && (
-                            <CheckCircle className="h-5 w-5" />
+                            <CheckCircle2 className="h-5 w-5" />
                           )}
                           {submission.status === "FAILED" && (
                             <XCircle className="h-5 w-5" />

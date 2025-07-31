@@ -36,16 +36,16 @@ export default function InvitePeopleDialog({
                 <Input
                   readOnly
                   value={inviteLink}
-                  className="rounded-r-none border-[#E6E4DD]"
+                  className="rounded-r-none border-border"
                 />
                 <Button
-                  className="rounded-l-none"
+                  className="rounded-l-none bg-primary-button text-white hover:bg-primary-button-hover"
                   onClick={() => navigator.clipboard.writeText(inviteLink)}
                 >
                   Copy
                 </Button>
               </div>
-              <p className="text-xs text-[#605F5B]">
+              <p className="text-xs text-muted-foreground">
                 Anyone with this link can join your class. The link expires in 7
                 days.
               </p>
@@ -60,13 +60,13 @@ export default function InvitePeopleDialog({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 border-[#E6E4DD]"
+                  className="h-7 border-border"
                   onClick={() => navigator.clipboard.writeText(classCode)}
                 >
                   Copy
                 </Button>
               </div>
-              <p className="text-xs text-[#605F5B]">
+              <p className="text-xs text-muted-foreground">
                 Students can use this code to join your class.
               </p>
             </div>

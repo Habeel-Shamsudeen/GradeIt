@@ -32,10 +32,10 @@ export function FullscreenAlert() {
         transition={{ delay: 0.1 }}
         className="w-full max-w-md px-4"
       >
-        <Card className="rounded-2xl border-[#E6E4DD] bg-white shadow-lg">
+        <Card className="rounded-2xl border-border bg-background shadow-lg">
           <CardHeader className="pb-4">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#F0EFEA]">
-              <Maximize2 className="h-8 w-8 text-[#141413]" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <Maximize2 className="h-8 w-8 text-muted-foreground" />
             </div>
             <CardTitle className="text-center text-xl">
               Fullscreen Required
@@ -45,7 +45,7 @@ export function FullscreenAlert() {
               dishonesty.
             </CardDescription>
           </CardHeader>
-          <CardContent className="pb-4 text-center text-[#605F5B]">
+          <CardContent className="pb-4 text-center text-muted-foreground">
             <p>
               Please enter fullscreen mode to continue with your assignment.
               This helps maintain academic integrity by preventing access to
@@ -53,7 +53,10 @@ export function FullscreenAlert() {
             </p>
           </CardContent>
           <CardFooter className="flex justify-center pb-6">
-            <Button onClick={handleEnterFullscreen} className="gap-2">
+            <Button
+              onClick={handleEnterFullscreen}
+              className="gap-2 bg-primary-button text-white hover:bg-primary-button-hover"
+            >
               <Maximize2 className="h-4 w-4" />
               Enter Fullscreen
             </Button>

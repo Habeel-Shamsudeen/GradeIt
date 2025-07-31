@@ -14,7 +14,7 @@ export function QuestionDescription({ question }: QuestionDescriptionProps) {
       </div>
       <Separator className="my-4" />
 
-      <div className="[&>h2]:text-lg [&>h2]:font-medium [&>p]:text-[#605F5B] [&>pre]:bg-[#F0EFEA] [&>pre]:p-4 [&>pre]:rounded-lg">
+      <div className="[&>h2]:text-lg [&>h2]:font-medium [&>p]:text-muted-foreground [&>pre]:bg-muted [&>pre]:p-4 [&>pre]:rounded-lg">
         <div dangerouslySetInnerHTML={{ __html: question.description }} />
 
         <h2>Example Test Cases:</h2>
