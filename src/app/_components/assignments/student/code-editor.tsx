@@ -39,7 +39,6 @@ export function CodeEditor({
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const codeRef = useRef<string>(code);
   const { theme } = useTheme();
-
   const [liveCode, setLiveCode] = useState(code);
 
   const debouncedCode = useDebounce(liveCode, 400);
@@ -80,7 +79,7 @@ export function CodeEditor({
     <div className="flex h-full flex-col">
       {/* Toolbar */}
       <div className="flex items-center justify-between border-b border-border bg-background px-4 py-2">
-        <Select defaultValue={language} disabled>
+        <Select value={language} disabled>
           <SelectTrigger className="w-32 border-border bg-transparent text-foreground">
             <SelectValue />
           </SelectTrigger>
