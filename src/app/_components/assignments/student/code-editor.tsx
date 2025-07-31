@@ -16,6 +16,8 @@ import {
   SelectValue,
 } from "@/app/_components/ui/select";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
+import { Language } from "@/lib/types/config-types";
+import { LanguageIcon } from "../../ui/language-icon";
 
 interface CodeEditorProps {
   code: string;
@@ -86,7 +88,7 @@ export function CodeEditor({
           <SelectContent defaultValue={language}>
             {Object.keys(LANGUAGE_ID_MAP).map((lang) => (
               <SelectItem key={lang} value={lang}>
-                {lang}
+                <LanguageIcon language={lang as Language} />
               </SelectItem>
             ))}
           </SelectContent>

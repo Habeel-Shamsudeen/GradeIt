@@ -18,6 +18,8 @@ import { Separator } from "@/app/_components/ui/separator";
 import { Question, TestCase } from "@/lib/types/assignment-tyes";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
 import TestCaseGenarationDialog from "../../testcase/Test-Case-Gen-dialog";
+import { LanguageIcon } from "../../ui/language-icon";
+import { Language } from "@/lib/types/config-types";
 
 interface QuestionFormProps {
   question: Question;
@@ -119,7 +121,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
             <SelectContent>
               {Object.keys(LANGUAGE_ID_MAP).map((language) => (
                 <SelectItem key={language} value={language}>
-                  {language}
+                  <LanguageIcon language={language as Language} />
                 </SelectItem>
               ))}
             </SelectContent>
