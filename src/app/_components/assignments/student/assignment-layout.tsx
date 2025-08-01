@@ -117,7 +117,7 @@ export function AssignmentLayout({
               animate={{ width: "60%" }}
               exit={{ width: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex h-full flex-col bg-[#1E1E1E]"
+              className="flex h-full flex-col bg-background"
             >
               <CodeEditor
                 code={code}
@@ -129,7 +129,7 @@ export function AssignmentLayout({
                 disableCopyPaste={assignment.copyPastePrevention}
               />
 
-              <div className="border-t border-[#2D2D2D]">
+              <div className="border-t border-border">
                 <CombinedTesting
                   results={testResults}
                   customInput={customInput}

@@ -66,7 +66,7 @@ export default function HeroSection() {
               size="lg"
               className="gap-1 bg-primary-button text-white hover:bg-main-700 "
             >
-              Get Started
+              <Link href="/classes">Get Started</Link>
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
 

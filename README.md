@@ -1,39 +1,66 @@
-# 🚀 GradeIT - Online Code Evaluation & Grading System
+# GradeIT - Online Code Evaluation & Grading System
 
 GradeIT is an automated online coding platform designed for college-level programming lab assignments. It simplifies grading by automatically executing student submissions, checking correctness against test cases, and providing instant feedback.
 
-🔗 [Live Demo](https://gradeit.habeel.live/)  
+🔗 [Live Demo](https://gradeit.habeel.live/)
+
+🔗 [Alternate Live Link](https://grade-it-ten.vercel.app/)
 📘 Student Classroom Join Code: `8e343e`
 
-## 🎯 Features
+## Features
 
-- ✅ **Automated Code Execution & Grading** - Runs submissions and checks correctness.
-- ✅ **Multiple Language Support** - Supports Python, Java, C++, and more.
-- ✅ **Plagiarism Detection (Optional)** - Detects similar submissions within an assignment.
-- ✅ **Secure Execution Environment** - Runs code in a sandboxed, isolated environment.
-- ✅ **Custom Test Cases** - Teachers can define their own test cases for grading.
-- ✅ **Instant Feedback** - Provides real-time feedback to students.
-- ✅ **ML Code Execution (Future Scope)** - Supports executing ML models in a controlled environment.
+### 🎯 **Core Features**
+
+- **Automated Code Execution & Grading** - Runs submissions and checks correctness against test cases
+- **Multiple Language Support** - Supports Python, Java, C++, JavaScript, TypeScript, and more
+- **Secure Execution Environment** - Runs code in a sandboxed, isolated environment using Judge0
+- **Custom Test Cases** - Teachers can define their own test cases with hidden/public visibility
+- **AI-Powered Test Case Generation** - Automatically generate comprehensive test cases using AI based on question descriptions
+- **Instant Feedback** - Provides real-time feedback to students with detailed execution results
+- **Role-Based Access Control** - Separate interfaces for Faculty and Students
+
+### 🏫 **Faculty Features**
+
+- **Classroom Management** - Create and manage virtual classrooms with unique codes
+- **Assignment Creation** - Build multi-question assignments with detailed problem statements
+- **Live Student Monitoring** - Real-time tracking of student progress and activity
+- **Analytics Dashboard** - Comprehensive student progress tracking with export capabilities
+- **Submission Review** - Detailed view of student submissions with test case results
+- **Performance Analytics** - Track completion rates, scores, and submission patterns
+- **AI-Powered Test Case Generation** - Automatically generate comprehensive test cases based on question descriptions using AI
+
+### 👨‍🎓 **Student Features**
+
+- **Interactive Code Editor** - Monaco editor with syntax highlighting and auto-completion
+- **Custom Test Case Testing** - Run code against custom inputs before submission
+- **Submission History** - View all previous submissions with detailed feedback
+- **Real-time Status Updates** - Live updates on code execution and grading status
+- **Restriction Notifications** - Clear feedback when attempting restricted actions
+
+### 🔒 **Security & Proctoring**
+
+- **Copy-Paste Prevention** - Disable copy/paste functionality during assignments
+- **Fullscreen Enforcement** - Require fullscreen mode to prevent cheating
+- **Secure Code Execution** - Sandboxed environment for safe code testing
+- **Session Management** - Secure authentication and session handling
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** Next.js, Tailwind CSS
-- **Backend:** Next.js, Node.js, Prisma ORM
+- **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes, Prisma ORM
 - **Database:** PostgreSQL
-- **Execution Engine:** Judge0 + Custom Execution Server
-- **Security:** OAuth
+- **Execution Engine:** Judge0 API + Custom Execution Server
+- **Authentication:** NextAuth.js with OAuth providers
+- **UI Components:** Shadcn
+- **Animations:** Framer Motion
+- **Code Editor:** Monaco Editor with syntax highlighting
+- **Deployment:** Vercel, Docker support
 
 ---
 
-That's a very clear and comprehensive setup guide\! To seamlessly integrate Docker Compose, we'll add a new section for it, making it an alternative (and often preferred) method for local setup.
-
-Here's how you can include the Docker Compose setup:
-
----
-
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### 1️⃣ Prerequisites
 
@@ -159,7 +186,7 @@ Follow the same steps as in Option A for creating and populating your **`.env`**
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 GradeIT is a classroom management and coding assignment platform with two primary roles:
 
@@ -230,15 +257,9 @@ In many colleges, computer labs rely on outdated manual systems that require con
 
 ---
 
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](https://chatgpt.com/c/LICENSE) file for details.
-
----
-
 ## 🤝 Contributing
 
-Contributions are welcome! If you find any bugs or want to enhance the project, feel free to submit a pull request.
+Contributions are welcome! If you find any bugs or want to enhance the project, feel free to raise an issue or submit a pull request to the test branch.
 
 ---
 

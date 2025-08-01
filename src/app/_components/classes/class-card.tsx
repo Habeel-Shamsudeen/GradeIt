@@ -39,7 +39,7 @@ export function ClassCard({
   };
 
   return (
-    <Card className="group relative overflow-hidden rounded-2xl border-[#E6E4DD] bg-white transition-all hover:shadow-lg dark:bg-white/[0.02]">
+    <Card className="group relative overflow-hidden rounded-2xl border-border bg-background transition-all hover:shadow-lg">
       <Link href={`/classes/${code}`} className="absolute inset-0 z-10">
         <span className="sr-only">View class</span>
       </Link>
@@ -90,20 +90,24 @@ export function ClassCard({
       </CardContent>
 
       <CardFooter className="grid grid-cols-2 gap-2 p-2">
-        <Button
-          variant="ghost"
-          className="h-auto w-full justify-start gap-2 px-3 py-2 text-[#605F5B] hover:text-[#141413]"
-        >
-          <Users className="h-4 w-4" />
-          <span className="text-sm">People</span>
-        </Button>
-        <Button
-          variant="ghost"
-          className="h-auto w-full justify-start gap-2 px-3 py-2 text-[#605F5B] hover:text-[#141413]"
-        >
-          <FolderClosed className="h-4 w-4" />
-          <span className="text-sm">Files</span>
-        </Button>
+        <Link href={`/classes/${code}?tab=people`} className="z-10">
+          <Button
+            variant="ghost"
+            className="h-auto w-full justify-start gap-2 px-3 py-2 text-muted-foreground hover:text-foreground"
+          >
+            <Users className="h-4 w-4" />
+            <span className="text-sm">People</span>
+          </Button>
+        </Link>
+        <Link href={`/classes/${code}?tab=assignments`} className="z-10">
+          <Button
+            variant="ghost"
+            className="h-auto w-full justify-start gap-2 px-3 py-2 text-muted-foreground hover:text-foreground"
+          >
+            <FolderClosed className="h-4 w-4" />
+            <span className="text-sm">Files</span>
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

@@ -16,6 +16,7 @@ import {
 } from "@/app/_components/ui/sidebar";
 import { getIconComponent } from "@/config/icons";
 import { ArrowRight01Icon } from "hugeicons-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -79,11 +80,11 @@ export function NavMain({
                             isActive={activeItem === subItem.url}
                             onClick={() => setActiveItem(subItem.url)}
                           >
-                            <a href={subItem.url}>
+                            <Link href={subItem.url}>
                               <span className="text-sm font-medium">
                                 {subItem.title}
                               </span>
-                            </a>
+                            </Link>
                           </SidebarMenuButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -99,12 +100,12 @@ export function NavMain({
                   tooltip={item.title}
                   onClick={() => setActiveItem(item.url)}
                 >
-                  <a href={item.url}>
+                  <Link href={item.url}>
                     {item.icon && <IconComponent size={20} />}
                     <span className="ml-1 text-sm font-medium">
                       {item.title}
                     </span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );

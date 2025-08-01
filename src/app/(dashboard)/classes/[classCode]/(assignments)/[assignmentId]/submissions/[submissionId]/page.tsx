@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ChevronLeft,
-  CheckCircle,
+  CheckCircle2,
   XCircle,
   Clock,
   AlertTriangle,
@@ -125,7 +125,7 @@ export default async function SubmissionDetailPage({
                           )}
                         >
                           {result.status === "PASSED" && (
-                            <CheckCircle className="h-4 w-4" />
+                            <CheckCircle2 className="h-4 w-4" />
                           )}
                           {result.status === "FAILED" && (
                             <XCircle className="h-4 w-4" />
@@ -224,7 +224,7 @@ export default async function SubmissionDetailPage({
                       )}
                     >
                       {submission.status === "COMPLETED" && (
-                        <CheckCircle className="h-4 w-4" />
+                        <CheckCircle2 className="h-4 w-4" />
                       )}
                       {submission.status === "FAILED" && (
                         <XCircle className="h-4 w-4" />

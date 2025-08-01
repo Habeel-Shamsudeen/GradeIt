@@ -8,7 +8,7 @@ import {
   Filter,
   Download,
   Users,
-  CheckCircle,
+  CheckCircle2,
   Clock,
   XCircle,
 } from "lucide-react";
@@ -126,7 +126,7 @@ export function FacultyView({
         <Card className="rounded-2xl border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-status-passed" />
+              <CheckCircle2 className="h-5 w-5 text-status-passed" />
               Completed
             </CardTitle>
             <CardDescription>

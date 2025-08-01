@@ -32,7 +32,7 @@
 
     --marine-900: 210 100% 15%;
     --marine-800: 210 100% 30%;
-    --marine-700: 210 100% 40%;
+    --marine-700: 202 100% 38%;
     --marine-600: 202 100% 45%;
     --marine-500: 210 45% 60%;
     --marine-300: 210 60% 85%;
@@ -60,8 +60,8 @@
     --neutral: 222.2 47.4% 11.2%;
     --neutral-foreground: 0 0% 98%;
 
-    --primary: 226 60% 60%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 202 100% 45%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -145,7 +145,7 @@
     --neutral: 0 0% 98%;
     --neutral-foreground: 217 14% 47%;
 
-    --primary: 226 60% 60%;
+    --primary: 202 100% 60%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 240 4.8% 95.9%;
@@ -196,4 +196,24 @@
     rgba(24, 24, 27, 0.96) 100%
   );
   backdrop-filter: blur(8px);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+  background-clip: content-box;
 }

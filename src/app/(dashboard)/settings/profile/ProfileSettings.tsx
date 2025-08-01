@@ -109,7 +109,7 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
             <Button
               type="submit"
               disabled={!form.formState.isDirty || isSubmitting}
-              className="w-full sm:w-auto bg-primary-button text-primary-button-foreground hover:bg-primary-button-hover"
+              className="w-full sm:w-auto bg-primary-button text-white hover:bg-primary-button-hover"
             >
               {isSubmitting ? (
                 <>
