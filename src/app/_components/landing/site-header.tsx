@@ -18,7 +18,6 @@ export default function SiteHeader() {
         className="sticky top-0 z-50 w-full border-b border-border bg-background/70 backdrop-blur-md supports-[backdrop-filter]:bg-background/70"
       >
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg  bg-primary-button  hover:bg-main-700">
               <Code className="h-4 w-4 text-primary-foreground" />
