@@ -65,7 +65,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
               </>
             ) : resolvedTheme === "light" || resolvedTheme === "dark" ? (
               <Link href="/classes">
-                <div className="ml-2 flex h-8 w-8 items-center justify-center rounded-lg  bg-primary-button  hover:bg-main-700">
+                <div className="ml-1.5 flex h-8 w-8 items-center justify-center rounded-lg  bg-primary-button  hover:bg-main-700">
                   <Code className="h-4 w-4 text-primary-foreground" />
                 </div>
               </Link>
