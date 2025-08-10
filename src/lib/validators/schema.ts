@@ -7,6 +7,16 @@ export const assignmentSchema = z.object({
   classCode: z.string().min(1, "Classroom ID is required"),
   copyPastePrevention: z.boolean(),
   fullScreenEnforcement: z.boolean(),
+  metrics: z
+    .array(
+      z.object({
+        id: z.string().min(1, "Metric ID is required"),
+        name: z.string().min(1, "Metric name is required"),
+        description: z.string().optional(),
+        weight: z.number().min(0).max(100, "Weight must be between 0 and 100"),
+      }),
+    )
+    .optional(),
   questions: z.array(
     z.object({
       title: z.string().min(1, "Question title is required"),

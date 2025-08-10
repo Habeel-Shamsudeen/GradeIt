@@ -43,7 +43,7 @@ model User {
   enrolledClasses Classroom[] @relation("StudentClasses")  // Student-joined classrooms
 
   submissions    Submission[]
- 
+  evaluationMetrics EvaluationMetric[]
   @@map("users")
 }
 
@@ -89,6 +89,7 @@ model Assignment {
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   questions   Question[]
   DueDate     DateTime? 
+  metrics AssignmentMetric[]
   createdAt   DateTime  @default(now())
 
   copyPastePrevention   Boolean @default(false)
@@ -135,6 +136,7 @@ model Submission {
   feedback      String?
   plagiarismScore Float? // Store plagiarism detection results
   testCaseResults TestCaseResult[]
+  metricResults SubmissionMetricResult[]
   createdAt     DateTime @default(now())
 }
 
@@ -152,4 +154,40 @@ model TestCaseResult {
   createdAt     DateTime      @default(now())
 
   @@unique([submissionId, testCaseId]) // One result per test case per submission
+}
+
+model EvaluationMetric {
+  id          String   @id @default(uuid())
+  name        String   // e.g. "Correctness", "Code Quality"
+  description String?
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  assignments AssignmentMetric[]
+  results     SubmissionMetricResult[]
+}
+
+model AssignmentMetric {
+  id             String            @id @default(uuid())
+  assignmentId   String
+  assignment     Assignment        @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  metricId       String
+  metric         EvaluationMetric  @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  weight         Float              // e.g. 0.2 for 20%
+  //config         Json?              // metric-specific settings
+  createdAt      DateTime           @default(now())
+}
+
+model SubmissionMetricResult {
+  id            String            @id @default(uuid())
+  submissionId  String
+  submission    Submission        @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  metricId      String
+  metric        EvaluationMetric  @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  score         Float              // 0–1 normalized
+  feedback      String?
+  createdAt     DateTime           @default(now())
+
+  @@unique([submissionId, metricId])
 }
