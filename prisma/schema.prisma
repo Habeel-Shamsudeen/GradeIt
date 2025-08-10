@@ -27,6 +27,12 @@ enum TestCaseStatus {
   PENDING
 }
 
+enum EvaluationStatus {
+  PENDING
+  TEST_CASES_EVALUATION_COMPLETE
+  EVALUATION_COMPLETE
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -115,8 +121,8 @@ model TestCase {
   input       String
   expectedOutput String
   hidden      Boolean @default(false)
-  weight      Int     @default(1) // Simple weight for scoring
-  isBonus     Boolean @default(false) // Optional bonus test cases
+//  weight      Int     @default(1) // Simple weight for scoring
+//  isBonus     Boolean @default(false) // Optional bonus test cases
   description String? // Description of what the test case is checking
   
   // Relation to test case results
@@ -134,7 +140,9 @@ model Submission {
   status        Status  @default(PENDING) 
   score         Float?    // Faculty can assign a score
   feedback      String?
-  plagiarismScore Float? // Store plagiarism detection results
+  // In Submission model
+  evaluationStatus EvaluationStatus @default(PENDING)
+//  plagiarismScore Float? // Store plagiarism detection results
   testCaseResults TestCaseResult[]
   metricResults SubmissionMetricResult[]
   createdAt     DateTime @default(now())

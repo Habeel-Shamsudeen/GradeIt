@@ -5,7 +5,6 @@ import { TestCaseStatus } from "@prisma/client";
 import { gradeSubmission } from "./grading-actions";
 import { cookies } from "next/headers";
 import { judgeResult } from "@/lib/types/code-types";
-
 export async function processJudgeResultWebhook(
   testCaseId: string,
   submissionId: string,
@@ -137,8 +136,11 @@ export async function getSubmissions(assignmentId: string) {
       status: submission.status,
       score: submission.score,
       language: submission.question.language,
-      plagiarismScore: submission.plagiarismScore,
       testCaseResults: submission.testCaseResults,
+      evaluationStatus:
+        session.user.role === "FACULTY"
+          ? submission.evaluationStatus
+          : undefined,
     }));
     return { status: "success", submissions: formattedSubmissions };
   } catch (error) {
@@ -186,9 +188,13 @@ export async function getSubmissionsById(submissionId: string) {
       status: submission.status,
       score: submission.score,
       language: submission.question.language,
-      plagiarismScore: submission.plagiarismScore,
       testCaseResults: submission.testCaseResults,
+      evaluationStatus:
+        session.user.role === "FACULTY"
+          ? submission.evaluationStatus
+          : undefined,
     };
+
     return { status: "success", submission: formattedSubmissions };
   } catch (error) {
     throw new Error("Failed to get submissions " + error);

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { TestResults } from "@/lib/types/code-types";
-import { Status, TestCaseStatus } from "@prisma/client";
+import { Status, TestCaseStatus, EvaluationStatus } from "@prisma/client";
 
 export async function gradeSubmission(submissionId: string) {
   try {
@@ -31,56 +31,41 @@ export async function gradeSubmission(submissionId: string) {
 
     let totalPoints = 0;
     let earnedPoints = 0;
-    let bonusPoints = 0;
 
     const testResults: TestResults[] = [];
 
     submission.testCaseResults.forEach((result) => {
-      const weight = result.testCase.weight || 1;
-      const isBonus = result.testCase.isBonus || false;
-
-      // Track test case outcome for feedback
       testResults.push({
         description:
           result.testCase.description || `Test Case ${result.testCase.id}`,
         passed: result.status === TestCaseStatus.PASSED,
-        isBonus,
+        isBonus: false,
         executionTime: result.executionTime,
         error: result.errorMessage,
       });
 
-      if (isBonus) {
-        if (result.status === TestCaseStatus.PASSED) {
-          bonusPoints += weight;
-        }
-      } else {
-        totalPoints += weight;
-        if (result.status === TestCaseStatus.PASSED) {
-          earnedPoints += weight;
-        }
+      totalPoints += 1;
+      if (result.status === TestCaseStatus.PASSED) {
+        earnedPoints += 1;
       }
     });
 
     const baseScore = totalPoints > 0 ? (earnedPoints / totalPoints) * 100 : 0;
 
-    const totalScore = Math.min(100, baseScore + bonusPoints * 5);
-
-    // Generate simple feedback
-    const feedback = generateFeedback(testResults, totalScore);
+    const totalScore = Math.min(100, baseScore);
 
     await prisma.submission.update({
       where: { id: submissionId },
       data: {
         score: totalScore,
-        feedback,
         status: totalScore >= 60 ? Status.COMPLETED : Status.FAILED, // Pass with 60% or higher
+        evaluationStatus: EvaluationStatus.TEST_CASES_EVALUATION_COMPLETE,
       },
     });
 
     return {
       submissionId,
       score: totalScore,
-      feedback,
     };
   } catch (error) {
     console.error(`Error grading submission ${submissionId}:`, error);
