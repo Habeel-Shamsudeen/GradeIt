@@ -29,7 +29,10 @@ enum TestCaseStatus {
 
 enum EvaluationStatus {
   PENDING
+  TEST_CASES_EVALUATION_FAILED
   TEST_CASES_EVALUATION_COMPLETE
+  LLM_EVALUATION_IN_PROGRESS
+  LLM_EVALUATION_FAILED
   EVALUATION_COMPLETE
 }
 
@@ -97,7 +100,7 @@ model Assignment {
   DueDate     DateTime? 
   metrics AssignmentMetric[]
   createdAt   DateTime  @default(now())
-
+  submissions Submission[]
   copyPastePrevention   Boolean @default(false)
   fullScreenEnforcement Boolean @default(false)
 }
@@ -133,6 +136,8 @@ model Submission {
   id            String   @id @default(uuid())
   studentId     String
   student       User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignmentId  String
+  assignment    Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   questionId    String
   question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   code          String

@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     const submission = await prisma.submission.create({
       data: {
         studentId: userId,
+        assignmentId: question.assignmentId,
         questionId,
         code,
         language,

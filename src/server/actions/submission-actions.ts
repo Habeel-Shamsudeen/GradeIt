@@ -2,7 +2,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TestCaseStatus } from "@prisma/client";
-import { gradeSubmission } from "./grading-actions";
+import { gradeSubmission, triggerLLMEvaluation } from "./grading-actions";
 import { cookies } from "next/headers";
 import { judgeResult } from "@/lib/types/code-types";
 export async function processJudgeResultWebhook(
@@ -80,6 +80,8 @@ export async function updateSubmissionStatus(submissionId: string) {
 
     if (allProcessed) {
       await gradeSubmission(submissionId);
+
+      triggerLLMEvaluation(submissionId);
     }
   } catch (error) {
     console.error(

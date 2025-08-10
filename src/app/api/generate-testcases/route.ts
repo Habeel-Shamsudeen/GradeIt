@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { buildPrompt, generateTestCases } from "@/lib/services/llm-service";
+import {
+  buildTestCaseGenerationPrompt,
+  generateTestCases,
+} from "@/lib/services/llm-service";
 import { TestCase } from "@/lib/types/assignment-tyes";
 
 export async function POST(req: NextRequest) {
@@ -26,7 +29,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const prompt = buildPrompt(
+    const prompt = buildTestCaseGenerationPrompt(
       questionTitle,
       questionDescription,
       language,

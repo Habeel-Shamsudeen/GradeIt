@@ -2,7 +2,7 @@ import { TestCase } from "@/lib/types/assignment-tyes";
 import { groq } from "@ai-sdk/groq";
 import { generateText } from "ai";
 
-export function buildPrompt(
+export function buildTestCaseGenerationPrompt(
   title: string,
   description: string,
   language: string,

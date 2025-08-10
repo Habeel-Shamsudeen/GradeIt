@@ -296,56 +296,6 @@ export default async function SubmissionDetailPage({
                     </div>
                   </>
                 )}
-
-                {submission.plagiarismScore !== null && (
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-sm text-muted-foreground">
-                        Similarity Score
-                      </p>
-                      {submission.plagiarismScore > 30 && (
-                        <div className="rounded-full bg-destructive/10 p-1 text-destructive">
-                          <AlertCircle className="h-3.5 w-3.5" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-1">
-                      <div className="flex items-center justify-between">
-                        <p
-                          className={cn(
-                            "font-medium",
-                            submission.plagiarismScore > 30 &&
-                              "text-destructive",
-                            submission.plagiarismScore > 15 &&
-                              submission.plagiarismScore <= 30 &&
-                              "text-yellow-700 dark:text-yellow-300",
-                            submission.plagiarismScore <= 15 &&
-                              "text-foreground",
-                          )}
-                        >
-                          {submission.plagiarismScore.toFixed(1)}%
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {submission.plagiarismScore > 30
-                            ? "High"
-                            : submission.plagiarismScore > 15
-                              ? "Medium"
-                              : "Low"}
-                        </p>
-                      </div>
-                      <Progress
-                        value={submission.plagiarismScore}
-                        className="mt-1 h-2"
-                      />
-                    </div>
-                    {submission.plagiarismScore > 30 && (
-                      <p className="mt-1 text-xs text-destructive">
-                        High similarity detected. Your submission may be flagged
-                        for review.
-                      </p>
-                    )}
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>

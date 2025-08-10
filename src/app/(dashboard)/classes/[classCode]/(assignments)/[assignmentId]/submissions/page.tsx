@@ -155,20 +155,6 @@ export default async function SubmissionsPage({
                               {submission.score !== null && (
                                 <span>Score: {submission.score}%</span>
                               )}
-                              {submission.plagiarismScore !== null && (
-                                <span
-                                  className={cn(
-                                    submission.plagiarismScore > 30 &&
-                                      "text-destructive",
-                                    submission.plagiarismScore > 15 &&
-                                      submission.plagiarismScore <= 30 &&
-                                      "text-yellow-700",
-                                  )}
-                                >
-                                  Similarity:{" "}
-                                  {submission.plagiarismScore.toFixed(1)}%
-                                </span>
-                              )}
                               <span>
                                 {
                                   submission.testCaseResults.filter(
