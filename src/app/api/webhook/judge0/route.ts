@@ -8,6 +8,7 @@ import { judgeResult } from "@/lib/types/code-types";
 
 export async function PUT(req: NextRequest) {
   try {
+    console.log("Judge0 webhook received");
     const url = new URL(req.url);
     const payloadParam = url.searchParams.get("payload");
 

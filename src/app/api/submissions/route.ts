@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       const webhookUrl = `${process.env.APP_URL}/api/webhook/judge0?payload=${encodedPayload}`;
 
       const response = await fetch(
-        `https://${process.env.RAPID_API_HOST}/submissions?base64_encoded=true&fields=*&callback_url=${encodeURIComponent(
+        `https://${process.env.JUDGE0_API_HOST}/submissions?base64_encoded=true&fields=*&callback_url=${encodeURIComponent(
           webhookUrl,
         )}`,
         {
