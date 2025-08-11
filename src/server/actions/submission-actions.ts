@@ -81,7 +81,26 @@ export async function updateSubmissionStatus(submissionId: string) {
     if (allProcessed) {
       await gradeSubmission(submissionId);
 
-      triggerLLMEvaluation(submissionId);
+      console.log("All test cases processed, grading submission");
+
+      const updatedSubmission = await prisma.submission.updateMany({
+        where: {
+          id: submissionId,
+          evaluationStatus: "TEST_CASES_EVALUATION_COMPLETE",
+        },
+        data: {
+          evaluationStatus: "LLM_EVALUATION_IN_PROGRESS",
+        },
+      });
+
+      if (updatedSubmission.count > 0) {
+        triggerLLMEvaluation(submissionId).catch((error) => {
+          console.error("Background LLM evaluation failed:", error);
+        });
+        console.log("LLM evaluation triggered in background");
+      } else {
+        console.log("LLM evaluation already in progress or completed");
+      }
     }
   } catch (error) {
     console.error(

@@ -30,7 +30,7 @@ export function buildCodeEvaluationPrompt(
   const metricsSection = metrics
     .map(
       (metric) =>
-        `- **${metric.metric.name}** (Weight: ${metric.weight}%): ${metric.metric.description || "No description provided"}`,
+        `- **${metric.metric.name}** (ID: ${metric.metricId}, Weight: ${metric.weight}%): ${metric.metric.description || "No description provided"}`,
     )
     .join("\n");
 
@@ -68,13 +68,15 @@ Return ONLY a valid JSON object with this exact structure:
 {
   "evaluations": [
     {
-      "metricId": "metric_id_here",
+      "metricId": "EXACT_METRIC_ID_FROM_ABOVE",
       "metricName": "Metric Name",
       "score": 85,
       "feedback": "Clear and well-structured code with good variable naming."
     }
   ]
 }
+
+**IMPORTANT:** Use the exact metric ID values shown above (e.g., "uuid-123-456") - do not make up new IDs.
 
 **CRITICAL:**
 - Return ONLY the JSON object, no additional text
@@ -116,8 +118,7 @@ export async function evaluateCodeWithLLM(
         prompt: prompt,
         temperature: 0.3,
       });
-      console.log(text);
-      // Clean and parse the response
+
       const cleanedText = text.trim();
       const jsonMatch = cleanedText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
       const jsonText = jsonMatch ? jsonMatch[1] : cleanedText;
@@ -150,8 +151,8 @@ export async function evaluateCodeWithLLM(
         throw error;
       }
 
-      // Wait before retrying (exponential backoff)
       if (attempt < maxRetries) {
+        // maybe also that feedback loop to llm so the llm can improve its response
         const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
         await new Promise((resolve) => setTimeout(resolve, delay));
       }

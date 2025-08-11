@@ -113,29 +113,46 @@ export async function triggerLLMEvaluation(submissionId: string) {
         metrics: assignment.metrics,
       });
 
-      console.log(evaluations);
-      await prisma.submissionMetricResult.createMany({
-        data: evaluations.map((metric) => ({
-          submissionId,
-          metricId: metric.metricId,
-          score: metric.score,
-          feedback: metric.feedback,
-        })),
-      });
+      const validMetricIds = new Set(assignment.metrics.map((m) => m.metricId));
+      const invalidMetrics = evaluations.filter(
+        (e) => !validMetricIds.has(e.metricId),
+      );
+
+      if (invalidMetrics.length > 0) {
+        throw new Error(
+          `Invalid metric IDs returned by LLM: ${invalidMetrics.map((m) => m.metricId).join(", ")}`,
+        );
+      }
+
+      await Promise.all(
+        evaluations.map((metric) =>
+          prisma.submissionMetricResult.update({
+            where: {
+              submissionId_metricId: {
+                submissionId,
+                metricId: metric.metricId,
+              },
+            },
+            data: {
+              score: metric.score,
+              feedback: metric.feedback,
+            },
+          }),
+        ),
+      );
       const MetricWeightage = await prisma.assignmentMetric.findMany({
         where: {
           assignmentId: assignment.id,
         },
       });
 
-      // calculate total score based on metric weightage
       const totalScore = evaluations.reduce((acc, metric) => {
         const weight =
           MetricWeightage?.find((m) => m.metricId === metric.metricId)
             ?.weight || 0;
         return acc + (metric.score * weight) / 100; // Convert weight percentage to decimal
       }, 0);
-      console.log(totalScore);
+
       await prisma.submission.update({
         where: { id: submissionId },
         data: {
@@ -143,6 +160,8 @@ export async function triggerLLMEvaluation(submissionId: string) {
           score: totalScore,
         },
       });
+
+      console.log("LLM evaluation complete");
     } catch (error) {
       console.error(
         `Error evaluating code with LLM for submission ${submissionId}:`,

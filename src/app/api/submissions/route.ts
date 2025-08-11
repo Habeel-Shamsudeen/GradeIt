@@ -45,6 +45,28 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: question.assignmentId },
+      include: {
+        metrics: {
+          include: {
+            metric: true,
+          },
+        },
+      },
+    });
+
+    if (assignment?.metrics.length) {
+      await prisma.submissionMetricResult.createMany({
+        data: assignment.metrics.map((assignmentMetric) => ({
+          submissionId: submission.id,
+          metricId: assignmentMetric.metricId,
+          score: 0,
+          feedback: "Evaluation pending...",
+        })),
+      });
+    }
+
     await prisma.testCaseResult.createMany({
       data: question.testCases.map((testCase) => ({
         submissionId: submission.id,
