@@ -84,13 +84,14 @@ export default function TestCaseGenarationDialog({
       const newTestCases = testCases.map(
         (tc: Omit<TestCase, "id">, index: number) => ({
           ...tc,
-          id: `generated-${existingTestCases.length + index + 1}`, // unique ID
+          id: `generated-${existingTestCases.length + index + 1}`,
         }),
       );
 
       updateField("testCases", [...existingTestCases, ...newTestCases]);
 
       toast.success("Test cases generated successfully!");
+      setOpen(false);
     } catch (error) {
       console.error("Error generating test cases:", error);
       toast.error("Failed to generate test cases. Please try again.");

@@ -37,12 +37,35 @@ export async function POST(req: NextRequest) {
     const submission = await prisma.submission.create({
       data: {
         studentId: userId,
+        assignmentId: question.assignmentId,
         questionId,
         code,
         language,
         status: Status.PENDING,
       },
     });
+
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: question.assignmentId },
+      include: {
+        metrics: {
+          include: {
+            metric: true,
+          },
+        },
+      },
+    });
+
+    if (assignment?.metrics.length) {
+      await prisma.submissionMetricResult.createMany({
+        data: assignment.metrics.map((assignmentMetric) => ({
+          submissionId: submission.id,
+          metricId: assignmentMetric.metricId,
+          score: 0,
+          feedback: "Evaluation pending...",
+        })),
+      });
+    }
 
     await prisma.testCaseResult.createMany({
       data: question.testCases.map((testCase) => ({
@@ -65,7 +88,7 @@ export async function POST(req: NextRequest) {
       const webhookUrl = `${process.env.APP_URL}/api/webhook/judge0?payload=${encodedPayload}`;
 
       const response = await fetch(
-        `https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*&callback_url=${encodeURIComponent(
+        `https://${process.env.JUDGE0_API_HOST}/submissions?base64_encoded=true&fields=*&callback_url=${encodeURIComponent(
           webhookUrl,
         )}`,
         {
@@ -73,8 +96,7 @@ export async function POST(req: NextRequest) {
           headers: {
             "Content-Type": "application/json",
             "x-rapidapi-key": process.env.JUDGE0_API_KEY || "",
-            "x-rapidapi-host":
-              process.env.RAPID_API_HOST || "judge0-ce.p.rapidapi.com",
+            "x-rapidapi-host": process.env.JUDGE0_API_HOST || "",
           },
           body: JSON.stringify({
             language_id:

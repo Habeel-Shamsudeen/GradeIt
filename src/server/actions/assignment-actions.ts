@@ -9,6 +9,7 @@ import { getClassIdFromCode } from "./utility-actions";
 export const createAssignment = async (formData: AssignmentSchema) => {
   const session = await auth();
   if (!session?.user) {
+    console.log("unauthorized");
     throw new Error("Unauthorized");
   }
   try {
@@ -19,12 +20,13 @@ export const createAssignment = async (formData: AssignmentSchema) => {
       },
     });
     if (!faculty) {
+      console.log("unauthorized not faculty");
       throw new Error("Unauthorized");
     }
 
-    console.log("formData", formData);
     const validation = assignmentSchema.safeParse(formData);
     if (!validation.success) {
+      console.log("validation errors", validation.error.format());
       return {
         status: "error",
         message: "Invalid input data",
@@ -38,6 +40,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
       dueDate,
       classCode,
       questions,
+      metrics,
       copyPastePrevention,
       fullScreenEnforcement,
     } = validation.data;
@@ -54,6 +57,14 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         classroomId,
         copyPastePrevention,
         fullScreenEnforcement,
+        metrics: metrics
+          ? {
+              create: metrics.map((metric) => ({
+                metricId: metric.id,
+                weight: metric.weight,
+              })),
+            }
+          : undefined,
         questions: {
           create: questions.map((question) => ({
             title: question.title,

@@ -13,6 +13,13 @@ export interface TestCase {
   hidden: boolean;
 }
 
+export interface EvaluationMetric {
+  id: string;
+  name: string;
+  description?: string;
+  weight: number;
+}
+
 export interface Assignment {
   id: string;
   title: string;
@@ -23,6 +30,7 @@ export interface Assignment {
   submissionCount: number;
   copyPastePrevention: boolean;
   fullScreenEnforcement: boolean;
+  metrics?: EvaluationMetric[];
 }
 
 export interface AssignmentById extends Assignment {

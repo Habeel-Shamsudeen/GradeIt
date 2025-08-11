@@ -2,10 +2,9 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TestCaseStatus } from "@prisma/client";
-import { gradeSubmission } from "./grading-actions";
+import { gradeSubmission, triggerLLMEvaluation } from "./grading-actions";
 import { cookies } from "next/headers";
 import { judgeResult } from "@/lib/types/code-types";
-
 export async function processJudgeResultWebhook(
   testCaseId: string,
   submissionId: string,
@@ -81,6 +80,27 @@ export async function updateSubmissionStatus(submissionId: string) {
 
     if (allProcessed) {
       await gradeSubmission(submissionId);
+
+      console.log("All test cases processed, grading submission");
+
+      const updatedSubmission = await prisma.submission.updateMany({
+        where: {
+          id: submissionId,
+          evaluationStatus: "TEST_CASES_EVALUATION_COMPLETE",
+        },
+        data: {
+          evaluationStatus: "LLM_EVALUATION_IN_PROGRESS",
+        },
+      });
+
+      if (updatedSubmission.count > 0) {
+        triggerLLMEvaluation(submissionId).catch((error) => {
+          console.error("Background LLM evaluation failed:", error);
+        });
+        console.log("LLM evaluation triggered in background");
+      } else {
+        console.log("LLM evaluation already in progress or completed");
+      }
     }
   } catch (error) {
     console.error(
@@ -137,8 +157,11 @@ export async function getSubmissions(assignmentId: string) {
       status: submission.status,
       score: submission.score,
       language: submission.question.language,
-      plagiarismScore: submission.plagiarismScore,
       testCaseResults: submission.testCaseResults,
+      evaluationStatus:
+        session.user.role === "FACULTY"
+          ? submission.evaluationStatus
+          : undefined,
     }));
     return { status: "success", submissions: formattedSubmissions };
   } catch (error) {
@@ -186,9 +209,13 @@ export async function getSubmissionsById(submissionId: string) {
       status: submission.status,
       score: submission.score,
       language: submission.question.language,
-      plagiarismScore: submission.plagiarismScore,
       testCaseResults: submission.testCaseResults,
+      evaluationStatus:
+        session.user.role === "FACULTY"
+          ? submission.evaluationStatus
+          : undefined,
     };
+
     return { status: "success", submission: formattedSubmissions };
   } catch (error) {
     throw new Error("Failed to get submissions " + error);
