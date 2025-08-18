@@ -50,7 +50,7 @@ export default function Loading() {
                     <div className="flex items-center gap-4">
                       {/* Status icon placeholder */}
                       <Skeleton className="h-5 w-5 rounded-full" />
-                      
+
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <Skeleton className="h-4 w-32" />

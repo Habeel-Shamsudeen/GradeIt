@@ -1,5 +1,10 @@
 import { Skeleton } from "@/app/_components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/_components/ui/tabs-modified";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/_components/ui/tabs-modified";
 
 export default function Loading() {
   return (
@@ -24,7 +29,7 @@ export default function Loading() {
             Profile
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="profile">
           <div className="p-6 rounded-2xl border-2 border-accent">
             {/* Profile Form Skeleton */}

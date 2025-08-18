@@ -66,7 +66,11 @@ export default function Loading() {
           <div className="h-full rounded-lg bg-muted/50 p-4">
             <div className="space-y-2">
               {[...Array(12)].map((_, i) => (
-                <Skeleton key={i} className="h-4 w-full" style={{ width: `${Math.random() * 40 + 60}%` }} />
+                <Skeleton
+                  key={i}
+                  className="h-4 w-full"
+                  style={{ width: `${Math.random() * 40 + 60}%` }}
+                />
               ))}
             </div>
           </div>

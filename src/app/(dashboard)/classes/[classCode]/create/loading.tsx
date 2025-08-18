@@ -9,13 +9,13 @@ export default function Loading() {
         heading="Create Assignment"
         text="Create a new coding assignment for your students."
       />
-      
+
       <div className="mt-8 space-y-8">
         {/* Assignment Details Section */}
         <Card className="rounded-xl border-border">
           <CardContent className="p-6">
             <Skeleton className="h-6 w-40 mb-6" />
-            
+
             <div className="space-y-6">
               {/* Title Field */}
               <div className="space-y-2">
@@ -79,7 +79,7 @@ export default function Loading() {
                       <Skeleton className="h-5 w-32" />
                       <Skeleton className="h-8 w-8 rounded-md" />
                     </div>
-                    
+
                     <div className="space-y-4">
                       {/* Question Title */}
                       <div className="space-y-2">

@@ -1,5 +1,11 @@
 import { Skeleton } from "@/app/_components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/app/_components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/app/_components/ui/card";
 import { Button } from "@/app/_components/ui/button";
 import { ChevronLeft } from "lucide-react";
 
@@ -40,10 +46,10 @@ export default function Loading() {
               <div className="rounded-lg bg-muted p-4">
                 <div className="space-y-2">
                   {[...Array(15)].map((_, i) => (
-                    <Skeleton 
-                      key={i} 
-                      className="h-4" 
-                      style={{ width: `${Math.random() * 40 + 60}%` }} 
+                    <Skeleton
+                      key={i}
+                      className="h-4"
+                      style={{ width: `${Math.random() * 40 + 60}%` }}
                     />
                   ))}
                 </div>
