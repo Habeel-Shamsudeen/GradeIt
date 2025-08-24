@@ -86,6 +86,8 @@ export function FacultyView({
       student.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  console.log("filteredStudents", filteredStudents[0].status);
+
   return (
     <div className="container mx-auto max-w-7xl p-6">
       <div className="mb-8">

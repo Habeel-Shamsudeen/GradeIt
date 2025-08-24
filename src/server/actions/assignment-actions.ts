@@ -34,6 +34,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         errors: validation.error.format(),
       };
     }
+    console.log("validation", validation.data);
 
     const {
       title,

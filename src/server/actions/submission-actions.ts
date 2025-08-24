@@ -352,8 +352,26 @@ export async function getStudentAssignmentProgress(
       (s) => s.studentId === student.id,
     );
 
-    // Count questions completed (has code submission)
-    const questionsCompleted = studentSubmission?.codeSubmission.length || 0;
+    // Get the best submission for each question (same logic as updateSubmissionStatus)
+    const questionIds = assignment.questions.map((q) => q.id);
+    const bestSubmissions = questionIds.map((questionId) => {
+      const submissions =
+        studentSubmission?.codeSubmission.filter(
+          (cs) =>
+            cs.questionId === questionId &&
+            cs.codeEvaluationStatus ===
+              CodeEvaluationStatus.EVALUATION_COMPLETE,
+        ) || [];
+      const bestSubmission = submissions.sort(
+        (a, b) => (b.score || 0) - (a.score || 0),
+      )[0];
+      return bestSubmission;
+    });
+
+    // Count questions completed (has completed evaluation)
+    const questionsCompleted = bestSubmissions.filter(
+      (cs) => cs !== undefined,
+    ).length;
 
     // Determine status
     let status = "not_started";
@@ -364,14 +382,24 @@ export async function getStudentAssignmentProgress(
           : "in_progress";
     }
 
-    // Calculate average score if completed
+    // Calculate score if completed
     let score = null;
     if (status === "completed" && studentSubmission) {
-      const scores = studentSubmission.codeSubmission
-        .map((cs) => cs.score)
-        .filter(Boolean) as number[];
-      if (scores.length > 0) {
-        score = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+      // Use the submission's finalScore if available, otherwise calculate from best submissions
+      if (
+        studentSubmission.finalScore !== null &&
+        studentSubmission.finalScore !== undefined
+      ) {
+        score = Math.round(studentSubmission.finalScore);
+      } else {
+        // Fallback: calculate average from best submission scores
+        const validBestSubmissions = bestSubmissions.filter(
+          (cs) => cs !== undefined,
+        );
+        if (validBestSubmissions.length > 0) {
+          const scores = validBestSubmissions.map((cs) => cs.score || 0);
+          score = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+        }
       }
     }
 
@@ -395,11 +423,13 @@ export async function getStudentAssignmentProgress(
       score,
       questionsCompleted,
       submissions:
-        studentSubmission?.codeSubmission.map((cs) => ({
-          questionId: cs.questionId,
-          status: studentSubmission.status,
-          score: cs.score,
-        })) || [],
+        bestSubmissions
+          .filter((cs) => cs !== undefined)
+          .map((cs) => ({
+            questionId: cs.questionId,
+            status: studentSubmission?.status || "NOT_STARTED",
+            score: cs.score,
+          })) || [],
     };
   });
 
