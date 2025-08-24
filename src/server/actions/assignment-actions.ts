@@ -44,6 +44,8 @@ export const createAssignment = async (formData: AssignmentSchema) => {
       metrics,
       copyPastePrevention,
       fullScreenEnforcement,
+      testCaseWeight,
+      metricsWeight,
     } = validation.data;
 
     const classroomId = await getClassIdFromCode(classCode);
@@ -58,6 +60,8 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         classroomId,
         copyPastePrevention,
         fullScreenEnforcement,
+        metricsWeight,
+        testCaseWeight,
         metrics: metrics
           ? {
               create: metrics.map((metric) => ({

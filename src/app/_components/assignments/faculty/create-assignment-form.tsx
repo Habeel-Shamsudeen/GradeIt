@@ -38,6 +38,8 @@ export function CreateAssignmentForm({
   const [fullScreenEnforcement, setFullScreenEnforcement] =
     useState<boolean>(false);
   const [metrics, setMetrics] = useState<EvaluationMetric[]>([]);
+  const [testCaseWeight, setTestCaseWeight] = useState(60);
+  const [metricsWeight, setMetricsWeight] = useState(40);
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: "1",
@@ -56,6 +58,14 @@ export function CreateAssignmentForm({
   ]);
   const [loading, setLoading] = useState(false);
 
+  const handleWeightageChange = (
+    newTestCaseWeight: number,
+    newMetricsWeight: number,
+  ) => {
+    setTestCaseWeight(newTestCaseWeight);
+    setMetricsWeight(newMetricsWeight);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -68,6 +78,8 @@ export function CreateAssignmentForm({
         questions,
         copyPastePrevention,
         fullScreenEnforcement,
+        testCaseWeight,
+        metricsWeight,
         metrics,
       });
 
@@ -166,6 +178,9 @@ export function CreateAssignmentForm({
         metrics={metrics}
         onMetricsChange={setMetrics}
         existingMetrics={existingMetrics}
+        testCaseWeight={testCaseWeight}
+        metricsWeight={metricsWeight}
+        onWeightageChange={handleWeightageChange}
       />
 
       <QuestionsList questions={questions} onQuestionsChange={setQuestions} />

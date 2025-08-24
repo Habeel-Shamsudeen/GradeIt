@@ -111,13 +111,22 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
 
     const { code, language, question, submission } = codeSubmission;
 
-    // if no metrics, skip LLM evaluation early return
+    // if no metrics, skip LLM evaluation and use only testcase score
     if (submission.assignment.metrics.length === 0) {
+      // When no metrics exist, final score is just the testcase score
+      const finalScore = calculateFinalScore(
+        codeSubmission.testCaseScore || 0,
+        0, // No metrics score
+        submission.assignment.testCaseWeight || 100, // Use full weight for test cases
+        0, // No metrics weight
+      );
+
       await prisma.codeSubmission.update({
         where: { id: codeSubmissionId },
         data: {
           codeEvaluationStatus: CodeEvaluationStatus.EVALUATION_COMPLETE,
-          score: codeSubmission.testCaseScore,
+          metricScore: 0,
+          score: finalScore,
         },
       });
       await updateSubmissionStatus(codeSubmission.submissionId);
@@ -183,11 +192,20 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
         return acc + (metric.score * weight) / 100; // Convert weight percentage to decimal
       }, 0);
 
+      // Calculate final score combining testcase and metrics scores
+      const finalScore = calculateFinalScore(
+        codeSubmission.testCaseScore || 0,
+        totalMetricScore,
+        submission.assignment.testCaseWeight || 60,
+        submission.assignment.metricsWeight || 40,
+      );
+
       await prisma.codeSubmission.update({
         where: { id: codeSubmissionId },
         data: {
           codeEvaluationStatus: CodeEvaluationStatus.EVALUATION_COMPLETE,
           metricScore: totalMetricScore,
+          score: finalScore,
         },
       });
 
@@ -215,4 +233,24 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
     );
     throw error;
   }
+}
+
+// helper function to calculate the final score
+function calculateFinalScore(
+  testCaseScore: number,
+  metricsScore: number,
+  testCaseWeight: number,
+  metricsWeight: number,
+): number {
+  // Normalize weights to ensure they add up to 100
+  const totalWeight = testCaseWeight + metricsWeight;
+  const normalizedTestCaseWeight =
+    totalWeight > 0 ? testCaseWeight / totalWeight : 0.6;
+  const normalizedMetricsWeight =
+    totalWeight > 0 ? metricsWeight / totalWeight : 0.4;
+
+  const finalScore =
+    testCaseScore * normalizedTestCaseWeight +
+    metricsScore * normalizedMetricsWeight;
+  return Math.min(100, Math.max(0, finalScore)); // Ensure score is between 0 and 100
 }
