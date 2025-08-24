@@ -322,28 +322,12 @@ export const removeStudentFromClass = async (
           },
         });
 
-        const assignments = await tx.assignment.findMany({
-          where: {
-            classroomId: classroom.id,
-          },
-          select: {
-            questions: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        });
-
-        const questionIds = assignments.flatMap((assignment) =>
-          assignment.questions.map((q) => q.id),
-        );
-
+        // Delete all submissions for this student in this classroom
         await tx.submission.deleteMany({
           where: {
             studentId: studentId,
-            questionId: {
-              in: questionIds,
+            assignment: {
+              classroomId: classroom.id,
             },
           },
         });

@@ -2,28 +2,35 @@
 
 import { prisma } from "@/lib/prisma";
 import { TestResults } from "@/lib/types/code-types";
-import { Status, TestCaseStatus, EvaluationStatus } from "@prisma/client";
+import {
+  TestCaseStatus,
+  CodeEvaluationStatus,
+  SubmissionStatus,
+} from "@prisma/client";
 import { evaluateCodeWithLLM } from "@/lib/services/code-evaluation-llm-service";
+import { updateSubmissionStatus } from "./submission-actions";
 
-//code submission grading
-export async function gradeSubmission(submissionId: string) {
+//code submission grading - Test case evaluation
+export async function evaluateSubmissionTestCases(codeSubmissionId: string) {
   try {
-    const submission = await prisma.submission.findUnique({
-      where: { id: submissionId },
+    const codeSubmission = await prisma.codeSubmission.findUnique({
+      where: { id: codeSubmissionId },
       include: {
         testCaseResults: {
           include: {
             testCase: true,
           },
         },
+        question: true,
+        submission: true,
       },
     });
 
-    if (!submission) {
-      throw new Error(`Submission ${submissionId} not found`);
+    if (!codeSubmission) {
+      throw new Error(`Code submission ${codeSubmissionId} not found`);
     }
 
-    const pendingTestCases = submission.testCaseResults.filter(
+    const pendingTestCases = codeSubmission.testCaseResults.filter(
       (result) => result.status === TestCaseStatus.PENDING,
     );
 
@@ -36,7 +43,7 @@ export async function gradeSubmission(submissionId: string) {
 
     const testResults: TestResults[] = [];
 
-    submission.testCaseResults.forEach((result) => {
+    codeSubmission.testCaseResults.forEach((result) => {
       testResults.push({
         description:
           result.testCase.description || `Test Case ${result.testCase.id}`,
@@ -56,36 +63,41 @@ export async function gradeSubmission(submissionId: string) {
 
     const totalScore = Math.min(100, baseScore);
 
-    await prisma.submission.update({
-      where: { id: submissionId },
+    // Update the code submission with test case score
+    await prisma.codeSubmission.update({
+      where: { id: codeSubmissionId },
       data: {
-        score: totalScore,
-        status: totalScore >= 60 ? Status.COMPLETED : Status.FAILED, // Pass with 60% or higher
-        evaluationStatus: EvaluationStatus.TEST_CASES_EVALUATION_COMPLETE,
+        testCaseScore: totalScore,
+        codeEvaluationStatus:
+          CodeEvaluationStatus.TEST_CASES_EVALUATION_COMPLETE,
       },
     });
 
     return {
-      submissionId,
+      codeSubmissionId,
       score: totalScore,
     };
   } catch (error) {
-    console.error(`Error grading submission ${submissionId}:`, error);
+    console.error(`Error grading code submission ${codeSubmissionId}:`, error);
     throw error;
   }
 }
 
-export async function triggerLLMEvaluation(submissionId: string) {
+export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
   try {
-    const submission = await prisma.submission.findUnique({
-      where: { id: submissionId },
+    const codeSubmission = await prisma.codeSubmission.findUnique({
+      where: { id: codeSubmissionId },
       include: {
         question: true,
-        assignment: {
+        submission: {
           include: {
-            metrics: {
+            assignment: {
               include: {
-                metric: true,
+                metrics: {
+                  include: {
+                    metric: true,
+                  },
+                },
               },
             },
           },
@@ -93,14 +105,23 @@ export async function triggerLLMEvaluation(submissionId: string) {
       },
     });
 
-    if (!submission) {
-      throw new Error(`Submission ${submissionId} not found`);
+    if (!codeSubmission) {
+      throw new Error(`Code submission ${codeSubmissionId} not found`);
     }
 
-    const { code, language, question, assignment } = submission;
+    const { code, language, question, submission } = codeSubmission;
 
     // if no metrics, skip LLM evaluation early return
-    if (assignment.metrics.length === 0) {
+    if (submission.assignment.metrics.length === 0) {
+      await prisma.codeSubmission.update({
+        where: { id: codeSubmissionId },
+        data: {
+          codeEvaluationStatus: CodeEvaluationStatus.EVALUATION_COMPLETE,
+          score: codeSubmission.testCaseScore,
+        },
+      });
+      await updateSubmissionStatus(codeSubmission.submissionId);
+      console.log("No metrics found, skipping LLM evaluation");
       return;
     }
 
@@ -110,10 +131,12 @@ export async function triggerLLMEvaluation(submissionId: string) {
         language,
         questionTitle: question.title,
         questionDescription: question.description,
-        metrics: assignment.metrics,
+        metrics: submission.assignment.metrics,
       });
 
-      const validMetricIds = new Set(assignment.metrics.map((m) => m.metricId));
+      const validMetricIds = new Set(
+        submission.assignment.metrics.map((m) => m.metricId),
+      );
       const invalidMetrics = evaluations.filter(
         (e) => !validMetricIds.has(e.metricId),
       );
@@ -126,58 +149,68 @@ export async function triggerLLMEvaluation(submissionId: string) {
 
       await Promise.all(
         evaluations.map((metric) =>
-          prisma.submissionMetricResult.update({
+          prisma.submissionMetricResult.upsert({
             where: {
-              submissionId_metricId: {
-                submissionId,
+              codeSubmissionId_metricId: {
+                codeSubmissionId: codeSubmissionId,
                 metricId: metric.metricId,
               },
             },
-            data: {
+            update: {
+              score: metric.score,
+              feedback: metric.feedback,
+            },
+            create: {
+              codeSubmissionId: codeSubmissionId,
+              metricId: metric.metricId,
               score: metric.score,
               feedback: metric.feedback,
             },
           }),
         ),
       );
+
       const MetricWeightage = await prisma.assignmentMetric.findMany({
         where: {
-          assignmentId: assignment.id,
+          assignmentId: submission.assignmentId,
         },
       });
 
-      const totalScore = evaluations.reduce((acc, metric) => {
+      const totalMetricScore = evaluations.reduce((acc, metric) => {
         const weight =
           MetricWeightage?.find((m) => m.metricId === metric.metricId)
             ?.weight || 0;
         return acc + (metric.score * weight) / 100; // Convert weight percentage to decimal
       }, 0);
 
-      await prisma.submission.update({
-        where: { id: submissionId },
+      await prisma.codeSubmission.update({
+        where: { id: codeSubmissionId },
         data: {
-          evaluationStatus: EvaluationStatus.EVALUATION_COMPLETE,
-          score: totalScore,
+          codeEvaluationStatus: CodeEvaluationStatus.EVALUATION_COMPLETE,
+          metricScore: totalMetricScore,
         },
       });
 
       console.log("LLM evaluation complete");
+
+      await updateSubmissionStatus(codeSubmission.submissionId);
     } catch (error) {
       console.error(
-        `Error evaluating code with LLM for submission ${submissionId}:`,
+        `Error evaluating code with LLM for code submission ${codeSubmissionId}:`,
         error,
       );
-      await prisma.submission.update({
-        where: { id: submissionId },
+      await prisma.codeSubmission.update({
+        where: { id: codeSubmissionId },
         data: {
-          evaluationStatus: EvaluationStatus.LLM_EVALUATION_FAILED,
+          codeEvaluationStatus: CodeEvaluationStatus.LLM_EVALUATION_FAILED,
         },
       });
+      await updateSubmissionStatus(codeSubmission.submissionId);
       throw error;
     }
   } catch (error) {
     console.error(
-      `Error triggering LLM evaluation for submission ${submissionId}:`,
+      `Error triggering LLM evaluation for code submission ${codeSubmissionId}:`,
       error,
     );
     throw error;

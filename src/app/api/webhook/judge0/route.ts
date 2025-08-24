@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { WebhookPayload } from "@/lib/types/config-types";
 import {
   processJudgeResultWebhook,
-  updateSubmissionStatus,
+  updateCodeSubmissionStatus,
 } from "@/server/actions/submission-actions";
 import { judgeResult } from "@/lib/types/code-types";
 
@@ -25,11 +25,11 @@ export async function PUT(req: NextRequest) {
 
     await processJudgeResultWebhook(
       payload.testCaseId,
-      payload.submissionId,
+      payload.codeSubmissionId,
       judgeResult,
     );
 
-    await updateSubmissionStatus(payload.submissionId);
+    await updateCodeSubmissionStatus(payload.codeSubmissionId);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

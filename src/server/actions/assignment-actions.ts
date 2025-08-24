@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { assignmentSchema, AssignmentSchema } from "@/lib/validators/schema";
 import { revalidatePath } from "next/cache";
 import { getClassIdFromCode } from "./utility-actions";
+import { SubmissionStatus } from "@prisma/client";
 
 export const createAssignment = async (formData: AssignmentSchema) => {
   const session = await auth();
@@ -81,6 +82,27 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         },
       },
     });
+
+    //create a submission for each student in the class
+    const students = await prisma.user.findMany({
+      where: {
+        enrolledClasses: {
+          some: {
+            id: classroomId,
+          },
+        },
+      },
+    });
+
+    const submissions = await prisma.submission.createMany({
+      data: students.map((student) => {
+        return {
+          studentId: student.id,
+          assignmentId: assignment.id,
+          status: SubmissionStatus.NOT_STARTED,
+        };
+      }),
+    });
     console.log("success", assignment);
     revalidatePath(`/classes/${classCode}`); // Refresh cache for updated data
     return { status: "success", assignment };
@@ -100,9 +122,10 @@ export const getAssignments = async (classroomId: string) => {
         classroomId,
       },
       include: {
-        questions: {
+        questions: true,
+        submissions: {
           include: {
-            Submission: true,
+            codeSubmission: true,
           },
         },
       },
@@ -117,8 +140,8 @@ export const getAssignments = async (classroomId: string) => {
       description: assignment.description,
       dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
       questionCount: assignment.questions.length,
-      submissionCount: assignment.questions.reduce(
-        (acc, question) => acc + question.Submission.length,
+      submissionCount: assignment.submissions.reduce(
+        (acc, submission) => acc + submission.codeSubmission.length,
         0,
       ),
       createdAt: new Date(assignment.createdAt),
@@ -144,7 +167,12 @@ export const getAssignmentById = async (assignmentId: string) => {
         questions: {
           include: {
             testCases: true,
-            Submission: true,
+            codeSubmission: true,
+          },
+        },
+        submissions: {
+          include: {
+            codeSubmission: true,
           },
         },
       },
@@ -160,8 +188,8 @@ export const getAssignmentById = async (assignmentId: string) => {
       description: assignment.description,
       dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
       questionCount: assignment.questions.length,
-      submissionCount: assignment.questions.reduce(
-        (acc, question) => acc + question.Submission.length,
+      submissionCount: assignment.submissions.reduce(
+        (acc, submission) => acc + submission.codeSubmission.length,
         0,
       ),
       createdAt: new Date(assignment.createdAt),

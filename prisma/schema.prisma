@@ -12,11 +12,13 @@ enum Role {
   STUDENT
 }
 
-enum Status {
+enum SubmissionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  LATE_SUBMISSION
   COMPLETED
-  FAILED
-  PENDING
   PARTIAL
+  FAILED
 }
 
 enum TestCaseStatus {
@@ -27,7 +29,7 @@ enum TestCaseStatus {
   PENDING
 }
 
-enum EvaluationStatus {
+enum CodeEvaluationStatus {
   PENDING
   TEST_CASES_EVALUATION_FAILED
   TEST_CASES_EVALUATION_COMPLETE
@@ -98,75 +100,24 @@ model Assignment {
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   questions   Question[]
   DueDate     DateTime? 
+  startDate   DateTime? 
   metrics AssignmentMetric[]
-  createdAt   DateTime  @default(now())
   submissions Submission[]
   copyPastePrevention   Boolean @default(false)
   fullScreenEnforcement Boolean @default(false)
+  allowLateSubmission Boolean @default(true)
+  allowAutoEvaluation Boolean @default(true) //metric based evaluation
+  createdAt   DateTime  @default(now())
 }
 
-model Question {
-  id           String    @id @default(uuid())
-  assignmentId String
-  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete:Cascade)
-  title        String
-  description  String
-  language     String
-  testCases    TestCase[]
-  createdAt    DateTime  @default(now())
-  Submission Submission[]
-}
-
-model TestCase {
-  id          String  @id @default(uuid())
-  questionId  String
-  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  input       String
-  expectedOutput String
-  hidden      Boolean @default(false)
-//  weight      Int     @default(1) // Simple weight for scoring
-//  isBonus     Boolean @default(false) // Optional bonus test cases
-  description String? // Description of what the test case is checking
-  
-  // Relation to test case results
-  testCaseResults TestCaseResult[]
-}
-
-model Submission {
-  id            String   @id @default(uuid())
-  studentId     String
-  student       User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  assignmentId  String
-  assignment    Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  questionId    String
-  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  code          String
-  language      String
-  status        Status  @default(PENDING) 
-  score         Float?    // Faculty can assign a score
-  feedback      String?
-  // In Submission model
-  evaluationStatus EvaluationStatus @default(PENDING)
-//  plagiarismScore Float? // Store plagiarism detection results
-  testCaseResults TestCaseResult[]
-  metricResults SubmissionMetricResult[]
-  createdAt     DateTime @default(now())
-}
-
-model TestCaseResult {
-  id            String        @id @default(uuid())
-  submissionId  String
-  submission    Submission    @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  testCaseId    String
-  testCase      TestCase      @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
-  status        TestCaseStatus @default(PENDING)
-  actualOutput  String?       // The actual output from running the test case
-  executionTime Int?          // Time taken to execute in milliseconds
-  errorMessage  String?       // If there was an error, store the message
-  judge0Token   String?
-  createdAt     DateTime      @default(now())
-
-  @@unique([submissionId, testCaseId]) // One result per test case per submission
+model AssignmentMetric {
+  id             String            @id @default(uuid())
+  assignmentId   String
+  assignment     Assignment        @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  metricId       String
+  metric         EvaluationMetric  @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  weight         Float              
+  createdAt      DateTime           @default(now())
 }
 
 model EvaluationMetric {
@@ -181,26 +132,89 @@ model EvaluationMetric {
   results     SubmissionMetricResult[]
 }
 
-model AssignmentMetric {
-  id             String            @id @default(uuid())
-  assignmentId   String
-  assignment     Assignment        @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  metricId       String
-  metric         EvaluationMetric  @relation(fields: [metricId], references: [id], onDelete: Cascade)
-  weight         Float              // e.g. 0.2 for 20%
-  //config         Json?              // metric-specific settings
-  createdAt      DateTime           @default(now())
+model Question {
+  id           String    @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete:Cascade)
+  title        String
+  description  String
+  language     String
+  testCases    TestCase[]
+  createdAt    DateTime  @default(now())
+  codeSubmission CodeSubmission[]
+}
+
+model TestCase {
+  id          String  @id @default(uuid())
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  input       String
+  expectedOutput String
+  hidden      Boolean @default(false)
+  description String? 
+  
+  testCaseResults TestCaseResult[]
+}
+
+model Submission {
+  id            String   @id @default(uuid())
+  studentId     String
+  student       User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignmentId  String
+  assignment    Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  finalScore         Float? @default(0)
+  status        SubmissionStatus  @default(NOT_STARTED)
+
+  codeSubmission CodeSubmission[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([studentId, assignmentId]) // one submission per student per assignment
+}
+
+model CodeSubmission {
+  id String @id @default(uuid())
+  submissionId String
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  questionId    String
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  code          String
+  language      String
+  score         Float @default(0)
+  testCaseScore     Float @default(0)
+  metricScore   Float @default(0)
+  feedback      String?
+  codeEvaluationStatus CodeEvaluationStatus @default(PENDING)
+  testCaseResults TestCaseResult[]
+  metricResults SubmissionMetricResult[]
+  createdAt     DateTime @default(now())
 }
 
 model SubmissionMetricResult {
   id            String            @id @default(uuid())
-  submissionId  String
-  submission    Submission        @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  codeSubmissionId  String
+  codeSubmission    CodeSubmission        @relation(fields: [codeSubmissionId], references: [id], onDelete: Cascade)
   metricId      String
   metric        EvaluationMetric  @relation(fields: [metricId], references: [id], onDelete: Cascade)
-  score         Float              // 0–1 normalized
+  score         Float              // 0–100
   feedback      String?
   createdAt     DateTime           @default(now())
 
-  @@unique([submissionId, metricId])
+  @@unique([codeSubmissionId, metricId])
+}
+
+model TestCaseResult {
+  id            String        @id @default(uuid())
+  codeSubmissionId  String
+  codeSubmission    CodeSubmission    @relation(fields: [codeSubmissionId], references: [id], onDelete: Cascade)
+  testCaseId    String
+  testCase      TestCase      @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+  status        TestCaseStatus @default(PENDING)
+  actualOutput  String?       
+  executionTime Int?          
+  errorMessage  String?       
+  judge0Token   String?
+  createdAt     DateTime      @default(now())
+
+  @@unique([codeSubmissionId, testCaseId]) // One result per test case per code submission
 }
