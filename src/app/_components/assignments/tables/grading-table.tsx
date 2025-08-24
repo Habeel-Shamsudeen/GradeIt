@@ -12,8 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/_components/ui/card";
-
-// Import modular components
 import { GradingTableFilters } from "./grading-table-filters";
 import { GradingTableActions } from "./grading-table-actions";
 import { GradingTableHeader } from "./grading-table-header";
@@ -23,7 +21,7 @@ import {
   useGradingTableSorting,
   useGradingTableSelection,
 } from "./grading-table-hooks";
-import { exportGradingTableToCSV } from "./grading-table-utils";
+import { exportGradingTableToCSV } from "@/lib/utils";
 
 interface GradingTableProps {
   data: GradingTableData;
@@ -35,6 +33,10 @@ interface GradingTableProps {
     newScore: number,
   ) => void;
   onBulkAction?: (action: string, studentIds: string[]) => void;
+  onRefresh?: () => void;
+  onExport?: () => void;
+  isRefreshing?: boolean;
+  isExporting?: boolean;
 }
 
 export const GradingTable: React.FC<GradingTableProps> = ({
@@ -43,6 +45,10 @@ export const GradingTable: React.FC<GradingTableProps> = ({
   assignmentId,
   onScoreChange,
   onBulkAction,
+  onRefresh,
+  onExport,
+  isRefreshing = false,
+  isExporting = false,
 }) => {
   // Use custom hooks for state management
   const { sortConfig, sortedStudents, handleSort } = useGradingTableSorting({
@@ -58,10 +64,12 @@ export const GradingTable: React.FC<GradingTableProps> = ({
       filteredStudents,
     });
 
-  // Export handler
-  const handleExport = () => {
-    exportGradingTableToCSV(filteredStudents, data);
-  };
+  // Use the provided export handler or fallback to default
+  const handleExport =
+    onExport ||
+    (() => {
+      exportGradingTableToCSV(filteredStudents, data);
+    });
 
   // Use passed columns or generate default columns
   const tableColumns = columns || [];
@@ -77,6 +85,9 @@ export const GradingTable: React.FC<GradingTableProps> = ({
             data={data}
             onBulkAction={onBulkAction}
             onExport={handleExport}
+            onRefresh={onRefresh}
+            isRefreshing={isRefreshing}
+            isExporting={isExporting}
           />
         </div>
 
@@ -113,6 +124,7 @@ export const GradingTable: React.FC<GradingTableProps> = ({
                   key={student.id}
                   student={student}
                   columns={tableColumns}
+                  metrics={data.metrics}
                   isSelected={selectedStudents.has(student.id)}
                   onSelect={handleSelectStudent}
                   onScoreChange={onScoreChange}

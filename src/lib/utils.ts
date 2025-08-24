@@ -131,52 +131,44 @@ export function mapStatus(status: string): "passed" | "failed" | "running" {
   }
 }
 
-export const exportToCSV = (students: any[]) => {
-  if (!students.length) {
-    alert("No data available to export.");
-    return;
-  }
-
-  // Convert JSON to CSV format
+export function exportGradingTableToCSV(
+  filteredData: GradingTableStudent[],
+  data: GradingTableData,
+): void {
   const headers = [
-    "ID",
-    "Name",
+    "Student Name",
     "Email",
-    "Avatar",
+    "Overall Score",
+    ...data.metrics.map((m) => `${m.name} (${m.weight}%)`),
     "Status",
-    "Submitted At",
-    "Score",
-    "Questions Completed",
-  ];
-  const csvRows = [
-    headers.join(","), // Add headers
-    ...students.map((student) =>
-      [
-        student.id,
-        student.name,
-        student.email,
-        student.avatar,
-        student.status,
-        student.submittedAt,
-        student.score,
-        student.questionsCompleted,
-      ].join(","),
-    ),
   ];
 
-  const csvContent = csvRows.join("\n");
+  const rows = filteredData.map((student) => [
+    student.name,
+    student.email,
+    student.overallScore.toFixed(1),
+    ...data.metrics.map((metric) => {
+      const score =
+        student.overallSubmission?.metricScores.find(
+          (m) => m.metricId === metric.id,
+        )?.score || 0;
+      return score.toString();
+    }),
+    student.status || "NOT_STARTED",
+  ]);
+
+  const csvContent = [headers, ...rows]
+    .map((row) => row.map((cell) => `"${cell}"`).join(","))
+    .join("\n");
+
   const blob = new Blob([csvContent], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-
-  // Create a hidden download link
+  const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "students_submissions.csv";
-  document.body.appendChild(a);
+  a.download = `grading-table-${new Date().toISOString().split("T")[0]}.csv`;
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
+  window.URL.revokeObjectURL(url);
+}
 
 export const getRandomEducationIcon = (): string => {
   const educationIcons = [
@@ -199,40 +191,61 @@ export function transformStudentDataForGrading(
   students: StudentProgress[],
   assignmentData: GradingTableHeaderData,
 ): GradingTableData {
-  //   Need to update to support multiple submissions per student when there is multiple questions for a assignment
-  // there will be multiple submissions for a student
-  // in that case we will display score the average of all submissions this includes test cases and metrics
-
   const transformedStudents: GradingTableStudent[] = students.map((student) => {
-    // Get the best code submission (highest score) for this student
-    const bestCodeSubmission = student.submissions
-      ?.filter((cs: any) => cs.codeEvaluationStatus === "EVALUATION_COMPLETE")
-      ?.sort((a: any, b: any) => (b.score || 0) - (a.score || 0))[0];
+    const numberOfSubmissions = student.submissions?.length || 0;
 
-    // Get metric scores from the best code submission
+    let avgScore = 0;
+    if (numberOfSubmissions > 0) {
+      avgScore = student.score;
+    } else {
+      avgScore =
+        student.submissions
+          .map((submission) => submission.score)
+          .reduce((acc, curr) => acc + curr, 0) / numberOfSubmissions;
+    }
+
+    const avgTestCaseScore =
+      student.submissions?.reduce((acc, curr) => acc + curr.testCaseScore, 0) /
+        numberOfSubmissions || 0;
+
     const metricScores = assignmentData.metrics.map((metric) => {
-      const metricResult = bestCodeSubmission?.metricResults?.find(
-        (mr: any) => mr.metricId === metric.id,
-      );
+      const metricResult =
+        student.submissions?.reduce(
+          (acc, curr) =>
+            acc +
+            curr.metricResults.find((mr: any) => mr.metricId === metric.id)
+              ?.score,
+          0,
+        ) / numberOfSubmissions || 0;
       return {
         metricId: metric.id,
         metricName: metric.name,
-        score: metricResult?.score || 0,
+        score: metricResult,
         weight: metric.weight,
       };
     });
 
-    const submissions: GradingTableSubmission[] = [
-      {
-        id: bestCodeSubmission?.id || `temp-${student.id}`,
+    const overallSubmission: GradingTableSubmission = {
+      id: student.submissions[0]?.id || `temp-${student.id}`,
+      studentId: student.id,
+      testCaseScore: avgTestCaseScore,
+      metricScores: metricScores,
+      totalScore: avgScore,
+      status: student.status,
+      submittedAt: student.submittedAt || undefined,
+    };
+
+    const submissions: GradingTableSubmission[] = student.submissions.map(
+      (submission) => ({
+        id: submission.id,
         studentId: student.id,
-        testCaseScore: bestCodeSubmission?.testCaseScore || 0,
-        metricScores: metricScores,
-        totalScore: bestCodeSubmission?.score || 0,
-        status: student.status,
-        submittedAt: student.submittedAt || undefined,
-      },
-    ];
+        testCaseScore: submission.testCaseScore,
+        metricScores: submission.metricResults,
+        totalScore: submission.score,
+        status: submission.codeEvaluationStatus,
+        submittedAt: submission.createdAt || undefined,
+      }),
+    );
 
     return {
       id: student.id,
@@ -241,6 +254,7 @@ export function transformStudentDataForGrading(
       avatar: student.avatar,
       overallScore: student.score,
       status: student.status,
+      overallSubmission: overallSubmission,
       submissions: submissions,
     };
   });

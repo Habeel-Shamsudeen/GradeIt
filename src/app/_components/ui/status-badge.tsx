@@ -28,6 +28,7 @@ export function StatusBadge({ status, className = "" }: StatusBadgeProps) {
           label: "Late Submission",
         };
       case "COMPLETED":
+      case "EVALUATION_COMPLETE":
         return {
           color:
             "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",

@@ -1,6 +1,7 @@
 "use client";
 
-import { MoreHorizontal, Edit3 } from "lucide-react";
+import { useState } from "react";
+import { MoreHorizontal, Edit3, Eye } from "lucide-react";
 import { TableCell, TableRow } from "@/app/_components/ui/table";
 import { Checkbox } from "@/app/_components/ui/checkbox";
 import { Button } from "@/app/_components/ui/button";
@@ -16,15 +17,17 @@ import {
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { StatusBadge } from "@/app/_components/ui/status-badge";
-import { EditableScore } from "@/app/_components/ui/editable-score";
+import { SubmissionDetailsDialog } from "./submission-details-dialog";
 import {
   GradingTableColumn,
   GradingTableStudent,
+  AssignmentMetricInfo,
 } from "@/lib/types/assignment-tyes";
 
 interface GradingTableRowProps {
   student: GradingTableStudent;
   columns: GradingTableColumn[];
+  metrics: AssignmentMetricInfo[];
   isSelected: boolean;
   onSelect: (studentId: string, checked: boolean) => void;
   onScoreChange?: (
@@ -37,10 +40,12 @@ interface GradingTableRowProps {
 export function GradingTableRow({
   student,
   columns,
+  metrics,
   isSelected,
   onSelect,
   onScoreChange,
 }: GradingTableRowProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   return (
     <TableRow>
       {columns.map((column) => {
@@ -84,38 +89,23 @@ export function GradingTableRow({
         if (column.key === "testCases") {
           return (
             <TableCell key={column.key}>
-              <EditableScore
-                value={student.submissions[0]?.testCaseScore || 0}
-                onChange={(newScore) =>
-                  onScoreChange?.(
-                    student.submissions[0]?.id || "",
-                    "testCases",
-                    newScore,
-                  )
-                }
-              />
+              <div className="font-medium">
+                {student.overallSubmission.testCaseScore.toFixed(1)}%
+              </div>
             </TableCell>
           );
         }
 
         if (column.key.startsWith("metric_")) {
           const metricId = column.key.replace("metric_", "");
-          const metricScore = student.submissions[0]?.metricScores.find(
+          const metricScore = student.overallSubmission?.metricScores.find(
             (m) => m.metricId === metricId,
           );
           return (
             <TableCell key={column.key}>
-              <EditableScore
-                value={metricScore?.score || 0}
-                onChange={(newScore) =>
-                  onScoreChange &&
-                  onScoreChange(
-                    student.submissions[0]?.id || "",
-                    metricId,
-                    newScore,
-                  )
-                }
-              />
+              <div className="font-medium">
+                {(metricScore?.score || 0).toFixed(1)}%
+              </div>
             </TableCell>
           );
         }
@@ -124,7 +114,7 @@ export function GradingTableRow({
           return (
             <TableCell key={column.key}>
               <div className="font-bold text-lg">
-                {student.overallScore.toFixed(1)}%
+                {student.overallSubmission.totalScore.toFixed(1)}%
               </div>
             </TableCell>
           );
@@ -148,11 +138,14 @@ export function GradingTableRow({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
                     <Edit3 className="h-4 w-4 mr-2" />
                     Edit Scores
                   </DropdownMenuItem>
-                  <DropdownMenuItem>View Submission</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Submission
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </TableCell>
@@ -161,6 +154,20 @@ export function GradingTableRow({
 
         return <TableCell key={column.key}></TableCell>;
       })}
+
+      <SubmissionDetailsDialog
+        metrics={columns
+          .filter((c) => c.key.startsWith("metric_"))
+          .map((c) => ({
+            id: c.key.replace("metric_", ""),
+            name: c.label,
+            weight: 0,
+          }))}
+        student={student}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onScoreChange={onScoreChange}
+      />
     </TableRow>
   );
 }

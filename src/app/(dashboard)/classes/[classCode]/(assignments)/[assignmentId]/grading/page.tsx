@@ -128,6 +128,7 @@ export default async function GradingPage({ params }: GradingPageProps) {
         data={transformedData}
         columns={headerData.columns}
         assignmentId={assignmentId}
+        classCode={classCode}
       />
     </div>
   );

@@ -9,6 +9,7 @@ import {
 } from "@prisma/client";
 import { evaluateCodeWithLLM } from "@/lib/services/code-evaluation-llm-service";
 import { updateSubmissionStatus } from "./submission-actions";
+import { revalidatePath } from "next/cache";
 
 //code submission grading - Test case evaluation
 export async function evaluateSubmissionTestCases(codeSubmissionId: string) {
@@ -257,25 +258,21 @@ function calculateFinalScore(
 
 // Grading Table Actions
 export const updateStudentScore = async (
-  submissionId: string,
+  codeSubmissionId: string,
   metricId: string,
   newScore: number,
 ) => {
   try {
     console.log(
       "Updating student score for submission:",
-      submissionId,
+      codeSubmissionId,
       metricId,
       newScore,
     );
     // Find the code submission for this student and assignment
     const codeSubmission = await prisma.codeSubmission.findFirst({
       where: {
-        id: submissionId,
-        codeEvaluationStatus: "EVALUATION_COMPLETE",
-      },
-      orderBy: {
-        score: "desc", // Get the best submission
+        id: codeSubmissionId,
       },
     });
 
@@ -306,7 +303,7 @@ export const updateStudentScore = async (
       where: {
         submissions: {
           some: {
-            id: submissionId,
+            id: codeSubmission.submissionId,
           },
         },
       },
@@ -350,12 +347,9 @@ export const updateStudentScore = async (
       });
 
       // Update submission final score
-      await prisma.submission.update({
-        where: { id: submissionId },
-        data: {
-          finalScore: finalScore,
-        },
-      });
+      await updateSubmissionStatus(codeSubmission.submissionId);
+
+      revalidatePath(`/assignments/${assignment.id}/grading`);
     }
 
     return { success: true };

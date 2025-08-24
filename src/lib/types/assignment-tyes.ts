@@ -79,6 +79,7 @@ export interface GradingTableStudent {
   overallScore: number;
   status: SubmissionStatus;
   submissions: GradingTableSubmission[];
+  overallSubmission: GradingTableSubmission;
 }
 
 export interface GradingTableSubmission {

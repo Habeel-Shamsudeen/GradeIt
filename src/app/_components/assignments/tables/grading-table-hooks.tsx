@@ -38,16 +38,17 @@ export function useGradingTableFilters({
 
       // Status filter
       if (filters.status !== "all") {
-        const hasMatchingStatus = student.submissions.some(
-          (sub) => sub.status === filters.status,
-        );
+        const hasMatchingStatus = student.status === filters.status;
         if (!hasMatchingStatus) return false;
       }
 
       // Score range filter
       if (filters.scoreRange !== "all") {
         const [min, max] = filters.scoreRange.split("-").map(Number);
-        if (student.overallScore < min || student.overallScore > max)
+        if (
+          student.overallSubmission.totalScore < min ||
+          student.overallSubmission.totalScore > max
+        )
           return false;
       }
 
@@ -89,10 +90,10 @@ export function useGradingTableSorting({
       } else if (sortConfig.key.startsWith("metric_")) {
         const metricId = sortConfig.key.replace("metric_", "");
         aValue =
-          a.submissions[0]?.metricScores.find((m) => m.metricId === metricId)
+          a.overallSubmission?.metricScores.find((m) => m.metricId === metricId)
             ?.score || 0;
         bValue =
-          b.submissions[0]?.metricScores.find((m) => m.metricId === metricId)
+          b.overallSubmission?.metricScores.find((m) => m.metricId === metricId)
             ?.score || 0;
       }
 
