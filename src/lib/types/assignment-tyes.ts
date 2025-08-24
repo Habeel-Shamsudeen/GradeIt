@@ -1,3 +1,5 @@
+import { SubmissionStatus } from "@prisma/client";
+
 export interface Question {
   id: string;
   title: string;
@@ -11,6 +13,7 @@ export interface TestCase {
   input: string;
   expectedOutput: string;
   hidden: boolean;
+  description?: string | null;
 }
 
 export interface EvaluationMetric {
@@ -35,4 +38,86 @@ export interface Assignment {
 
 export interface AssignmentById extends Assignment {
   questions: Question[];
+}
+
+// Grading Table Header Types
+export interface GradingTableColumn {
+  key: string;
+  label: string;
+  sortable: boolean;
+  width: string;
+}
+
+export interface AssignmentMetricInfo {
+  id: string;
+  name: string;
+  description?: string;
+  weight: number;
+}
+
+export interface GradingTableHeaderData {
+  id: string;
+  title: string;
+  testCaseWeight: number;
+  metricsWeight: number;
+  metrics: AssignmentMetricInfo[];
+}
+
+export interface GradingTableHeaderResponse {
+  success: boolean;
+  columns: GradingTableColumn[];
+  assignment: GradingTableHeaderData;
+  error?: string;
+}
+
+// Grading Table Data Types
+export interface GradingTableStudent {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  overallScore: number;
+  status: SubmissionStatus;
+  submissions: GradingTableSubmission[];
+}
+
+export interface GradingTableSubmission {
+  id: string;
+  studentId: string;
+  testCaseScore: number;
+  metricScores: GradingTableMetricScore[];
+  totalScore: number;
+  status: SubmissionStatus;
+  submittedAt?: string;
+}
+
+export interface GradingTableMetricScore {
+  metricId: string;
+  metricName: string;
+  score: number;
+  weight: number;
+}
+
+export interface GradingTableData {
+  students: GradingTableStudent[];
+  metrics: AssignmentMetricInfo[];
+}
+
+// Student Progress Types (from server actions)
+export interface StudentProgress {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  status: SubmissionStatus;
+  submittedAt: string | null;
+  score: number;
+  questionsCompleted: number;
+  submissions: any[]; // CodeSubmission array from Prisma
+}
+
+// Transform function types
+export interface TransformStudentDataParams {
+  studentData: StudentProgress[];
+  assignmentData: GradingTableHeaderData;
 }

@@ -325,9 +325,8 @@ export async function getStudentAssignmentProgress(
   }
 
   const assignment = classroom.assignments[0];
-  const questionIds = assignment.questions.map((q) => q.id);
 
-  // 2. Get all submissions for this assignment
+  // 2. Get all submissions for this assignment with metric results
   const submissions = await prisma.submission.findMany({
     where: {
       assignmentId: assignmentId,
@@ -335,22 +334,27 @@ export async function getStudentAssignmentProgress(
     },
     include: {
       codeSubmission: {
-        where: {
-          questionId: { in: questionIds },
-        },
         include: {
-          testCaseResults: true,
+          metricResults: {
+            include: {
+              metric: true,
+            },
+          },
         },
       },
     },
   });
 
-  // 3. Process student data
+  // 3. Process student data using database values directly
   const studentsProgress = classroom.students.map((student) => {
     // Get this student's submission for this assignment
     const studentSubmission = submissions.find(
       (s) => s.studentId === student.id,
     );
+
+    const status = studentSubmission?.status || "NOT_STARTED";
+
+    const score = studentSubmission?.finalScore || 0;
 
     // Get the best submission for each question (same logic as updateSubmissionStatus)
     const questionIds = assignment.questions.map((q) => q.id);
@@ -372,37 +376,6 @@ export async function getStudentAssignmentProgress(
     const questionsCompleted = bestSubmissions.filter(
       (cs) => cs !== undefined,
     ).length;
-
-    // Determine status
-    let status = "not_started";
-    if (questionsCompleted > 0) {
-      status =
-        questionsCompleted === assignment.questions.length
-          ? "completed"
-          : "in_progress";
-    }
-
-    // Calculate score if completed
-    let score = null;
-    if (status === "completed" && studentSubmission) {
-      // Use the submission's finalScore if available, otherwise calculate from best submissions
-      if (
-        studentSubmission.finalScore !== null &&
-        studentSubmission.finalScore !== undefined
-      ) {
-        score = Math.round(studentSubmission.finalScore);
-      } else {
-        // Fallback: calculate average from best submission scores
-        const validBestSubmissions = bestSubmissions.filter(
-          (cs) => cs !== undefined,
-        );
-        if (validBestSubmissions.length > 0) {
-          const scores = validBestSubmissions.map((cs) => cs.score || 0);
-          score = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-        }
-      }
-    }
-
     return {
       id: student.id,
       name: student.name,
@@ -422,143 +395,9 @@ export async function getStudentAssignmentProgress(
           : null,
       score,
       questionsCompleted,
-      submissions:
-        bestSubmissions
-          .filter((cs) => cs !== undefined)
-          .map((cs) => ({
-            questionId: cs.questionId,
-            status: studentSubmission?.status || "NOT_STARTED",
-            score: cs.score,
-          })) || [],
+      submissions: bestSubmissions.filter((cs) => cs !== undefined) || [],
     };
   });
 
   return studentsProgress;
 }
-
-/*
-legacy polling mechanism
-export async function pollJudge0Submissions(submissionId: string) {
-  try {
-    const pendingResults = await prisma.testCaseResult.findMany({
-      where: {
-        submissionId,
-        status: TestCaseStatus.PENDING,
-      },
-      include: {
-        submission: true,
-      },
-    });
-
-    if (pendingResults.length === 0) {
-      await updateSubmissionStatus(submissionId);
-      return;
-    }
-
-    const updatePromises = pendingResults.map(async (result) => {
-      if (!result.judge0Token) {
-        console.error(`Missing Judge0 token for test case result ${result.id}`);
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `https://judge0-ce.p.rapidapi.com/submissions/${result.judge0Token}?base64_encoded=true&fields=*`,
-          {
-            method: "GET",
-            headers: {
-              "x-rapidapi-key": process.env.JUDGE0_API_KEY || "",
-              "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
-            },
-          }
-        );
-
-        const judgeResult = await response.json();
-
-        // Skip if the result is still being processed
-        if (judgeResult.status && judgeResult.status.id <= 2) {
-          // 1=In Queue, 2=Processing
-          return;
-        }
-
-        await processJudgeResult(result.id, judgeResult);
-      } catch (error) {
-        console.error(
-          `Error polling Judge0 for token ${result.judge0Token}:`,
-          error
-        );
-      }
-    });
-
-    await Promise.all(updatePromises);
-
-    await updateSubmissionStatus(submissionId);
-  } catch (error) {
-    console.error(
-      `Error polling Judge0 submissions for submission ${submissionId}:`,
-      error
-    );
-  }
-}
-
-export async function processJudgeResult(
-  testCaseResultId: string,
-  judgeResult: any,
-) {
-  try {
-    let testCaseStatus: TestCaseStatus;
-    let actualOutput = null;
-    let errorMessage = null;
-    const executionTime = judgeResult.time
-      ? Math.round(parseFloat(judgeResult.time) * 1000)
-      : null; // Convert to ms
-
-    if (judgeResult.status.id === 3) {
-      // Accepted
-      testCaseStatus = TestCaseStatus.PASSED;
-      if (judgeResult.stdout) {
-        actualOutput = Buffer.from(judgeResult.stdout, "base64").toString();
-      }
-    } else if (judgeResult.status.id === 4) {
-      // Wrong Answer
-      testCaseStatus = TestCaseStatus.FAILED;
-      if (judgeResult.stdout) {
-        actualOutput = Buffer.from(judgeResult.stdout, "base64").toString();
-      }
-    } else if (judgeResult.status.id === 5) {
-      // Time Limit Exceeded
-      testCaseStatus = TestCaseStatus.TIMEOUT;
-      errorMessage = "Time limit exceeded";
-    } else if (judgeResult.compile_output) {
-      // Compilation Error
-      testCaseStatus = TestCaseStatus.ERROR;
-      errorMessage = Buffer.from(
-        judgeResult.compile_output,
-        "base64",
-      ).toString();
-    } else if (judgeResult.stderr) {
-      // Runtime Error
-      testCaseStatus = TestCaseStatus.ERROR;
-      errorMessage = Buffer.from(judgeResult.stderr, "base64").toString();
-    } else {
-      testCaseStatus = TestCaseStatus.ERROR;
-      errorMessage = `Execution failed: ${judgeResult.status.description}`;
-    }
-
-    await prisma.testCaseResult.update({
-      where: { id: testCaseResultId },
-      data: {
-        status: testCaseStatus,
-        actualOutput,
-        errorMessage,
-        executionTime,
-      },
-    });
-  } catch (error) {
-    console.error(
-      `Error processing Judge0 result for test case result ${testCaseResultId}:`,
-      error,
-    );
-  }
-}
-*/

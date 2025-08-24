@@ -6,6 +6,7 @@ import { assignmentSchema, AssignmentSchema } from "@/lib/validators/schema";
 import { revalidatePath } from "next/cache";
 import { getClassIdFromCode } from "./utility-actions";
 import { SubmissionStatus } from "@prisma/client";
+import { GradingTableHeaderResponse } from "@/lib/types/assignment-tyes";
 
 export const createAssignment = async (formData: AssignmentSchema) => {
   const session = await auth();
@@ -205,5 +206,115 @@ export const getAssignmentById = async (assignmentId: string) => {
     return { status: "success", assignment: formattedAssignment };
   } catch (error) {
     throw new Error("Failed to get assignment " + error);
+  }
+};
+
+export const getAssignmentGradingTableHeader = async (
+  assignmentId: string,
+): Promise<GradingTableHeaderResponse> => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: {
+        metrics: {
+          include: {
+            metric: true,
+          },
+        },
+      },
+    });
+
+    if (!assignment) {
+      throw new Error("Assignment not found");
+    }
+
+    // Construct the columns array
+    const columns = [
+      {
+        key: "select",
+        label: "",
+        sortable: false,
+        width: "50px",
+      },
+      {
+        key: "student",
+        label: "Student",
+        sortable: true,
+        width: "200px",
+      },
+      ...(assignment.testCaseWeight > 0
+        ? [
+            {
+              key: "testCases",
+              label: `Test Cases (${assignment.testCaseWeight}%)`,
+              sortable: true,
+              width: "120px",
+            },
+          ]
+        : []),
+      ...assignment.metrics.map((assignmentMetric) => ({
+        key: `metric_${assignmentMetric.metric.id}`,
+        label: `${assignmentMetric.metric.name} (${assignmentMetric.weight * (assignment.metricsWeight / 100)}%)`,
+        sortable: true,
+        width: "120px",
+      })),
+      {
+        key: "overallScore",
+        label: "Overall Score",
+        sortable: true,
+        width: "120px",
+      },
+      {
+        key: "status",
+        label: "Status",
+        sortable: true,
+        width: "120px",
+      },
+      {
+        key: "actions",
+        label: "Actions",
+        sortable: false,
+        width: "100px",
+      },
+    ];
+
+    return {
+      success: true,
+      columns,
+      assignment: {
+        id: assignment.id,
+        title: assignment.title,
+        testCaseWeight: assignment.testCaseWeight,
+        metricsWeight: assignment.metricsWeight,
+        metrics: assignment.metrics.map((am) => ({
+          id: am.metric.id,
+          name: am.metric.name,
+          description: am.metric.description || undefined,
+          weight: am.weight,
+        })),
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching assignment grading table header:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch assignment grading table header",
+      columns: [],
+      assignment: {
+        id: "",
+        title: "",
+        testCaseWeight: 0,
+        metricsWeight: 0,
+        metrics: [],
+      },
+    };
   }
 };
