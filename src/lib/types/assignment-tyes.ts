@@ -23,7 +23,7 @@ export interface EvaluationMetric {
 export interface Assignment {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   dueDate: Date | null;
   createdAt: Date;
   questionCount: number;

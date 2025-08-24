@@ -95,7 +95,7 @@ model Classroom {
 model Assignment {
   id          String    @id @default(uuid())
   title       String
-  description String
+  description String?
   classroomId String
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   questions   Question[]

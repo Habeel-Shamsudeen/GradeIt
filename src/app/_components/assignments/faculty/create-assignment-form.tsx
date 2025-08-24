@@ -115,7 +115,6 @@ export function CreateAssignmentForm({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Provide detailed instructions for the assignment..."
                 className="min-h-32 resize-y bg-background border border-border text-foreground placeholder:text-muted-foreground"
-                required
               />
             </div>
 

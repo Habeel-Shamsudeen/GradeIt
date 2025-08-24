@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import { prisma } from "./prisma";
+import { Role } from "@prisma/client";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -28,7 +29,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
-        session.user.role = token.role;
+        session.user.role = token.role as Role;
         session.onboarded = token.onboarded;
       }
       return session;

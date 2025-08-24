@@ -53,7 +53,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
     const assignment = await prisma.assignment.create({
       data: {
         title,
-        description,
+        description: description ?? null,
         DueDate: dueDate ? new Date(dueDate) : null,
         classroomId,
         copyPastePrevention,
@@ -137,7 +137,7 @@ export const getAssignments = async (classroomId: string) => {
     const formattedAssignments = assignments.map((assignment) => ({
       id: assignment.id,
       title: assignment.title,
-      description: assignment.description,
+      description: assignment.description ?? undefined,
       dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
       questionCount: assignment.questions.length,
       submissionCount: assignment.submissions.reduce(
@@ -185,7 +185,7 @@ export const getAssignmentById = async (assignmentId: string) => {
     const formattedAssignment = {
       id: assignment.id,
       title: assignment.title,
-      description: assignment.description,
+      description: assignment.description ?? undefined,
       dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
       questionCount: assignment.questions.length,
       submissionCount: assignment.submissions.reduce(
