@@ -6,16 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/_components/ui/card";
-import { GradingTableClient } from "@/app/_components/assignments/grading-table-client";
+import { GradingTableClient } from "@/app/_components/assignments/tables/grading-table-client";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
 import {
   getAssignmentById,
   getAssignmentGradingTableHeader,
 } from "@/server/actions/assignment-actions";
-import {
-  GradingTableHeaderResponse,
-  StudentProgress,
-} from "@/lib/types/assignment-tyes";
 import { transformStudentDataForGrading } from "@/lib/utils";
 
 interface GradingPageProps {

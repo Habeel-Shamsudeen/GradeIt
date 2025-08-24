@@ -199,6 +199,10 @@ export function transformStudentDataForGrading(
   students: StudentProgress[],
   assignmentData: GradingTableHeaderData,
 ): GradingTableData {
+  //   Need to update to support multiple submissions per student when there is multiple questions for a assignment
+  // there will be multiple submissions for a student
+  // in that case we will display score the average of all submissions this includes test cases and metrics
+
   const transformedStudents: GradingTableStudent[] = students.map((student) => {
     // Get the best code submission (highest score) for this student
     const bestCodeSubmission = student.submissions
