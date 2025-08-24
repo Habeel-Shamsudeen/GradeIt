@@ -114,7 +114,7 @@ export default async function SubmissionsPage({
                               "bg-destructive/10 text-destructive",
                             submission.status === "PARTIAL" &&
                               "bg-status-partial text-status-partial-foreground",
-                            submission.status === "PENDING" &&
+                            submission.status === "IN_PROGRESS" &&
                               "bg-status-pending text-status-pending-foreground",
                           )}
                         >
@@ -127,7 +127,7 @@ export default async function SubmissionsPage({
                           {submission.status === "PARTIAL" && (
                             <AlertTriangle className="h-5 w-5" />
                           )}
-                          {submission.status === "PENDING" && (
+                          {submission.status === "IN_PROGRESS" && (
                             <Clock className="h-5 w-5" />
                           )}
                         </div>
@@ -150,7 +150,7 @@ export default async function SubmissionsPage({
                             </Badge>
                           </div>
 
-                          {submission.status !== "PENDING" && (
+                          {submission.status !== "IN_PROGRESS" && (
                             <div className="flex gap-4 text-sm text-muted-foreground">
                               {submission.score !== null && (
                                 <span>Score: {submission.score}%</span>

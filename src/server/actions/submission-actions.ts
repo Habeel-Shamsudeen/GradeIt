@@ -1,13 +1,21 @@
 "use server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { TestCaseStatus } from "@prisma/client";
-import { gradeSubmission, triggerLLMEvaluation } from "./grading-actions";
+import {
+  TestCaseStatus,
+  CodeEvaluationStatus,
+  SubmissionStatus,
+} from "@prisma/client";
+import {
+  evaluateSubmissionMetrics,
+  evaluateSubmissionTestCases,
+} from "./grading-actions";
 import { cookies } from "next/headers";
 import { judgeResult } from "@/lib/types/code-types";
+
 export async function processJudgeResultWebhook(
   testCaseId: string,
-  submissionId: string,
+  codeSubmissionId: string,
   judgeResult: judgeResult,
 ) {
   try {
@@ -48,8 +56,8 @@ export async function processJudgeResultWebhook(
 
     await prisma.testCaseResult.update({
       where: {
-        submissionId_testCaseId: {
-          submissionId,
+        codeSubmissionId_testCaseId: {
+          codeSubmissionId: codeSubmissionId,
           testCaseId,
         },
       },
@@ -68,10 +76,10 @@ export async function processJudgeResultWebhook(
   }
 }
 
-export async function updateSubmissionStatus(submissionId: string) {
+export async function updateCodeSubmissionStatus(codeSubmissionId: string) {
   try {
     const testCaseResults = await prisma.testCaseResult.findMany({
-      where: { submissionId },
+      where: { codeSubmissionId: codeSubmissionId },
     });
 
     const allProcessed = testCaseResults.every(
@@ -79,22 +87,22 @@ export async function updateSubmissionStatus(submissionId: string) {
     );
 
     if (allProcessed) {
-      await gradeSubmission(submissionId);
+      await evaluateSubmissionTestCases(codeSubmissionId);
 
       console.log("All test cases processed, grading submission");
 
-      const updatedSubmission = await prisma.submission.updateMany({
+      const updatedCodeSubmission = await prisma.codeSubmission.updateMany({
         where: {
-          id: submissionId,
-          evaluationStatus: "TEST_CASES_EVALUATION_COMPLETE",
+          id: codeSubmissionId,
+          codeEvaluationStatus: "TEST_CASES_EVALUATION_COMPLETE",
         },
         data: {
-          evaluationStatus: "LLM_EVALUATION_IN_PROGRESS",
+          codeEvaluationStatus: "LLM_EVALUATION_IN_PROGRESS",
         },
       });
 
-      if (updatedSubmission.count > 0) {
-        triggerLLMEvaluation(submissionId).catch((error) => {
+      if (updatedCodeSubmission.count > 0) {
+        evaluateSubmissionMetrics(codeSubmissionId).catch((error) => {
           console.error("Background LLM evaluation failed:", error);
         });
         console.log("LLM evaluation triggered in background");
@@ -104,9 +112,64 @@ export async function updateSubmissionStatus(submissionId: string) {
     }
   } catch (error) {
     console.error(
-      `Error updating submission status for submission ${submissionId}:`,
+      `Error updating submission status for submission ${codeSubmissionId}:`,
       error,
     );
+  }
+}
+
+export async function updateSubmissionStatus(submissionId: string) {
+  const submission = await prisma.submission.findUnique({
+    where: { id: submissionId },
+    include: {
+      codeSubmission: true,
+      assignment: {
+        include: {
+          questions: true,
+        },
+      },
+    },
+  });
+  if (!submission) {
+    throw new Error("Code submission not found");
+  }
+  const questionIds = submission.assignment.questions.map((q) => q.id);
+
+  // get the best submission for each question
+  const bestSubmissions = questionIds.map((questionId) => {
+    const submissions = submission.codeSubmission.filter(
+      (cs) =>
+        cs.questionId === questionId &&
+        cs.codeEvaluationStatus === CodeEvaluationStatus.EVALUATION_COMPLETE,
+    );
+    const bestSubmission = submissions.sort(
+      (a, b) => (b.score || 0) - (a.score || 0),
+    )[0];
+    return bestSubmission;
+  });
+
+  // calculate the final score
+
+  const validSubmissions = bestSubmissions.filter((cs) => cs !== undefined);
+
+  if (validSubmissions.length === questionIds.length) {
+    const finalScore =
+      validSubmissions.reduce((acc, cs) => acc + (cs.score || 0), 0) /
+      validSubmissions.length;
+    await prisma.submission.update({
+      where: { id: submissionId },
+      data: {
+        status: SubmissionStatus.COMPLETED,
+        finalScore: finalScore,
+      },
+    });
+  } else if (validSubmissions.length > 0) {
+    await prisma.submission.update({
+      where: { id: submissionId },
+      data: {
+        status: SubmissionStatus.PARTIAL,
+      },
+    });
   }
 }
 
@@ -129,47 +192,61 @@ export async function getSubmissions(assignmentId: string) {
 
     if (!assignment) {
       return {
-        status: "falied",
+        status: "failed",
         message: "Assignment not found",
       };
     }
 
-    const submissions = await prisma.submission.findMany({
+    // Get the submission for this student and assignment
+    const submission = await prisma.submission.findUnique({
       where: {
-        studentId: studentId ? studentId : session.user.id,
-        questionId: {
-          in: assignment.questions.map((ques) => ques.id),
+        studentId_assignmentId: {
+          studentId: studentId ? studentId : session.user.id,
+          assignmentId: assignmentId,
         },
       },
       include: {
-        question: true,
-        testCaseResults: true,
+        codeSubmission: {
+          include: {
+            question: true,
+            testCaseResults: true,
+          },
+        },
       },
     });
 
-    const formattedSubmissions = submissions.map((submission) => ({
-      id: submission.id,
-      studentId: submission.studentId,
-      questionId: submission.questionId,
-      questionTitle: submission.question.title,
-      code: submission.code,
-      submittedAt: submission.createdAt,
-      status: submission.status,
-      score: submission.score,
-      language: submission.question.language,
-      testCaseResults: submission.testCaseResults,
-      evaluationStatus:
-        session.user.role === "FACULTY"
-          ? submission.evaluationStatus
-          : undefined,
-    }));
+    if (!submission) {
+      return {
+        status: "success",
+        submissions: [],
+      };
+    }
+
+    const formattedSubmissions = submission.codeSubmission.map(
+      (codeSubmission) => ({
+        id: codeSubmission.id,
+        studentId: submission.studentId,
+        questionId: codeSubmission.questionId,
+        questionTitle: codeSubmission.question.title,
+        code: codeSubmission.code,
+        submittedAt: codeSubmission.createdAt,
+        status: submission.status,
+        score: codeSubmission.score,
+        language: codeSubmission.question.language,
+        testCaseResults: codeSubmission.testCaseResults,
+        evaluationStatus:
+          session.user.role === "FACULTY"
+            ? codeSubmission.codeEvaluationStatus
+            : undefined,
+      }),
+    );
     return { status: "success", submissions: formattedSubmissions };
   } catch (error) {
     throw new Error("Failed to get submissions " + error);
   }
 }
 
-export async function getSubmissionsById(submissionId: string) {
+export async function getSubmissionsById(codeSubmissionId: string) {
   const session = await auth();
   if (!session?.user) {
     throw new Error("Unauthorized");
@@ -177,10 +254,12 @@ export async function getSubmissionsById(submissionId: string) {
   const cookieStore = await cookies();
   const studentId = cookieStore.get("student")?.value || session.user.id;
   try {
-    const submission = await prisma.submission.findUnique({
+    const codeSubmission = await prisma.codeSubmission.findUnique({
       where: {
-        studentId: studentId,
-        id: submissionId,
+        id: codeSubmissionId,
+        submission: {
+          studentId: studentId,
+        },
       },
       include: {
         question: true,
@@ -189,34 +268,35 @@ export async function getSubmissionsById(submissionId: string) {
             testCase: true,
           },
         },
+        submission: true,
       },
     });
 
-    if (!submission) {
+    if (!codeSubmission) {
       return {
-        status: "falied",
+        status: "failed",
         message: "Submission not found",
       };
     }
 
-    const formattedSubmissions = {
-      id: submission.id,
-      studentId: submission.studentId,
-      questionId: submission.questionId,
-      questionTitle: submission.question.title,
-      code: submission.code,
-      submittedAt: submission.createdAt,
-      status: submission.status,
-      score: submission.score,
-      language: submission.question.language,
-      testCaseResults: submission.testCaseResults,
+    const formattedSubmission = {
+      id: codeSubmission.id,
+      studentId: codeSubmission.submission.studentId,
+      questionId: codeSubmission.questionId,
+      questionTitle: codeSubmission.question.title,
+      code: codeSubmission.code,
+      submittedAt: codeSubmission.createdAt,
+      status: codeSubmission.submission.status,
+      score: codeSubmission.score,
+      language: codeSubmission.question.language,
+      testCaseResults: codeSubmission.testCaseResults,
       evaluationStatus:
         session.user.role === "FACULTY"
-          ? submission.evaluationStatus
+          ? codeSubmission.codeEvaluationStatus
           : undefined,
     };
 
-    return { status: "success", submission: formattedSubmissions };
+    return { status: "success", submission: formattedSubmission };
   } catch (error) {
     throw new Error("Failed to get submissions " + error);
   }
@@ -247,28 +327,33 @@ export async function getStudentAssignmentProgress(
   const assignment = classroom.assignments[0];
   const questionIds = assignment.questions.map((q) => q.id);
 
-  // 2. Get all submissions for this assignment's questions
+  // 2. Get all submissions for this assignment
   const submissions = await prisma.submission.findMany({
     where: {
-      questionId: { in: questionIds },
+      assignmentId: assignmentId,
       studentId: { in: classroom.students.map((s) => s.id) },
     },
     include: {
-      testCaseResults: true,
+      codeSubmission: {
+        where: {
+          questionId: { in: questionIds },
+        },
+        include: {
+          testCaseResults: true,
+        },
+      },
     },
   });
 
   // 3. Process student data
   const studentsProgress = classroom.students.map((student) => {
-    // Get this student's submissions for this assignment
-    const studentSubmissions = submissions.filter(
+    // Get this student's submission for this assignment
+    const studentSubmission = submissions.find(
       (s) => s.studentId === student.id,
     );
 
-    // Count questions completed (has submission)
-    const questionsCompleted = new Set(
-      studentSubmissions.map((s) => s.questionId),
-    ).size;
+    // Count questions completed (has code submission)
+    const questionsCompleted = studentSubmission?.codeSubmission.length || 0;
 
     // Determine status
     let status = "not_started";
@@ -281,9 +366,9 @@ export async function getStudentAssignmentProgress(
 
     // Calculate average score if completed
     let score = null;
-    if (status === "completed") {
-      const scores = studentSubmissions
-        .map((s) => s.score)
+    if (status === "completed" && studentSubmission) {
+      const scores = studentSubmission.codeSubmission
+        .map((cs) => cs.score)
         .filter(Boolean) as number[];
       if (scores.length > 0) {
         score = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
@@ -297,18 +382,24 @@ export async function getStudentAssignmentProgress(
       avatar: student.image || "",
       status,
       submittedAt:
-        studentSubmissions.length > 0
+        studentSubmission?.codeSubmission &&
+        studentSubmission.codeSubmission.length > 0
           ? new Date(
-              Math.max(...studentSubmissions.map((s) => s.createdAt.getTime())),
+              Math.max(
+                ...studentSubmission.codeSubmission.map((cs) =>
+                  cs.createdAt.getTime(),
+                ),
+              ),
             ).toISOString()
           : null,
       score,
       questionsCompleted,
-      submissions: studentSubmissions.map((sub) => ({
-        questionId: sub.questionId,
-        status: sub.status,
-        score: sub.score,
-      })),
+      submissions:
+        studentSubmission?.codeSubmission.map((cs) => ({
+          questionId: cs.questionId,
+          status: studentSubmission.status,
+          score: cs.score,
+        })) || [],
     };
   });
 

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { TestCaseStatus, Status } from "@prisma/client";
+import {
+  TestCaseStatus,
+  SubmissionStatus,
+  CodeEvaluationStatus,
+} from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
 // import { pollJudge0Submissions } from "@/server/actions/submission-actions";
@@ -24,7 +28,10 @@ export async function POST(req: NextRequest) {
 
     const question = await prisma.question.findUnique({
       where: { id: questionId },
-      include: { testCases: true },
+      include: {
+        testCases: true,
+        assignment: true,
+      },
     });
 
     if (!question) {
@@ -34,16 +41,56 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const submission = await prisma.submission.create({
-      data: {
-        studentId: userId,
-        assignmentId: question.assignmentId,
-        questionId,
-        code,
-        language,
-        status: Status.PENDING,
+    // Get or create submission for this student and assignment
+    let submission = await prisma.submission.findUnique({
+      where: {
+        studentId_assignmentId: {
+          studentId: userId,
+          assignmentId: question.assignmentId,
+        },
       },
     });
+
+    if (!submission) {
+      submission = await prisma.submission.create({
+        data: {
+          studentId: userId,
+          assignmentId: question.assignmentId,
+          status: SubmissionStatus.IN_PROGRESS,
+        },
+      });
+    }
+
+    // Check if code submission already exists for this question
+    let codeSubmission = await prisma.codeSubmission.findFirst({
+      where: {
+        submissionId: submission.id,
+        questionId: questionId,
+      },
+    });
+
+    if (codeSubmission) {
+      // Update existing code submission
+      codeSubmission = await prisma.codeSubmission.update({
+        where: { id: codeSubmission.id },
+        data: {
+          code,
+          language,
+          codeEvaluationStatus: CodeEvaluationStatus.PENDING,
+        },
+      });
+    } else {
+      // Create new code submission
+      codeSubmission = await prisma.codeSubmission.create({
+        data: {
+          submissionId: submission.id,
+          questionId,
+          code,
+          language,
+          codeEvaluationStatus: CodeEvaluationStatus.PENDING,
+        },
+      });
+    }
 
     const assignment = await prisma.assignment.findUnique({
       where: { id: question.assignmentId },
@@ -59,17 +106,26 @@ export async function POST(req: NextRequest) {
     if (assignment?.metrics.length) {
       await prisma.submissionMetricResult.createMany({
         data: assignment.metrics.map((assignmentMetric) => ({
-          submissionId: submission.id,
+          codeSubmissionId: codeSubmission.id,
           metricId: assignmentMetric.metricId,
           score: 0,
           feedback: "Evaluation pending...",
         })),
+        skipDuplicates: true,
       });
     }
 
+    // Delete existing test case results for this code submission
+    await prisma.testCaseResult.deleteMany({
+      where: {
+        codeSubmissionId: codeSubmission.id,
+      },
+    });
+
+    // Create new test case results
     await prisma.testCaseResult.createMany({
       data: question.testCases.map((testCase) => ({
-        submissionId: submission.id,
+        codeSubmissionId: codeSubmission.id,
         testCaseId: testCase.id,
         status: TestCaseStatus.PENDING,
       })),
@@ -77,7 +133,7 @@ export async function POST(req: NextRequest) {
 
     const testCasePromises = question.testCases.map(async (testCase) => {
       const webhookPayload: WebhookPayload = {
-        submissionId: submission.id,
+        codeSubmissionId: codeSubmission.id,
         testCaseId: testCase.id,
         questionId,
       };
@@ -119,8 +175,8 @@ export async function POST(req: NextRequest) {
 
       await prisma.testCaseResult.update({
         where: {
-          submissionId_testCaseId: {
-            submissionId: submission.id,
+          codeSubmissionId_testCaseId: {
+            codeSubmissionId: codeSubmission.id,
             testCaseId: testCase.id,
           },
         },
@@ -134,16 +190,19 @@ export async function POST(req: NextRequest) {
 
     try {
       await Promise.all(testCasePromises);
-      //await pollJudge0Submissions(submission.id);
+      //await pollJudge0Submissions(codeSubmission.id);
 
       return NextResponse.json({
-        submissionId: submission.id,
+        submissionId: codeSubmission.id,
         message: "Submission created and test cases queued",
       });
     } catch (error) {
-      await prisma.submission.update({
-        where: { id: submission.id },
-        data: { status: Status.FAILED },
+      await prisma.codeSubmission.update({
+        where: { id: codeSubmission.id },
+        data: {
+          codeEvaluationStatus:
+            CodeEvaluationStatus.TEST_CASES_EVALUATION_FAILED,
+        },
       });
 
       throw error;

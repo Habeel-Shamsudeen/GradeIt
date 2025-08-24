@@ -219,7 +219,7 @@ export default async function SubmissionDetailPage({
                           "bg-destructive/10 text-destructive",
                         submission.status === "PARTIAL" &&
                           "bg-status-partial text-status-partial-foreground",
-                        submission.status === "PENDING" &&
+                        submission.status === "IN_PROGRESS" &&
                           "bg-status-pending text-status-pending-foreground",
                       )}
                     >
@@ -232,7 +232,7 @@ export default async function SubmissionDetailPage({
                       {submission.status === "PARTIAL" && (
                         <AlertTriangle className="h-4 w-4" />
                       )}
-                      {submission.status === "PENDING" && (
+                      {submission.status === "IN_PROGRESS" && (
                         <Clock className="h-4 w-4" />
                       )}
                     </div>
@@ -259,7 +259,7 @@ export default async function SubmissionDetailPage({
                   </div>
                 </div>
 
-                {submission.status !== "PENDING" && (
+                {submission.status !== "IN_PROGRESS" && (
                   <>
                     {submission.score !== null && (
                       <div>

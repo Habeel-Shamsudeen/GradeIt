@@ -162,7 +162,7 @@ model Submission {
   student       User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   assignmentId  String
   assignment    Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  finalScore         Float?
+  finalScore         Float? @default(0)
   status        SubmissionStatus  @default(NOT_STARTED)
 
   codeSubmission CodeSubmission[]
@@ -180,9 +180,9 @@ model CodeSubmission {
   question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   code          String
   language      String
-  score         Float? 
-  testCaseScore     Float? 
-  metricScore   Float? 
+  score         Float @default(0)
+  testCaseScore     Float @default(0)
+  metricScore   Float @default(0)
   feedback      String?
   codeEvaluationStatus CodeEvaluationStatus @default(PENDING)
   testCaseResults TestCaseResult[]
@@ -192,21 +192,21 @@ model CodeSubmission {
 
 model SubmissionMetricResult {
   id            String            @id @default(uuid())
-  submissionId  String
-  codeSubmission    CodeSubmission        @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  codeSubmissionId  String
+  codeSubmission    CodeSubmission        @relation(fields: [codeSubmissionId], references: [id], onDelete: Cascade)
   metricId      String
   metric        EvaluationMetric  @relation(fields: [metricId], references: [id], onDelete: Cascade)
   score         Float              // 0–100
   feedback      String?
   createdAt     DateTime           @default(now())
 
-  @@unique([submissionId, metricId])
+  @@unique([codeSubmissionId, metricId])
 }
 
 model TestCaseResult {
   id            String        @id @default(uuid())
-  submissionId  String
-  codeSubmission    CodeSubmission    @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  codeSubmissionId  String
+  codeSubmission    CodeSubmission    @relation(fields: [codeSubmissionId], references: [id], onDelete: Cascade)
   testCaseId    String
   testCase      TestCase      @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
   status        TestCaseStatus @default(PENDING)
@@ -216,5 +216,5 @@ model TestCaseResult {
   judge0Token   String?
   createdAt     DateTime      @default(now())
 
-  @@unique([submissionId, testCaseId]) // One result per test case per submission
+  @@unique([codeSubmissionId, testCaseId]) // One result per test case per code submission
 }
