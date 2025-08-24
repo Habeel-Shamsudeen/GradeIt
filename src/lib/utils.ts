@@ -3,6 +3,13 @@ import {
   getAssigmentTitleFromId,
   getClassNameFromCode,
 } from "@/server/actions/utility-actions";
+import {
+  StudentProgress,
+  GradingTableHeaderData,
+  GradingTableData,
+  GradingTableStudent,
+  GradingTableSubmission,
+} from "@/lib/types/assignment-tyes";
 import { type ClassValue, clsx } from "clsx";
 import { randomUUID } from "crypto";
 import { twMerge } from "tailwind-merge";
@@ -187,3 +194,55 @@ export const getRandomEducationIcon = (): string => {
   const randomIndex = Math.floor(Math.random() * educationIcons.length);
   return educationIcons[randomIndex];
 };
+
+export function transformStudentDataForGrading(
+  students: StudentProgress[],
+  assignmentData: GradingTableHeaderData,
+): GradingTableData {
+  const transformedStudents: GradingTableStudent[] = students.map((student) => {
+    // Get the best code submission (highest score) for this student
+    const bestCodeSubmission = student.submissions
+      ?.filter((cs: any) => cs.codeEvaluationStatus === "EVALUATION_COMPLETE")
+      ?.sort((a: any, b: any) => (b.score || 0) - (a.score || 0))[0];
+
+    // Get metric scores from the best code submission
+    const metricScores = assignmentData.metrics.map((metric) => {
+      const metricResult = bestCodeSubmission?.metricResults?.find(
+        (mr: any) => mr.metricId === metric.id,
+      );
+      return {
+        metricId: metric.id,
+        metricName: metric.name,
+        score: metricResult?.score || 0,
+        weight: metric.weight,
+      };
+    });
+
+    const submissions: GradingTableSubmission[] = [
+      {
+        id: bestCodeSubmission?.id || `temp-${student.id}`,
+        studentId: student.id,
+        testCaseScore: bestCodeSubmission?.testCaseScore || 0,
+        metricScores: metricScores,
+        totalScore: bestCodeSubmission?.score || 0,
+        status: student.status,
+        submittedAt: student.submittedAt || undefined,
+      },
+    ];
+
+    return {
+      id: student.id,
+      name: student.name,
+      email: student.email,
+      avatar: student.avatar,
+      overallScore: student.score,
+      status: student.status,
+      submissions: submissions,
+    };
+  });
+
+  return {
+    students: transformedStudents,
+    metrics: assignmentData.metrics,
+  };
+}

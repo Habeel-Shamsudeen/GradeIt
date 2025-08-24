@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
@@ -33,14 +34,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
-import { AssignmentById } from "@/lib/types/assignment-tyes";
+import { AssignmentById, StudentProgress } from "@/lib/types/assignment-tyes";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
 import { setStudentCookie } from "@/server/actions/utility-actions";
+import Link from "next/link";
+import { Badge } from "../../ui/badge";
+import { SubmissionStatus } from "@prisma/client";
+import { StatusBadge } from "../../ui/status-badge";
 
 interface FacultyViewProps {
   assignment: AssignmentById;
   classCode: string;
-  initialStudents: any[];
+  initialStudents: StudentProgress[];
 }
 
 export function FacultyView({
@@ -49,7 +54,7 @@ export function FacultyView({
   initialStudents,
 }: FacultyViewProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [students, setStudents] = useState(initialStudents);
+  const [students, setStudents] = useState<StudentProgress[]>(initialStudents);
   const [loading, setLoading] = useState(false);
 
   // Load student progress data
@@ -71,13 +76,13 @@ export function FacultyView({
 
   const totalStudents = students.length;
   const completedCount = students.filter(
-    (s) => s.status === "completed",
+    (s) => s.status === SubmissionStatus.COMPLETED,
   ).length;
   const inProgressCount = students.filter(
-    (s) => s.status === "in_progress",
+    (s) => s.status === SubmissionStatus.IN_PROGRESS,
   ).length;
   const notStartedCount = students.filter(
-    (s) => s.status === "not_started",
+    (s) => s.status === SubmissionStatus.NOT_STARTED,
   ).length;
 
   const filteredStudents = students.filter(
@@ -212,6 +217,12 @@ export function FacultyView({
                     <DropdownMenuItem>Not Started</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <Link href={`/classes/${classCode}/${assignment.id}/grading`}>
+                  <Button className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90">
+                    <BarChart3 className="h-4 w-4" />
+                    Grading Table
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   className="gap-1.5 border-border"
@@ -253,27 +264,13 @@ export function FacultyView({
                         {student.questionsCompleted} /{" "}
                         {assignment.questions.length} Questions
                       </p>
-                      {student.status === "completed" && (
+                      {student.status === SubmissionStatus.COMPLETED && (
                         <p className="text-sm text-muted-foreground">
                           Score: {student.score}%
                         </p>
                       )}
                     </div>
-                    <div
-                      className={cn(
-                        "flex h-8 items-center rounded-full px-3 text-sm",
-                        student.status === "completed" &&
-                          "bg-status-passed text-status-passed-foreground",
-                        student.status === "in_progress" &&
-                          "bg-status-pending text-status-pending-foreground",
-                        student.status === "not_started" &&
-                          "bg-destructive text-destructive-foreground",
-                      )}
-                    >
-                      {student.status === "completed" && "Completed"}
-                      {student.status === "in_progress" && "In Progress"}
-                      {student.status === "not_started" && "Not Started"}
-                    </div>
+                    <StatusBadge status={student.status} />
                     <Button
                       variant="ghost"
                       size="sm"

@@ -95,7 +95,7 @@ model Classroom {
 model Assignment {
   id          String    @id @default(uuid())
   title       String
-  description String
+  description String?
   classroomId String
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   questions   Question[]
@@ -107,6 +107,11 @@ model Assignment {
   fullScreenEnforcement Boolean @default(false)
   allowLateSubmission Boolean @default(true)
   allowAutoEvaluation Boolean @default(true) //metric based evaluation
+  
+  // Scoring weights (as percentages, should add up to 100)
+  testCaseWeight Float @default(60.0)  // Default: 60% for test cases
+  metricsWeight  Float @default(40.0)  // Default: 40% for metrics
+  
   createdAt   DateTime  @default(now())
 }
 

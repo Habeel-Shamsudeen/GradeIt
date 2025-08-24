@@ -5,14 +5,18 @@ import {
   generateTestCases,
 } from "@/lib/services/llm-service";
 import { TestCase } from "@/lib/types/assignment-tyes";
+import { getUserRole } from "@/server/actions/user-actions";
 
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user || session.user.role !== "FACULTY") {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
+    const { role } = await getUserRole();
+    if (role !== "FACULTY") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const {
       questionTitle,
       questionDescription,

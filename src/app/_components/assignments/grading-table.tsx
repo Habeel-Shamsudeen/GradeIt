@@ -2,6 +2,14 @@
 
 import React, { useState, useMemo } from "react";
 import {
+  GradingTableColumn,
+  GradingTableData,
+  GradingTableStudent,
+  GradingTableSubmission,
+} from "@/lib/types/assignment-tyes";
+import { StatusBadge } from "@/app/_components/ui/status-badge";
+import { EditableScore } from "@/app/_components/ui/editable-score";
+import {
   Table,
   TableBody,
   TableCell,
@@ -49,150 +57,10 @@ import {
   X,
 } from "lucide-react";
 
-// Types
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-}
-
-interface Metric {
-  id: string;
-  name: string;
-  weight: number;
-}
-
-interface Submission {
-  id: string;
-  studentId: string;
-  testCaseScore: number;
-  metricScores: {
-    metricId: string;
-    metricName: string;
-    score: number;
-    weight: number;
-  }[];
-  totalScore: number;
-  status: "completed" | "in_progress" | "not_started" | "failed";
-  submittedAt: string;
-}
-
-interface GradingTableData {
-  students: (Student & {
-    submissions: Submission[];
-    overallScore: number;
-  })[];
-  metrics: Metric[];
-}
-
-interface EditableScoreProps {
-  value: number;
-  onChange: (newScore: number) => void;
-  maxScore?: number;
-  className?: string;
-}
-
-// Editable Score Component
-const EditableScore: React.FC<EditableScoreProps> = ({
-  value,
-  onChange,
-  maxScore = 100,
-  className = "",
-}) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(value);
-
-  const handleSave = () => {
-    if (tempValue >= 0 && tempValue <= maxScore) {
-      onChange(tempValue);
-    }
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setTempValue(value);
-    setIsEditing(false);
-  };
-
-  const getScoreColor = (score: number) => {
-    if (score >= 90) return "text-green-600 font-semibold";
-    if (score >= 80) return "text-blue-600 font-semibold";
-    if (score >= 70) return "text-yellow-600 font-semibold";
-    if (score >= 60) return "text-orange-600 font-semibold";
-    return "text-red-600 font-semibold";
-  };
-
-  return (
-    <div className="relative">
-      {isEditing ? (
-        <div className="flex items-center gap-1">
-          <Input
-            type="number"
-            value={tempValue}
-            onChange={(e) => setTempValue(Number(e.target.value))}
-            min={0}
-            max={maxScore}
-            className="w-16 h-8 text-sm"
-            autoFocus
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
-              if (e.key === "Escape") handleCancel();
-            }}
-          />
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-6 w-6 p-0"
-            onClick={handleSave}
-          >
-            <Check className="h-3 w-3" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-6 w-6 p-0"
-            onClick={handleCancel}
-          >
-            <X className="h-3 w-3" />
-          </Button>
-        </div>
-      ) : (
-        <div
-          className={`cursor-pointer hover:bg-muted p-1 rounded transition-colors ${getScoreColor(value)} ${className}`}
-          onClick={() => setIsEditing(true)}
-        >
-          {value}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Status Badge Component
-const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case "completed":
-        return { color: "bg-green-100 text-green-800", label: "Completed" };
-      case "in_progress":
-        return { color: "bg-yellow-100 text-yellow-800", label: "In Progress" };
-      case "not_started":
-        return { color: "bg-gray-100 text-gray-800", label: "Not Started" };
-      case "failed":
-        return { color: "bg-red-100 text-red-800", label: "Failed" };
-      default:
-        return { color: "bg-gray-100 text-gray-800", label: status };
-    }
-  };
-
-  const config = getStatusConfig(status);
-  return <Badge className={config.color}>{config.label}</Badge>;
-};
-
-// Main Grading Table Component
 interface GradingTableProps {
   data: GradingTableData;
+  columns?: GradingTableColumn[];
+  assignmentId?: string;
   onScoreChange?: (
     submissionId: string,
     metricId: string,
@@ -203,6 +71,8 @@ interface GradingTableProps {
 
 export const GradingTable: React.FC<GradingTableProps> = ({
   data,
+  columns,
+  assignmentId,
   onScoreChange,
   onBulkAction,
 }) => {
@@ -219,212 +89,6 @@ export const GradingTable: React.FC<GradingTableProps> = ({
     scoreRange: "all",
   });
 
-  const sampleData = {
-    students: [
-      {
-        id: "1",
-        name: "John Doe",
-        email: "john.doe@example.com",
-        avatar: "",
-        overallScore: 87.5,
-        submissions: [
-          {
-            id: "sub1",
-            studentId: "1",
-            questionId: "q1",
-            questionTitle: "Fibonacci Sequence",
-            testCaseScore: 85,
-            metricScores: [
-              {
-                metricId: "metric1",
-                metricName: "Code Quality",
-                score: 90,
-                weight: 30,
-              },
-              {
-                metricId: "metric2",
-                metricName: "Algorithm Efficiency",
-                score: 85,
-                weight: 40,
-              },
-              {
-                metricId: "metric3",
-                metricName: "Documentation",
-                score: 80,
-                weight: 30,
-              },
-            ],
-            totalScore: 87.5,
-            status: "completed" as const,
-            submittedAt: "2024-01-15T10:30:00Z",
-          },
-        ],
-      },
-      {
-        id: "2",
-        name: "Jane Smith",
-        email: "jane.smith@example.com",
-        avatar: "",
-        overallScore: 92.0,
-        submissions: [
-          {
-            id: "sub2",
-            studentId: "2",
-            questionId: "q1",
-            questionTitle: "Fibonacci Sequence",
-            testCaseScore: 95,
-            metricScores: [
-              {
-                metricId: "metric1",
-                metricName: "Code Quality",
-                score: 95,
-                weight: 30,
-              },
-              {
-                metricId: "metric2",
-                metricName: "Algorithm Efficiency",
-                score: 90,
-                weight: 40,
-              },
-              {
-                metricId: "metric3",
-                metricName: "Documentation",
-                score: 95,
-                weight: 30,
-              },
-            ],
-            totalScore: 92.0,
-            status: "completed" as const,
-            submittedAt: "2024-01-15T11:15:00Z",
-          },
-        ],
-      },
-      {
-        id: "3",
-        name: "Bob Johnson",
-        email: "bob.johnson@example.com",
-        avatar: "",
-        overallScore: 65.0,
-        submissions: [
-          {
-            id: "sub3",
-            studentId: "3",
-            questionId: "q1",
-            questionTitle: "Fibonacci Sequence",
-            testCaseScore: 60,
-            metricScores: [
-              {
-                metricId: "metric1",
-                metricName: "Code Quality",
-                score: 70,
-                weight: 30,
-              },
-              {
-                metricId: "metric2",
-                metricName: "Algorithm Efficiency",
-                score: 60,
-                weight: 40,
-              },
-              {
-                metricId: "metric3",
-                metricName: "Documentation",
-                score: 65,
-                weight: 30,
-              },
-            ],
-            totalScore: 65.0,
-            status: "completed" as const,
-            submittedAt: "2024-01-15T14:20:00Z",
-          },
-        ],
-      },
-      {
-        id: "4",
-        name: "Alice Brown",
-        email: "alice.brown@example.com",
-        avatar: "",
-        overallScore: 0,
-        submissions: [
-          {
-            id: "sub4",
-            studentId: "4",
-            questionId: "q1",
-            questionTitle: "Fibonacci Sequence",
-            testCaseScore: 0,
-            metricScores: [
-              {
-                metricId: "metric1",
-                metricName: "Code Quality",
-                score: 0,
-                weight: 30,
-              },
-              {
-                metricId: "metric2",
-                metricName: "Algorithm Efficiency",
-                score: 0,
-                weight: 40,
-              },
-              {
-                metricId: "metric3",
-                metricName: "Documentation",
-                score: 0,
-                weight: 30,
-              },
-            ],
-            totalScore: 0,
-            status: "not_started" as const,
-            submittedAt: "",
-          },
-        ],
-      },
-      {
-        id: "5",
-        name: "Charlie Wilson",
-        email: "charlie.wilson@example.com",
-        avatar: "",
-        overallScore: 45.0,
-        submissions: [
-          {
-            id: "sub5",
-            studentId: "5",
-            questionId: "q1",
-            questionTitle: "Fibonacci Sequence",
-            testCaseScore: 40,
-            metricScores: [
-              {
-                metricId: "metric1",
-                metricName: "Code Quality",
-                score: 50,
-                weight: 30,
-              },
-              {
-                metricId: "metric2",
-                metricName: "Algorithm Efficiency",
-                score: 40,
-                weight: 40,
-              },
-              {
-                metricId: "metric3",
-                metricName: "Documentation",
-                score: 45,
-                weight: 30,
-              },
-            ],
-            totalScore: 45.0,
-            status: "failed" as const,
-            submittedAt: "2024-01-15T16:45:00Z",
-          },
-        ],
-      },
-    ],
-    metrics: [
-      { id: "metric1", name: "Code Quality", weight: 30 },
-      { id: "metric2", name: "Algorithm Efficiency", weight: 40 },
-      { id: "metric3", name: "Documentation", weight: 30 },
-    ],
-  };
-
-  // Sorting function
   const sortedData = useMemo(() => {
     if (!sortConfig) return data.students;
 
@@ -437,6 +101,9 @@ export const GradingTable: React.FC<GradingTableProps> = ({
       } else if (sortConfig.key === "overallScore") {
         aValue = a.overallScore;
         bValue = b.overallScore;
+      } else if (sortConfig.key === "status") {
+        aValue = a.status;
+        bValue = b.status;
       } else if (sortConfig.key.startsWith("metric_")) {
         const metricId = sortConfig.key.replace("metric_", "");
         aValue =
@@ -445,9 +112,6 @@ export const GradingTable: React.FC<GradingTableProps> = ({
         bValue =
           b.submissions[0]?.metricScores.find((m) => m.metricId === metricId)
             ?.score || 0;
-      } else {
-        aValue = a[sortConfig.key as keyof typeof a];
-        bValue = b[sortConfig.key as keyof typeof b];
       }
 
       if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
@@ -456,7 +120,6 @@ export const GradingTable: React.FC<GradingTableProps> = ({
     });
   }, [data.students, sortConfig]);
 
-  // Filtering function
   const filteredData = useMemo(() => {
     return sortedData.filter((student) => {
       // Search filter
@@ -540,7 +203,7 @@ export const GradingTable: React.FC<GradingTableProps> = ({
           )?.score || 0;
         return score.toString();
       }),
-      student.submissions[0]?.status || "not_started",
+      student.submissions[0]?.status || "NOT_STARTED",
     ]);
 
     const csvContent = [headers, ...rows]
@@ -556,45 +219,8 @@ export const GradingTable: React.FC<GradingTableProps> = ({
     window.URL.revokeObjectURL(url);
   };
 
-  // Generate table columns
-  const columns = [
-    {
-      key: "select",
-      label: "",
-      sortable: false,
-      width: "50px",
-    },
-    {
-      key: "student",
-      label: "Student",
-      sortable: true,
-      width: "200px",
-    },
-    ...data.metrics.map((metric) => ({
-      key: `metric_${metric.id}`,
-      label: `${metric.name} (${metric.weight}%)`,
-      sortable: true,
-      width: "120px",
-    })),
-    {
-      key: "overallScore",
-      label: "Overall Score",
-      sortable: true,
-      width: "120px",
-    },
-    {
-      key: "status",
-      label: "Status",
-      sortable: true,
-      width: "120px",
-    },
-    {
-      key: "actions",
-      label: "Actions",
-      sortable: false,
-      width: "100px",
-    },
-  ];
+  // Use passed columns or generate default columns
+  const tableColumns = columns || [];
 
   return (
     <Card className="w-full">
@@ -664,10 +290,12 @@ export const GradingTable: React.FC<GradingTableProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="not_started">Not Started</SelectItem>
-              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+              <SelectItem value="NOT_STARTED">Not Started</SelectItem>
+              <SelectItem value="LATE_SUBMISSION">Late Submission</SelectItem>
+              <SelectItem value="PARTIAL">Partial</SelectItem>
+              <SelectItem value="FAILED">Failed</SelectItem>
             </SelectContent>
           </Select>
 
@@ -697,7 +325,7 @@ export const GradingTable: React.FC<GradingTableProps> = ({
           <Table>
             <TableHeader>
               <TableRow>
-                {columns.map((column) => (
+                {tableColumns.map((column) => (
                   <TableHead
                     key={column.key}
                     style={{ width: column.width }}
@@ -733,84 +361,130 @@ export const GradingTable: React.FC<GradingTableProps> = ({
             <TableBody>
               {filteredData.map((student) => (
                 <TableRow key={student.id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedStudents.has(student.id)}
-                      onCheckedChange={(checked) =>
-                        handleSelectStudent(student.id, checked as boolean)
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={student.avatar} />
-                        <AvatarFallback>
-                          {student.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{student.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {student.email}
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  {data.metrics.map((metric) => {
-                    const metricScore =
-                      student.submissions[0]?.metricScores.find(
-                        (m) => m.metricId === metric.id,
+                  {tableColumns.map((column) => {
+                    if (column.key === "select") {
+                      return (
+                        <TableCell key={column.key}>
+                          <Checkbox
+                            checked={selectedStudents.has(student.id)}
+                            onCheckedChange={(checked) =>
+                              handleSelectStudent(
+                                student.id,
+                                checked as boolean,
+                              )
+                            }
+                          />
+                        </TableCell>
                       );
-                    return (
-                      <TableCell key={metric.id}>
-                        <EditableScore
-                          value={metricScore?.score || 0}
-                          onChange={(newScore) =>
-                            onScoreChange?.(
-                              student.submissions[0]?.id || "",
-                              metric.id,
-                              newScore,
-                            )
-                          }
-                        />
-                      </TableCell>
-                    );
+                    }
+
+                    if (column.key === "student") {
+                      return (
+                        <TableCell key={column.key}>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={student.avatar} />
+                              <AvatarFallback>
+                                {student.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium">{student.name}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {student.email}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                      );
+                    }
+
+                    if (column.key === "testCases") {
+                      return (
+                        <TableCell key={column.key}>
+                          <EditableScore
+                            value={student.submissions[0]?.testCaseScore || 0}
+                            onChange={(newScore) =>
+                              onScoreChange?.(
+                                student.submissions[0]?.id || "",
+                                "testCases",
+                                newScore,
+                              )
+                            }
+                          />
+                        </TableCell>
+                      );
+                    }
+
+                    if (column.key.startsWith("metric_")) {
+                      const metricId = column.key.replace("metric_", "");
+                      const metricScore =
+                        student.submissions[0]?.metricScores.find(
+                          (m) => m.metricId === metricId,
+                        );
+                      return (
+                        <TableCell key={column.key}>
+                          <EditableScore
+                            value={metricScore?.score || 0}
+                            onChange={(newScore) =>
+                              onScoreChange &&
+                              onScoreChange(
+                                student.submissions[0]?.id || "",
+                                metricId,
+                                newScore,
+                              )
+                            }
+                          />
+                        </TableCell>
+                      );
+                    }
+
+                    if (column.key === "overallScore") {
+                      return (
+                        <TableCell key={column.key}>
+                          <div className="font-bold text-lg">
+                            {student.overallScore.toFixed(1)}%
+                          </div>
+                        </TableCell>
+                      );
+                    }
+
+                    if (column.key === "status") {
+                      return (
+                        <TableCell key={column.key}>
+                          <StatusBadge status={student.status} />
+                        </TableCell>
+                      );
+                    }
+
+                    if (column.key === "actions") {
+                      return (
+                        <TableCell key={column.key}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem>
+                                <Edit3 className="h-4 w-4 mr-2" />
+                                Edit Scores
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                View Submission
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      );
+                    }
+
+                    return <TableCell key={column.key}></TableCell>;
                   })}
-
-                  <TableCell>
-                    <div className="font-bold text-lg">
-                      {student.overallScore.toFixed(1)}%
-                    </div>
-                  </TableCell>
-
-                  <TableCell>
-                    <StatusBadge
-                      status={student.submissions[0]?.status || "not_started"}
-                    />
-                  </TableCell>
-
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>
-                          <Edit3 className="h-4 w-4 mr-2" />
-                          Edit Scores
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>Add Comment</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

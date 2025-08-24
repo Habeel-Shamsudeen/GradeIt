@@ -62,35 +62,34 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if code submission already exists for this question
-    let codeSubmission = await prisma.codeSubmission.findFirst({
-      where: {
+    // let codeSubmission = await prisma.codeSubmission.findFirst({
+    //   where: {
+    //     submissionId: submission.id,
+    //     questionId: questionId,
+    //   },
+    // });
+
+    // if (codeSubmission) {
+    //   // Update existing code submission
+    //   codeSubmission = await prisma.codeSubmission.update({
+    //     where: { id: codeSubmission.id },
+    //     data: {
+    //       code,
+    //       language,
+    //       codeEvaluationStatus: CodeEvaluationStatus.PENDING,
+    //     },
+    //   });
+    // } else {
+    //   // Create new code submission
+    const codeSubmission = await prisma.codeSubmission.create({
+      data: {
         submissionId: submission.id,
-        questionId: questionId,
+        questionId,
+        code,
+        language,
+        codeEvaluationStatus: CodeEvaluationStatus.PENDING,
       },
     });
-
-    if (codeSubmission) {
-      // Update existing code submission
-      codeSubmission = await prisma.codeSubmission.update({
-        where: { id: codeSubmission.id },
-        data: {
-          code,
-          language,
-          codeEvaluationStatus: CodeEvaluationStatus.PENDING,
-        },
-      });
-    } else {
-      // Create new code submission
-      codeSubmission = await prisma.codeSubmission.create({
-        data: {
-          submissionId: submission.id,
-          questionId,
-          code,
-          language,
-          codeEvaluationStatus: CodeEvaluationStatus.PENDING,
-        },
-      });
-    }
 
     const assignment = await prisma.assignment.findUnique({
       where: { id: question.assignmentId },

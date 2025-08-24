@@ -111,13 +111,22 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
 
     const { code, language, question, submission } = codeSubmission;
 
-    // if no metrics, skip LLM evaluation early return
+    // if no metrics, skip LLM evaluation and use only testcase score
     if (submission.assignment.metrics.length === 0) {
+      // When no metrics exist, final score is just the testcase score
+      const finalScore = calculateFinalScore(
+        codeSubmission.testCaseScore || 0,
+        0, // No metrics score
+        submission.assignment.testCaseWeight || 100, // Use full weight for test cases
+        0, // No metrics weight
+      );
+
       await prisma.codeSubmission.update({
         where: { id: codeSubmissionId },
         data: {
           codeEvaluationStatus: CodeEvaluationStatus.EVALUATION_COMPLETE,
-          score: codeSubmission.testCaseScore,
+          metricScore: 0,
+          score: finalScore,
         },
       });
       await updateSubmissionStatus(codeSubmission.submissionId);
@@ -183,11 +192,20 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
         return acc + (metric.score * weight) / 100; // Convert weight percentage to decimal
       }, 0);
 
+      // Calculate final score combining testcase and metrics scores
+      const finalScore = calculateFinalScore(
+        codeSubmission.testCaseScore || 0,
+        totalMetricScore,
+        submission.assignment.testCaseWeight || 60,
+        submission.assignment.metricsWeight || 40,
+      );
+
       await prisma.codeSubmission.update({
         where: { id: codeSubmissionId },
         data: {
           codeEvaluationStatus: CodeEvaluationStatus.EVALUATION_COMPLETE,
           metricScore: totalMetricScore,
+          score: finalScore,
         },
       });
 
@@ -216,3 +234,163 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
     throw error;
   }
 }
+
+// helper function to calculate the final score
+function calculateFinalScore(
+  testCaseScore: number,
+  metricsScore: number,
+  testCaseWeight: number,
+  metricsWeight: number,
+): number {
+  // Normalize weights to ensure they add up to 100
+  const totalWeight = testCaseWeight + metricsWeight;
+  const normalizedTestCaseWeight =
+    totalWeight > 0 ? testCaseWeight / totalWeight : 0.6;
+  const normalizedMetricsWeight =
+    totalWeight > 0 ? metricsWeight / totalWeight : 0.4;
+
+  const finalScore =
+    testCaseScore * normalizedTestCaseWeight +
+    metricsScore * normalizedMetricsWeight;
+  return Math.min(100, Math.max(0, finalScore)); // Ensure score is between 0 and 100
+}
+
+// Grading Table Actions
+export const updateStudentScore = async (
+  submissionId: string,
+  metricId: string,
+  newScore: number,
+) => {
+  try {
+    console.log(
+      "Updating student score for submission:",
+      submissionId,
+      metricId,
+      newScore,
+    );
+    // Find the code submission for this student and assignment
+    const codeSubmission = await prisma.codeSubmission.findFirst({
+      where: {
+        id: submissionId,
+        codeEvaluationStatus: "EVALUATION_COMPLETE",
+      },
+      orderBy: {
+        score: "desc", // Get the best submission
+      },
+    });
+
+    if (!codeSubmission) {
+      return { success: false, error: "No completed code submission found" };
+    }
+
+    // Update the metric result
+    await prisma.submissionMetricResult.upsert({
+      where: {
+        codeSubmissionId_metricId: {
+          codeSubmissionId: codeSubmission.id,
+          metricId: metricId,
+        },
+      },
+      update: {
+        score: newScore,
+      },
+      create: {
+        codeSubmissionId: codeSubmission.id,
+        metricId: metricId,
+        score: newScore,
+      },
+    });
+
+    // Recalculate the final score for the code submission
+    const assignment = await prisma.assignment.findFirst({
+      where: {
+        submissions: {
+          some: {
+            id: submissionId,
+          },
+        },
+      },
+      include: {
+        metrics: true,
+      },
+    });
+
+    if (assignment) {
+      // Get all metric results for this code submission
+      const metricResults = await prisma.submissionMetricResult.findMany({
+        where: {
+          codeSubmissionId: codeSubmission.id,
+        },
+      });
+
+      // Calculate new metric score
+      const totalMetricScore = metricResults.reduce((acc, result) => {
+        const assignmentMetric = assignment.metrics.find(
+          (m) => m.metricId === result.metricId,
+        );
+        const weight = assignmentMetric?.weight || 0;
+        return acc + (result.score * weight) / 100;
+      }, 0);
+
+      // Calculate final score
+      const finalScore = calculateFinalScore(
+        codeSubmission.testCaseScore || 0,
+        totalMetricScore,
+        assignment.testCaseWeight || 60,
+        assignment.metricsWeight || 40,
+      );
+
+      // Update code submission score
+      await prisma.codeSubmission.update({
+        where: { id: codeSubmission.id },
+        data: {
+          metricScore: totalMetricScore,
+          score: finalScore,
+        },
+      });
+
+      // Update submission final score
+      await prisma.submission.update({
+        where: { id: submissionId },
+        data: {
+          finalScore: finalScore,
+        },
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update score:", error);
+    return { success: false, error: "Failed to update score" };
+  }
+};
+
+export const performBulkAction = async (
+  action: string,
+  studentIds: string[],
+  assignmentId: string,
+) => {
+  try {
+    switch (action) {
+      case "export":
+        // Handle export action
+        console.log("Exporting students:", studentIds);
+        break;
+      // case "comment":
+      //   // Handle adding comments
+      //   console.log("Adding comments to students:", studentIds);
+      //   break;
+      // case "grade":
+      //   // Handle bulk grading
+      //   console.log("Bulk grading students:", studentIds);
+      //   break;
+      default:
+        console.log("Unknown bulk action:", action);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to perform bulk action:", error);
+    return { success: false, error: "Failed to perform bulk action" };
+  }
+};
