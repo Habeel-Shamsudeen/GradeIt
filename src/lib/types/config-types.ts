@@ -6,7 +6,7 @@ export interface NavGroupInterface {
 }
 
 export interface WebhookPayload {
-  submissionId: string;
+  codeSubmissionId: string;
   testCaseId: string;
   questionId: string;
 }

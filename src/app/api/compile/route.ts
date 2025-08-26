@@ -17,13 +17,13 @@ export async function POST(req: NextRequest) {
     }
 
     const response = await fetch(
-      "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*",
+      `https://${process.env.JUDGE0_API_HOST}/submissions?base64_encoded=true&fields=*`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-rapidapi-key": process.env.JUDGE0_API_KEY || "",
-          "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+          "x-rapidapi-host": process.env.JUDGE0_API_HOST || "",
         },
         body: JSON.stringify({
           language_id:
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     for (let i = 0; i < 10; i++) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const resultResponse = await fetch(
-        `https://judge0-ce.p.rapidapi.com/submissions/${judgeData.token}?base64_encoded=true&fields=*`,
+        `https://${process.env.JUDGE0_API_HOST}/submissions/${judgeData.token}?base64_encoded=true&fields=*`,
         {
           method: "GET",
           headers: {

@@ -140,13 +140,13 @@ export function useCodeRunner({
         setTestResults(mappedResults);
 
         if (
-          submissionData.status === "COMPLETED" ||
-          submissionData.status === "PASSED" ||
-          submissionData.status === "FAILED"
+          submissionData.status === "EVALUATION_COMPLETE" ||
+          submissionData.status === "TEST_CASES_EVALUATION_FAILED" ||
+          submissionData.status === "LLM_EVALUATION_FAILED"
         ) {
           completed = true;
 
-          if (submissionData.status === "COMPLETED") {
+          if (submissionData.status === "EVALUATION_COMPLETE") {
             setCodeStatus("All tests passed successfully!");
             toast.success("Your solution passed all test cases");
           } else {

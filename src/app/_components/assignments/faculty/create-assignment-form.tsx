@@ -4,20 +4,17 @@ import type React from "react";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Code } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
 import { Textarea } from "@/app/_components/ui/textarea";
+import { QuestionsList } from "./questions-list";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/app/_components/ui/accordion";
-import { QuestionForm } from "./question-form";
+  EvaluationMetrics,
+  ExistingMetric,
+  type EvaluationMetric,
+} from "./evaluation-metrics";
 import { createAssignment } from "@/server/actions/assignment-actions";
 import { Question } from "@/lib/types/assignment-tyes";
 import { toast } from "sonner";
@@ -25,9 +22,13 @@ import { Switch } from "../../ui/switch";
 
 interface CreateAssignmentFormProps {
   classCode: string;
+  existingMetrics: ExistingMetric[];
 }
 
-export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
+export function CreateAssignmentForm({
+  classCode,
+  existingMetrics,
+}: CreateAssignmentFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -36,6 +37,9 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
     useState<boolean>(false);
   const [fullScreenEnforcement, setFullScreenEnforcement] =
     useState<boolean>(false);
+  const [metrics, setMetrics] = useState<EvaluationMetric[]>([]);
+  const [testCaseWeight, setTestCaseWeight] = useState(60);
+  const [metricsWeight, setMetricsWeight] = useState(40);
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: "1",
@@ -54,36 +58,12 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
   ]);
   const [loading, setLoading] = useState(false);
 
-  const addQuestion = () => {
-    setQuestions([
-      ...questions,
-      {
-        id: `${questions.length + 1}`,
-        title: "",
-        description: "",
-        language: "python",
-        testCases: [
-          {
-            id: "1",
-            input: "",
-            expectedOutput: "",
-            hidden: false,
-          },
-        ],
-      },
-    ]);
-  };
-
-  const removeQuestion = (index: number) => {
-    if (questions.length > 1) {
-      setQuestions(questions.filter((_, i) => i !== index));
-    }
-  };
-
-  const updateQuestion = (index: number, updatedQuestion: Question) => {
-    const newQuestions = [...questions];
-    newQuestions[index] = updatedQuestion;
-    setQuestions(newQuestions);
+  const handleWeightageChange = (
+    newTestCaseWeight: number,
+    newMetricsWeight: number,
+  ) => {
+    setTestCaseWeight(newTestCaseWeight);
+    setMetricsWeight(newMetricsWeight);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,6 +78,9 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
         questions,
         copyPastePrevention,
         fullScreenEnforcement,
+        testCaseWeight,
+        metricsWeight,
+        metrics,
       });
 
       if (response.status === "success") {
@@ -144,7 +127,6 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Provide detailed instructions for the assignment..."
                 className="min-h-32 resize-y bg-background border border-border text-foreground placeholder:text-muted-foreground"
-                required
               />
             </div>
 
@@ -192,71 +174,16 @@ export function CreateAssignmentForm({ classCode }: CreateAssignmentFormProps) {
         </CardContent>
       </Card>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-medium text-foreground">Questions</h2>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addQuestion}
-            className="gap-1 border border-border"
-          >
-            <Plus className="h-4 w-4" />
-            Add Question
-          </Button>
-        </div>
+      <EvaluationMetrics
+        metrics={metrics}
+        onMetricsChange={setMetrics}
+        existingMetrics={existingMetrics}
+        testCaseWeight={testCaseWeight}
+        metricsWeight={metricsWeight}
+        onWeightageChange={handleWeightageChange}
+      />
 
-        <AnimatePresence>
-          {questions.map((question, index) => (
-            <motion.div
-              key={question.id}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Accordion type="single" collapsible defaultValue={question.id}>
-                <AccordionItem
-                  value={question.id}
-                  className="rounded-2xl border border-border bg-background"
-                >
-                  <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                    <div className="flex flex-1 items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Code className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium text-foreground">
-                          {question.title || `Question ${index + 1}`}
-                        </span>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeQuestion(index);
-                        }}
-                        className="mr-2 h-8 w-8 rounded-full p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Remove question</span>
-                      </Button>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-6">
-                    <QuestionForm
-                      question={question}
-                      onChange={(updatedQuestion) =>
-                        updateQuestion(index, updatedQuestion)
-                      }
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+      <QuestionsList questions={questions} onQuestionsChange={setQuestions} />
 
       <div className="flex justify-end gap-4 pt-4">
         <Button

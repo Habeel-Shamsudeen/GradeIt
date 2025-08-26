@@ -3,6 +3,13 @@ import {
   getAssigmentTitleFromId,
   getClassNameFromCode,
 } from "@/server/actions/utility-actions";
+import {
+  StudentProgress,
+  GradingTableHeaderData,
+  GradingTableData,
+  GradingTableStudent,
+  GradingTableSubmission,
+} from "@/lib/types/assignment-tyes";
 import { type ClassValue, clsx } from "clsx";
 import { randomUUID } from "crypto";
 import { twMerge } from "tailwind-merge";
@@ -124,52 +131,44 @@ export function mapStatus(status: string): "passed" | "failed" | "running" {
   }
 }
 
-export const exportToCSV = (students: any[]) => {
-  if (!students.length) {
-    alert("No data available to export.");
-    return;
-  }
-
-  // Convert JSON to CSV format
+export function exportGradingTableToCSV(
+  filteredData: GradingTableStudent[],
+  data: GradingTableData,
+): void {
   const headers = [
-    "ID",
-    "Name",
+    "Student Name",
     "Email",
-    "Avatar",
+    "Overall Score",
+    ...data.metrics.map((m) => `${m.name} (${m.weight}%)`),
     "Status",
-    "Submitted At",
-    "Score",
-    "Questions Completed",
-  ];
-  const csvRows = [
-    headers.join(","), // Add headers
-    ...students.map((student) =>
-      [
-        student.id,
-        student.name,
-        student.email,
-        student.avatar,
-        student.status,
-        student.submittedAt,
-        student.score,
-        student.questionsCompleted,
-      ].join(","),
-    ),
   ];
 
-  const csvContent = csvRows.join("\n");
+  const rows = filteredData.map((student) => [
+    student.name,
+    student.email,
+    student.overallScore.toFixed(1),
+    ...data.metrics.map((metric) => {
+      const score =
+        student.overallSubmission?.metricScores.find(
+          (m) => m.metricId === metric.id,
+        )?.score || 0;
+      return score.toString();
+    }),
+    student.status || "NOT_STARTED",
+  ]);
+
+  const csvContent = [headers, ...rows]
+    .map((row) => row.map((cell) => `"${cell}"`).join(","))
+    .join("\n");
+
   const blob = new Blob([csvContent], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-
-  // Create a hidden download link
+  const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "students_submissions.csv";
-  document.body.appendChild(a);
+  a.download = `grading-table-${new Date().toISOString().split("T")[0]}.csv`;
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
+  window.URL.revokeObjectURL(url);
+}
 
 export const getRandomEducationIcon = (): string => {
   const educationIcons = [
@@ -187,3 +186,81 @@ export const getRandomEducationIcon = (): string => {
   const randomIndex = Math.floor(Math.random() * educationIcons.length);
   return educationIcons[randomIndex];
 };
+
+export function transformStudentDataForGrading(
+  students: StudentProgress[],
+  assignmentData: GradingTableHeaderData,
+): GradingTableData {
+  const transformedStudents: GradingTableStudent[] = students.map((student) => {
+    const numberOfSubmissions = student.submissions?.length || 0;
+
+    let avgScore = 0;
+    if (numberOfSubmissions > 0) {
+      avgScore = student.score;
+    } else {
+      avgScore =
+        student.submissions
+          .map((submission) => submission.score)
+          .reduce((acc, curr) => acc + curr, 0) / numberOfSubmissions;
+    }
+
+    const avgTestCaseScore =
+      student.submissions?.reduce((acc, curr) => acc + curr.testCaseScore, 0) /
+        numberOfSubmissions || 0;
+
+    const metricScores = assignmentData.metrics.map((metric) => {
+      const metricResult =
+        student.submissions?.reduce(
+          (acc, curr) =>
+            acc +
+            curr.metricResults.find((mr: any) => mr.metricId === metric.id)
+              ?.score,
+          0,
+        ) / numberOfSubmissions || 0;
+      return {
+        metricId: metric.id,
+        metricName: metric.name,
+        score: metricResult,
+        weight: metric.weight,
+      };
+    });
+
+    const overallSubmission: GradingTableSubmission = {
+      id: student.submissions[0]?.id || `temp-${student.id}`,
+      studentId: student.id,
+      testCaseScore: avgTestCaseScore,
+      metricScores: metricScores,
+      totalScore: avgScore,
+      status: student.status,
+      submittedAt: student.submittedAt || undefined,
+    };
+
+    const submissions: GradingTableSubmission[] = student.submissions.map(
+      (submission) => ({
+        id: submission.id,
+        studentId: student.id,
+        testCaseScore: submission.testCaseScore,
+        metricScores: submission.metricResults,
+        totalScore: submission.score,
+        status: submission.codeEvaluationStatus,
+        submittedAt: submission.createdAt || undefined,
+      }),
+    );
+
+    return {
+      id: student.id,
+      name: student.name,
+      email: student.email,
+      avatar: student.avatar,
+      overallScore: student.score,
+      status: student.status,
+      overallSubmission: overallSubmission,
+      submissions: submissions,
+    };
+  });
+
+  return {
+    students: transformedStudents,
+    metrics: assignmentData.metrics,
+  };
+}

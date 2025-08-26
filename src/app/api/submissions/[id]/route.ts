@@ -14,10 +14,12 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
     const submissionId = id;
     const userId = session.user.id;
 
-    const submission = await prisma.submission.findUnique({
+    const submission = await prisma.codeSubmission.findUnique({
       where: {
         id: submissionId,
-        studentId: userId,
+        submission: {
+          studentId: userId,
+        },
       },
       include: {
         testCaseResults: {
@@ -62,7 +64,7 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
 
     return NextResponse.json({
       id: submission.id,
-      status: submission.status,
+      status: submission.codeEvaluationStatus,
       results,
       code: submission.code,
       language: submission.language,

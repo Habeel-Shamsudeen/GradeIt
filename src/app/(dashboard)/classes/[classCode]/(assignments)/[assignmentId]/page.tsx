@@ -5,6 +5,7 @@ import { FacultyView } from "@/app/_components/assignments/faculty/faculty-view"
 import { getUserRole } from "@/server/actions/user-actions";
 import { getAssignmentById } from "@/server/actions/assignment-actions";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
+import { StudentProgress } from "@/lib/types/assignment-tyes";
 
 export const metadata: Metadata = {
   title: "Assignment | gradeIT",
@@ -19,10 +20,8 @@ export default async function AssignmentPage({
   const { assignmentId, classCode } = await params;
   const { assignment } = await getAssignmentById(assignmentId);
   const { role } = await getUserRole();
-  const initialStudentData = await getStudentAssignmentProgress(
-    assignmentId,
-    classCode,
-  );
+  const initialStudentData: StudentProgress[] =
+    await getStudentAssignmentProgress(assignmentId, classCode);
 
   if (!assignment) {
     notFound();
