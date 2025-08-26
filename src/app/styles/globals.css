@@ -19,6 +19,36 @@
     --status-partial: 48 96% 89%;
     --status-partial-foreground: 48 100% 45%;
 
+    --status-not-started: 240 4.8% 95.9%;
+    --status-not-started-foreground: 240 5.9% 10%;
+
+    --status-in-progress: 217 91% 95%;
+    --status-in-progress-foreground: 217 91% 60%;
+
+    --status-late: 48 96% 89%;
+    --status-late-foreground: 48 100% 45%;
+
+    --status-completed: 145 80% 55%;
+    --status-completed-foreground: 0 0% 100%;
+
+    --status-failed: 0 84% 95%;
+    --status-failed-foreground: 0 84% 60%;
+
+    --score-excellent: 145 80% 55%;
+    --score-excellent-foreground: 0 0% 100%;
+
+    --score-good: 217 91% 60%;
+    --score-good-foreground: 0 0% 100%;
+
+    --score-fair: 48 96% 53%;
+    --score-fair-foreground: 48 100% 25%;
+
+    --score-poor: 25 95% 53%;
+    --score-poor-foreground: 25 95% 25%;
+
+    --score-fail: 0 84% 60%;
+    --score-fail-foreground: 0 0% 100%;
+
     --primary-button: var(--marine-600);
     --primary-button-foreground: var(--marine-100);
     --primary-button-hover: var(--marine-700);
@@ -104,6 +134,37 @@
 
     --status-partial: 48 100% 20%;
     --status-partial-foreground: 48 100% 85%;
+
+    --status-not-started: 240 3.7% 15.9%;
+    --status-not-started-foreground: 240 5% 64.9%;
+
+    --status-in-progress: 217 91% 20%;
+    --status-in-progress-foreground: 217 91% 80%;
+
+    --status-late: 48 100% 20%;
+    --status-late-foreground: 48 100% 85%;
+
+    --status-completed: 145 80% 30%;
+    --status-completed-foreground: 145 80% 90%;
+
+    --status-failed: 0 62% 20%;
+    --status-failed-foreground: 0 84% 80%;
+
+    --score-excellent: 145 80% 30%;
+    --score-excellent-foreground: 145 80% 90%;
+
+    --score-good: 217 91% 40%;
+    --score-good-foreground: 217 91% 90%;
+
+    --score-fair: 48 96% 30%;
+    --score-fair-foreground: 48 100% 85%;
+
+    --score-poor: 25 95% 30%;
+    --score-poor-foreground: 25 95% 85%;
+
+    --score-fail: 0 62% 30%;
+    --score-fail-foreground: 0 84% 90%;
+
     --primary-button: var(--marine-600);
     --primary-button-foreground: var(--marine-100);
     --primary-button-hover: var(--marine-700);

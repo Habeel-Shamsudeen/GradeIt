@@ -38,13 +38,11 @@ export function EditableScore({
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return "text-green-600 font-semibold dark:text-green-400";
-    if (score >= 80) return "text-blue-600 font-semibold dark:text-blue-400";
-    if (score >= 70)
-      return "text-yellow-600 font-semibold dark:text-yellow-400";
-    if (score >= 60)
-      return "text-orange-600 font-semibold dark:text-orange-400";
-    return "text-red-600 font-semibold dark:text-red-400";
+    if (score >= 90) return "text-score-excellent font-semibold";
+    if (score >= 80) return "text-score-good font-semibold";
+    if (score >= 70) return "text-score-fair font-semibold";
+    if (score >= 60) return "text-score-poor font-semibold";
+    return "text-score-fail font-semibold";
   };
 
   if (disabled) {
@@ -75,18 +73,18 @@ export function EditableScore({
           <Button
             size="sm"
             variant="ghost"
-            className="h-6 w-6 p-0 hover:bg-green-100 dark:hover:bg-green-900/20"
+            className="h-6 w-6 p-0 hover:bg-status-completed"
             onClick={handleSave}
           >
-            <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
+            <Check className="h-3 w-3 text-score-excellent" />
           </Button>
           <Button
             size="sm"
             variant="ghost"
-            className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
+            className="h-6 w-6 p-0 hover:bg-status-failed"
             onClick={handleCancel}
           >
-            <X className="h-3 w-3 text-red-600 dark:text-red-400" />
+            <X className="h-3 w-3 text-score-fail" />
           </Button>
         </div>
       ) : (
