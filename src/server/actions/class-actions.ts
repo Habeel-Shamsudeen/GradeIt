@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { classCreation, UserClassroom } from "@/lib/types/class-types";
 import { generateClassroomCode } from "@/lib/utils";
-import { unstable_cache, revalidateTag } from "next/cache";
 import { isCodeUnique } from "./utility-actions";
 import { getUserRole } from "./user-actions";
 
@@ -64,41 +63,31 @@ export const getUserClasses = async () => {
   try {
     const { role } = await getUserRole();
 
-    const read = unstable_cache(
-      async () => {
-        const user = await prisma.user.findUnique({
-          where: { id: session.user.id },
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        classrooms: role === "FACULTY" && {
           select: {
-            classrooms: role === "FACULTY" && {
-              select: {
-                id: true,
-                name: true,
-                section: true,
-                code: true,
-                inviteLink: true,
-                facultyName: true,
-              },
-            },
-            enrolledClasses: role === "STUDENT" && {
-              select: {
-                id: true,
-                name: true,
-                section: true,
-                code: true,
-                inviteLink: true,
-                facultyName: true,
-              },
-            },
+            id: true,
+            name: true,
+            section: true,
+            code: true,
+            inviteLink: true,
+            facultyName: true,
           },
-        });
-        return user;
+        },
+        enrolledClasses: role === "STUDENT" && {
+          select: {
+            id: true,
+            name: true,
+            section: true,
+            code: true,
+            inviteLink: true,
+            facultyName: true,
+          },
+        },
       },
-      ["getUserClasses", session.user.id, role],
-      { revalidate: 300, tags: [
-        `classes:user:${session.user.id}`,
-      ] },
-    );
-    const user = await read();
+    });
     if (!user) {
       throw new Error("User not found");
     }
@@ -195,9 +184,6 @@ export const joinClassUsingCode = async (code: string) => {
       },
     });
 
-    // invalidate cached class lists for this student
-    revalidateTag(`classes:user:${student.id}`);
-
     return { status: "success", message: "Joined class successfully" };
   } catch (error) {
     console.error("Error while joining class:", error);
@@ -293,7 +279,6 @@ export const deleteClass = async (classCode: string) => {
     await prisma.classroom.delete({
       where: { code: classCode },
     });
-    // Note: broad invalidation is avoided; specific class tags can be added if needed.
     return { status: "success", message: "Classroom deleted successfully" };
   } catch (error) {
     console.error("Error deleting class:", error);
@@ -352,9 +337,6 @@ export const removeStudentFromClass = async (
         timeout: 10000,
       },
     );
-
-    // invalidate cached class list for that student
-    revalidateTag(`classes:user:${studentId}`);
 
     return {
       status: "success",

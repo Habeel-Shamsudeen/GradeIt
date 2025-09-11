@@ -12,7 +12,7 @@ import {
 } from "./grading-actions";
 import { cookies } from "next/headers";
 import { judgeResult } from "@/lib/types/code-types";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 export async function processJudgeResultWebhook(
   testCaseId: string,
@@ -117,10 +117,9 @@ export async function updateCodeSubmissionStatus(codeSubmissionId: string) {
         include: { submission: true },
       });
       if (cs?.submission) {
-        revalidateTag(`submissions:user:${cs.submission.studentId}:assignment:${cs.submission.assignmentId}`);
-        revalidateTag(`progress:assignment:${cs.submission.assignmentId}`);
-        revalidateTag(`grading:assignment:${cs.submission.assignmentId}`);
-        revalidateTag(`assignment:${cs.submission.assignmentId}`);
+        // Revalidate key pages that consume this data
+        revalidatePath(`/classes/${cs.submission.assignmentId}`);
+        revalidatePath(`/assignments/${cs.submission.assignmentId}/grading`);
       }
     }
   } catch (error) {
@@ -185,13 +184,7 @@ export async function updateSubmissionStatus(submissionId: string) {
     });
   }
 
-  // Precise invalidations
-  const s = await prisma.submission.findUnique({ where: { id: submissionId } });
-  if (s) {
-    revalidateTag(`submissions:user:${s.studentId}:assignment:${s.assignmentId}`);
-    revalidateTag(`progress:assignment:${s.assignmentId}`);
-    revalidateTag(`grading:assignment:${s.assignmentId}`);
-  }
+  // Page-level revalidation for grading and assignment surfaces can be added here if needed
 }
 
 export async function getSubmissions(assignmentId: string) {
@@ -327,27 +320,18 @@ export async function getStudentAssignmentProgress(
   assignmentId: string,
   classCode: string,
 ) {
-  const readClassroom = unstable_cache(
-    async () =>
-      prisma.classroom.findUnique({
-        where: { code: classCode },
+  const classroom = await prisma.classroom.findUnique({
+    where: { code: classCode },
+    include: {
+      students: true,
+      assignments: {
+        where: { id: assignmentId },
         include: {
-          students: true,
-          assignments: {
-            where: { id: assignmentId },
-            include: {
-              questions: true,
-            },
-          },
+          questions: true,
         },
-      }),
-    ["classroomForProgress", classCode, assignmentId],
-    { revalidate: 60, tags: [
-      `assignment:${assignmentId}`,
-      `progress:assignment:${assignmentId}`,
-    ] },
-  );
-  const classroom = await readClassroom();
+      },
+    },
+  });
 
   if (!classroom || !classroom.assignments[0]) {
     throw new Error("Classroom or assignment not found");

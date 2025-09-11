@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { assignmentSchema, AssignmentSchema } from "@/lib/validators/schema";
-import { revalidatePath, unstable_cache, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { getClassIdFromCode } from "./utility-actions";
 import { SubmissionStatus } from "@prisma/client";
 import { GradingTableHeaderResponse } from "@/lib/types/assignment-tyes";
@@ -111,7 +111,6 @@ export const createAssignment = async (formData: AssignmentSchema) => {
     });
     console.log("success", assignment);
     revalidatePath(`/classes/${classCode}`); // Refresh page-level cache
-    revalidateTag(`assignments:class:${classCode}`); // Invalidate assignment list for this class
     return { status: "success", assignment };
   } catch (error) {
     throw new Error("Failed to create assignment" + error);
@@ -124,29 +123,22 @@ export const getAssignments = async (classroomId: string) => {
     throw new Error("Unauthorized");
   }
   try {
-    const read = unstable_cache(
-      async () => {
-        return prisma.assignment.findMany({
-          where: {
-            classroomId,
-          },
-          include: {
-            questions: true,
-            submissions: {
-              include: {
-                codeSubmission: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
+    const assignments = await prisma.assignment.findMany({
+      where: {
+        classroomId,
       },
-      ["getAssignments", classroomId],
-      { revalidate: 300, tags: [`assignments:class:${classroomId}`] },
-    );
-    const assignments = await read();
+      include: {
+        questions: true,
+        submissions: {
+          include: {
+            codeSubmission: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
     const formattedAssignments = assignments.map((assignment) => ({
       id: assignment.id,
@@ -175,29 +167,22 @@ export const getAssignmentById = async (assignmentId: string) => {
     throw new Error("Unauthorized");
   }
   try {
-    const read = unstable_cache(
-      async () => {
-        return prisma.assignment.findUnique({
-          where: { id: assignmentId },
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: {
+        questions: {
           include: {
-            questions: {
-              include: {
-                testCases: true,
-                codeSubmission: true,
-              },
-            },
-            submissions: {
-              include: {
-                codeSubmission: true,
-              },
-            },
+            testCases: true,
+            codeSubmission: true,
           },
-        });
+        },
+        submissions: {
+          include: {
+            codeSubmission: true,
+          },
+        },
       },
-      ["getAssignmentById", assignmentId],
-      { revalidate: 120, tags: [`assignment:${assignmentId}`] },
-    );
-    const assignment = await read();
+    });
 
     if (!assignment) {
       return { status: "error", message: "Assignment not found" };
