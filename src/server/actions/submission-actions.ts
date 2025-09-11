@@ -12,6 +12,7 @@ import {
 } from "./grading-actions";
 import { cookies } from "next/headers";
 import { judgeResult } from "@/lib/types/code-types";
+import { revalidateTag, unstable_cache } from "next/cache";
 
 export async function processJudgeResultWebhook(
   testCaseId: string,
@@ -109,6 +110,18 @@ export async function updateCodeSubmissionStatus(codeSubmissionId: string) {
       } else {
         console.log("LLM evaluation already in progress or completed");
       }
+
+      // Invalidate dependent cached views
+      const cs = await prisma.codeSubmission.findUnique({
+        where: { id: codeSubmissionId },
+        include: { submission: true },
+      });
+      if (cs?.submission) {
+        revalidateTag(`submissions:user:${cs.submission.studentId}:assignment:${cs.submission.assignmentId}`);
+        revalidateTag(`progress:assignment:${cs.submission.assignmentId}`);
+        revalidateTag(`grading:assignment:${cs.submission.assignmentId}`);
+        revalidateTag(`assignment:${cs.submission.assignmentId}`);
+      }
     }
   } catch (error) {
     console.error(
@@ -170,6 +183,14 @@ export async function updateSubmissionStatus(submissionId: string) {
         status: SubmissionStatus.PARTIAL,
       },
     });
+  }
+
+  // Precise invalidations
+  const s = await prisma.submission.findUnique({ where: { id: submissionId } });
+  if (s) {
+    revalidateTag(`submissions:user:${s.studentId}:assignment:${s.assignmentId}`);
+    revalidateTag(`progress:assignment:${s.assignmentId}`);
+    revalidateTag(`grading:assignment:${s.assignmentId}`);
   }
 }
 
@@ -306,19 +327,27 @@ export async function getStudentAssignmentProgress(
   assignmentId: string,
   classCode: string,
 ) {
-  // 1. Get the classroom with its enrolled students
-  const classroom = await prisma.classroom.findUnique({
-    where: { code: classCode },
-    include: {
-      students: true,
-      assignments: {
-        where: { id: assignmentId },
+  const readClassroom = unstable_cache(
+    async () =>
+      prisma.classroom.findUnique({
+        where: { code: classCode },
         include: {
-          questions: true,
+          students: true,
+          assignments: {
+            where: { id: assignmentId },
+            include: {
+              questions: true,
+            },
+          },
         },
-      },
-    },
-  });
+      }),
+    ["classroomForProgress", classCode, assignmentId],
+    { revalidate: 60, tags: [
+      `assignment:${assignmentId}`,
+      `progress:assignment:${assignmentId}`,
+    ] },
+  );
+  const classroom = await readClassroom();
 
   if (!classroom || !classroom.assignments[0]) {
     throw new Error("Classroom or assignment not found");
