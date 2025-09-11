@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Editor } from "@monaco-editor/react";
+import dynamic from "next/dynamic";
 import type * as monaco from "monaco-editor";
 import { Play, Send } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
@@ -28,6 +28,8 @@ interface CodeEditorProps {
   isRunning: boolean;
   disableCopyPaste: boolean;
 }
+
+const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 export function CodeEditor({
   code,
