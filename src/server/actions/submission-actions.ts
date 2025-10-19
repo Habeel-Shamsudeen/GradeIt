@@ -12,6 +12,7 @@ import {
 } from "./grading-actions";
 import { cookies } from "next/headers";
 import { judgeResult } from "@/lib/types/code-types";
+import { revalidatePath } from "next/cache";
 
 export async function processJudgeResultWebhook(
   testCaseId: string,
@@ -109,6 +110,17 @@ export async function updateCodeSubmissionStatus(codeSubmissionId: string) {
       } else {
         console.log("LLM evaluation already in progress or completed");
       }
+
+      // Invalidate dependent cached views
+      const cs = await prisma.codeSubmission.findUnique({
+        where: { id: codeSubmissionId },
+        include: { submission: true },
+      });
+      if (cs?.submission) {
+        // Revalidate key pages that consume this data
+        revalidatePath(`/classes/${cs.submission.assignmentId}`);
+        revalidatePath(`/assignments/${cs.submission.assignmentId}/grading`);
+      }
     }
   } catch (error) {
     console.error(
@@ -171,6 +183,8 @@ export async function updateSubmissionStatus(submissionId: string) {
       },
     });
   }
+
+  // Page-level revalidation for grading and assignment surfaces can be added here if needed
 }
 
 export async function getSubmissions(assignmentId: string) {
@@ -306,7 +320,6 @@ export async function getStudentAssignmentProgress(
   assignmentId: string,
   classCode: string,
 ) {
-  // 1. Get the classroom with its enrolled students
   const classroom = await prisma.classroom.findUnique({
     where: { code: classCode },
     include: {

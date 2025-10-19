@@ -5,6 +5,7 @@ import {
   updateCodeSubmissionStatus,
 } from "@/server/actions/submission-actions";
 import { judgeResult } from "@/lib/types/code-types";
+// no tag-based revalidation to avoid unstable APIs; page-level revalidation is handled in actions
 
 export async function PUT(req: NextRequest) {
   try {
@@ -30,6 +31,8 @@ export async function PUT(req: NextRequest) {
     );
 
     await updateCodeSubmissionStatus(payload.codeSubmissionId);
+
+    // No cache mutation here; dependent pages will be revalidated by server actions after DB writes.
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

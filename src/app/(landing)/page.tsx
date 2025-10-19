@@ -8,6 +8,9 @@ import StudentsSection from "../_components/landing/sections/students-section";
 import WorkflowSection from "../_components/landing/sections/workflow-section";
 import SiteHeader from "../_components/landing/site-header";
 
+export const dynamic = "force-static";
+export const revalidate = 86400; // 24h ISR for landing
+
 export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col bg-background">

@@ -1,5 +1,5 @@
 import { CodeRunner } from "@/lib/types/code-types";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 
 interface useCodeRunnerParams {
@@ -18,6 +18,10 @@ export function useCodeRunner({
   const [codeStatus, setCodeStatus] = useState<string>("");
   const [testResults, setTestResults] = useState<CodeRunner[]>([]);
 
+  // Simple in-memory cache to avoid repeated identical compile runs during a session
+  const lastRunKeyRef = useRef<string>("");
+  const lastRunResultRef = useRef<CodeRunner[] | null>(null);
+
   const runCode = async () => {
     if (isRunning) {
       toast.warning("Code already in process of execution");
@@ -27,6 +31,13 @@ export function useCodeRunner({
       toast.error("Please enter some code to run");
       return;
     }
+    const cacheKey = `${language}::${questionId}::${code}::${input ?? ""}`;
+    if (lastRunKeyRef.current === cacheKey && lastRunResultRef.current) {
+      setTestResults(lastRunResultRef.current);
+      setCodeStatus("Using recent result");
+      return;
+    }
+
     setIsRunning(true);
     setCodeStatus("Running");
     toast.success("Running your code...");
@@ -46,6 +57,8 @@ export function useCodeRunner({
       const { output } = await response.json();
 
       setTestResults([output]);
+      lastRunKeyRef.current = cacheKey;
+      lastRunResultRef.current = [output];
       toast.success("Your code ran successfully");
     } catch (error: any) {
       console.error("Error running code:", error);
@@ -110,11 +123,12 @@ export function useCodeRunner({
   const pollSubmissionStatus = async (submissionId: string) => {
     let completed = false;
     let attempts = 0;
-    const maxAttempts = 30; // Poll for maximum of 30 attempts (30 seconds with 2s interval) that is for 60 seconds
+    const maxAttempts = 20; // fewer attempts with backoff (~70-90s)
+    let delayMs = 2000;
 
     while (!completed && attempts < maxAttempts) {
       attempts++;
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
 
       try {
         const response = await fetch(`/api/submissions/${submissionId}`);
@@ -158,6 +172,8 @@ export function useCodeRunner({
         }
 
         setCodeStatus(`Running test cases (${attempts}/${maxAttempts})...`);
+        // Exponential backoff with jitter, cap at 10s
+        delayMs = Math.min(10000, Math.floor(delayMs * 1.5 + Math.random() * 250));
       } catch (error) {
         console.error("Error polling submission status:", error);
       }

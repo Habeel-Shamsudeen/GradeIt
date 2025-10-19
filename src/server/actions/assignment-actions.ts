@@ -110,7 +110,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
       }),
     });
     console.log("success", assignment);
-    revalidatePath(`/classes/${classCode}`); // Refresh cache for updated data
+    revalidatePath(`/classes/${classCode}`); // Refresh page-level cache
     return { status: "success", assignment };
   } catch (error) {
     throw new Error("Failed to create assignment" + error);
