@@ -181,12 +181,29 @@ export const getAssignmentById = async (assignmentId: string) => {
             codeSubmission: true,
           },
         },
+        metrics: {
+          include: {
+            metric: true,
+          },
+        },
       },
     });
 
     if (!assignment) {
       return { status: "error", message: "Assignment not found" };
     }
+
+    const metrics: {
+      id: string;
+      name: string;
+      description?: string;
+      weight: number;
+    }[] = assignment.metrics.map((am) => ({
+      id: am.metric.id,
+      name: am.metric.name,
+      description: am.metric.description ?? undefined,
+      weight: am.weight,
+    }));
 
     const formattedAssignment = {
       id: assignment.id,
@@ -202,6 +219,9 @@ export const getAssignmentById = async (assignmentId: string) => {
       questions: assignment.questions,
       copyPastePrevention: assignment.copyPastePrevention,
       fullScreenEnforcement: assignment.fullScreenEnforcement,
+      testCaseWeight: assignment.testCaseWeight,
+      metricsWeight: assignment.metricsWeight,
+      metrics,
     };
     return { status: "success", assignment: formattedAssignment };
   } catch (error) {
