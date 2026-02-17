@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { classCreation, UserClassroom } from "@/lib/types/class-types";
@@ -105,7 +106,7 @@ export const getUserClasses = async () => {
   }
 };
 
-export const getClassbyCode = async (code: string) => {
+export const getClassbyCode = cache(async (code: string) => {
   const session = await auth();
 
   if (!session?.user) {
@@ -136,7 +137,7 @@ export const getClassbyCode = async (code: string) => {
     console.error("Error fetching class by code:", error);
     return { status: "failed" };
   }
-};
+});
 
 export const joinClassUsingCode = async (code: string) => {
   const session = await auth();
