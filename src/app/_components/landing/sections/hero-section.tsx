@@ -39,7 +39,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-6 text-4xl font-medium tracking-tight text-foreground md:text-5xl lg:text-6xl"
+            className="font-display mt-6 text-4xl font-medium tracking-tight text-foreground md:text-5xl lg:text-6xl"
           >
             Simplify coding education with{" "}
             <span className="font-semibold">gradeIT</span>

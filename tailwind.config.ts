@@ -159,7 +159,7 @@ const config: Config = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
-        inter: ["var(--font-inter)", "sans-serif"],
+        display: ["var(--font-onest)", "sans-serif"],
       },
     },
   },

@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Maximize2, Minimize2, FileText } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { QuestionDescription } from "./question-description";
 import { ScoringWeightDistribution } from "./scoring-weight-distribution";
-import { CodeEditor } from "./code-editor";
 import { QuestionNav } from "./question-nav";
+
+const CodeEditor = dynamic(
+  () => import("./code-editor").then((mod) => ({ default: mod.CodeEditor })),
+  { ssr: false },
+);
 import { AssignmentById } from "@/lib/types/assignment-tyes";
 import { FullscreenAlert } from "./fullscreen-alert";
 import { CombinedTesting } from "./combined-testing-component";
