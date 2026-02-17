@@ -7,8 +7,8 @@ export const assignmentSchema = z.object({
   classCode: z.string().min(1, "Classroom ID is required"),
   copyPastePrevention: z.boolean(),
   fullScreenEnforcement: z.boolean(),
-  testCaseWeight: z.number().min(0).max(100).default(60),
-  metricsWeight: z.number().min(0).max(100).default(40),
+  testCaseWeight: z.number().min(0).max(100).default(100),
+  metricsWeight: z.number().min(0).max(100).default(0),
   metrics: z
     .array(
       z.object({

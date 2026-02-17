@@ -108,8 +108,8 @@ model Assignment {
   allowAutoEvaluation Boolean @default(true) //metric based evaluation
   
   // Scoring weights (as percentages, should add up to 100)
-  testCaseWeight Float @default(60.0)  // Default: 60% for test cases
-  metricsWeight  Float @default(40.0)  // Default: 40% for metrics
+  testCaseWeight Float @default(100.0) // 100% when no metrics; split when metrics exist
+  metricsWeight  Float @default(0.0)   // 0% when no metrics
   
   createdAt   DateTime  @default(now())
 }

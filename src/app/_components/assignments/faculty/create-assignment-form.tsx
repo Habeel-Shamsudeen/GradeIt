@@ -38,8 +38,8 @@ export function CreateAssignmentForm({
   const [fullScreenEnforcement, setFullScreenEnforcement] =
     useState<boolean>(false);
   const [metrics, setMetrics] = useState<EvaluationMetric[]>([]);
-  const [testCaseWeight, setTestCaseWeight] = useState(60);
-  const [metricsWeight, setMetricsWeight] = useState(40);
+  const [testCaseWeight, setTestCaseWeight] = useState(100);
+  const [metricsWeight, setMetricsWeight] = useState(0);
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: "1",

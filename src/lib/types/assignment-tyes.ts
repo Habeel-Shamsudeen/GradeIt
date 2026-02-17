@@ -34,6 +34,8 @@ export interface Assignment {
   copyPastePrevention: boolean;
   fullScreenEnforcement: boolean;
   metrics?: EvaluationMetric[];
+  testCaseWeight?: number;
+  metricsWeight?: number;
 }
 
 export interface AssignmentById extends Assignment {

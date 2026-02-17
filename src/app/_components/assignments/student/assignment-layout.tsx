@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Maximize2, Minimize2, FileText } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { QuestionDescription } from "./question-description";
+import { ScoringWeightDistribution } from "./scoring-weight-distribution";
 import { CodeEditor } from "./code-editor";
 import { QuestionNav } from "./question-nav";
 import { AssignmentById } from "@/lib/types/assignment-tyes";
@@ -86,6 +87,15 @@ export function AssignmentLayout({
 
           <div className="flex-1 overflow-y-auto p-6">
             <QuestionDescription question={currentQuestion} />
+            {assignment.metrics !== undefined &&
+              assignment.testCaseWeight !== undefined &&
+              assignment.metricsWeight !== undefined && (
+                <ScoringWeightDistribution
+                  testCaseWeight={assignment.testCaseWeight}
+                  metricsWeight={assignment.metricsWeight}
+                  metrics={assignment.metrics}
+                />
+              )}
           </div>
 
           <AnimatePresence>
