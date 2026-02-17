@@ -197,8 +197,8 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
       const finalScore = calculateFinalScore(
         codeSubmission.testCaseScore || 0,
         totalMetricScore,
-        submission.assignment.testCaseWeight || 60,
-        submission.assignment.metricsWeight || 40,
+        submission.assignment.testCaseWeight ?? 100,
+        submission.assignment.metricsWeight ?? 0,
       );
 
       await prisma.codeSubmission.update({
@@ -246,9 +246,9 @@ function calculateFinalScore(
   // Normalize weights to ensure they add up to 100
   const totalWeight = testCaseWeight + metricsWeight;
   const normalizedTestCaseWeight =
-    totalWeight > 0 ? testCaseWeight / totalWeight : 0.6;
+    totalWeight > 0 ? testCaseWeight / totalWeight : 1;
   const normalizedMetricsWeight =
-    totalWeight > 0 ? metricsWeight / totalWeight : 0.4;
+    totalWeight > 0 ? metricsWeight / totalWeight : 0;
 
   const finalScore =
     testCaseScore * normalizedTestCaseWeight +
@@ -333,8 +333,8 @@ export const updateStudentScore = async (
       const finalScore = calculateFinalScore(
         codeSubmission.testCaseScore || 0,
         totalMetricScore,
-        assignment.testCaseWeight || 60,
-        assignment.metricsWeight || 40,
+        assignment.testCaseWeight ?? 100,
+        assignment.metricsWeight ?? 0,
       );
 
       // Update code submission score

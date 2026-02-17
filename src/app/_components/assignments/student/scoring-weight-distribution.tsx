@@ -15,9 +15,8 @@ export function ScoringWeightDistribution({
   metricsWeight,
   metrics,
 }: ScoringWeightDistributionProps) {
-  if (metrics.length === 0 && testCaseWeight === 0) {
-    return null;
-  }
+  const hasMetrics = metrics.length > 0;
+  const effectiveTestCaseWeight = hasMetrics ? testCaseWeight : 100;
 
   return (
     <>
@@ -28,7 +27,9 @@ export function ScoringWeightDistribution({
           Scoring & weight distribution
         </h2>
         <p className="mb-4 text-sm text-muted-foreground">
-          Your score is split between test cases and evaluation metrics.
+          {hasMetrics
+            ? "Your score is split between test cases and evaluation metrics."
+            : "Your score is based entirely on passing test cases (hidden/sample tests)."}
         </p>
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-md bg-background/80 px-3 py-2 text-sm">
@@ -36,10 +37,10 @@ export function ScoringWeightDistribution({
               Test cases (passing hidden/sample tests)
             </span>
             <span className="tabular-nums text-muted-foreground">
-              {Math.round(testCaseWeight)}%
+              {Math.round(effectiveTestCaseWeight)}%
             </span>
           </div>
-          {metrics.length > 0 && (
+          {hasMetrics && (
             <div className="rounded-md bg-background/80 px-3 py-2 text-sm">
               <span className="font-medium text-foreground">
                 Evaluation metrics (total)

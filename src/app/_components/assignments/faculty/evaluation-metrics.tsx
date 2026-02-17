@@ -60,8 +60,8 @@ export function EvaluationMetrics({
   metrics,
   onMetricsChange,
   existingMetrics = [],
-  testCaseWeight = 60,
-  metricsWeight = 40,
+  testCaseWeight = 100,
+  metricsWeight = 0,
   onWeightageChange,
 }: EvaluationMetricsProps) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
