@@ -4,19 +4,21 @@ import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { AssignmentCard } from "./assignment-card";
 import { Button } from "@/app/_components/ui/button";
-import { Role } from "@prisma/client";
+import { Role } from "@/app/generated/prisma/client";
 import { Assignment } from "@/lib/types/assignment-tyes";
 
 interface AssignmentListProps {
   classCode: string;
   role: Role;
   assignments: Assignment[];
+  upcomingAssignments?: Assignment[];
 }
 
 export function AssignmentList({
   classCode,
   role,
   assignments,
+  upcomingAssignments = [],
 }: AssignmentListProps) {
   const router = useRouter();
   const handleCreateAssignment = () => {
@@ -38,8 +40,32 @@ export function AssignmentList({
         )}
       </div>
 
+      {upcomingAssignments.length > 0 && (
+        <div className="mb-8">
+          <h3 className="mb-3 text-sm font-medium text-muted-foreground">
+            Upcoming
+          </h3>
+          <div className="grid gap-4">
+            {upcomingAssignments.map((assignment, index) => (
+              <motion.div
+                key={assignment.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: index * 0.05 }}
+              >
+                <AssignmentCard
+                  assignment={assignment}
+                  classCode={classCode}
+                  isUpcomingPreview
+                />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid gap-4">
-        {assignments.length === 0 ? (
+        {assignments.length === 0 && upcomingAssignments.length === 0 ? (
           <div className="flex h-40 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center">
             <p className="text-muted-foreground">No assignments yet.</p>
             {role === "FACULTY" && (

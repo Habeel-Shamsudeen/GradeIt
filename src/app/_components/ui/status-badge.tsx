@@ -1,5 +1,5 @@
 import { Badge } from "./badge";
-import { SubmissionStatus } from "@prisma/client";
+import { SubmissionStatus } from "@/app/generated/prisma/client";
 
 interface StatusBadgeProps {
   status: SubmissionStatus | string;

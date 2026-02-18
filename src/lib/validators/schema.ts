@@ -4,6 +4,8 @@ export const assignmentSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   dueDate: z.string().optional(),
+  startDate: z.string().optional(),
+  allowLateSubmission: z.boolean().default(true),
   classCode: z.string().min(1, "Classroom ID is required"),
   copyPastePrevention: z.boolean(),
   fullScreenEnforcement: z.boolean(),
@@ -36,3 +38,9 @@ export const assignmentSchema = z.object({
 });
 
 export type AssignmentSchema = z.infer<typeof assignmentSchema>;
+
+export const assignmentUpdateSchema = assignmentSchema
+  .omit({ classCode: true })
+  .extend({ assignmentId: z.string().min(1, "Assignment ID is required") });
+
+export type AssignmentUpdateSchema = z.infer<typeof assignmentUpdateSchema>;

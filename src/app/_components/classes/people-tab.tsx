@@ -18,7 +18,7 @@ import {
 } from "@/app/_components/ui/dropdown-menu";
 import { Members } from "@/lib/types/class-types";
 import InvitePeopleDialog from "./Invite-dialog";
-import { Role } from "@prisma/client";
+import { Role } from "@/app/generated/prisma/client";
 import { removeStudentFromClass } from "@/server/actions/class-actions";
 import { toast } from "sonner";
 

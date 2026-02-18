@@ -4,7 +4,7 @@ import {
   TestCaseStatus,
   SubmissionStatus,
   CodeEvaluationStatus,
-} from "@prisma/client";
+} from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
 // import { pollJudge0Submissions } from "@/server/actions/submission-actions";

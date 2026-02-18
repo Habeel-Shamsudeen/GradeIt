@@ -10,7 +10,7 @@ import { Button } from "@/app/_components/ui/button";
 import { useTheme } from "next-themes";
 import { getCardBgColor } from "@/lib/utils";
 import { UserClassroom } from "@/lib/types/class-types";
-import { Role } from "@prisma/client";
+import { Role } from "@/app/generated/prisma/client";
 import { ClassGridSkeleton } from "./skeleton/class-grid-skeleton";
 
 export function ClassGrid({
