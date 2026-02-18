@@ -5,7 +5,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/app/_components/ui/sidebar";
-import { Moon02Icon, Sun01Icon } from "hugeicons-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
@@ -36,9 +36,9 @@ export function ThemeToggleTxt() {
           className="w-full group-data-[collapsible=icon]:justify-center"
         >
           {theme === "light" ? (
-            <Moon02Icon className="h-5 w-5" />
+            <Moon className="h-5 w-5" />
           ) : (
-            <Sun01Icon className="h-5 w-5" />
+            <Sun className="h-5 w-5" />
           )}
           <div className="ml-2 flex-1 text-left text-sm font-medium group-data-[collapsible=icon]:hidden">
             <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>

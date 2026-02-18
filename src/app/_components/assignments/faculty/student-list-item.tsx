@@ -9,7 +9,7 @@ import {
 import { Button } from "@/app/_components/ui/button";
 import { StatusBadge } from "@/app/_components/ui/status-badge";
 import { StudentProgress } from "@/lib/types/assignment-tyes";
-import { SubmissionStatus } from "@/app/generated/prisma/client";
+import { SubmissionStatus } from "@/app/generated/prisma/enums";
 import { setStudentCookie } from "@/server/actions/utility-actions";
 
 interface StudentListItemProps {

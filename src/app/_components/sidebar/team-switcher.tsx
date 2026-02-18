@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { PlusSignIcon, UnfoldMoreIcon } from "hugeicons-react";
+import { ChevronsUpDown, Plus } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -50,7 +50,7 @@ export function TeamSwitcher({
                 </span>
                 <span className="truncate text-xs">{activeTeam.plan}</span>
               </div>
-              <UnfoldMoreIcon type="sharp" className="ml-auto h-4" />
+              <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -78,7 +78,7 @@ export function TeamSwitcher({
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2">
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <PlusSignIcon className="size-4" />
+                <Plus className="size-4" />
               </div>
               <div className="font-medium text-muted-foreground">
                 Add New Project

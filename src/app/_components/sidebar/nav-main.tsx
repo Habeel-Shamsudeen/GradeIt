@@ -15,7 +15,7 @@ import {
   SidebarMenuSubItem,
 } from "@/app/_components/ui/sidebar";
 import { getIconComponent } from "@/config/icons";
-import { ArrowRight01Icon } from "hugeicons-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -63,11 +63,13 @@ export function NavMain({
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton tooltip={item.title}>
-                      {item.icon && <IconComponent size={20} />}
+                      {item.icon && (
+                        <IconComponent className="size-5 shrink-0" />
+                      )}
                       <span className="ml-1 text-sm font-medium">
                         {item.title}
                       </span>
-                      <ArrowRight01Icon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                      <ChevronRight className="ml-auto size-5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
@@ -101,7 +103,7 @@ export function NavMain({
                   onClick={() => setActiveItem(item.url)}
                 >
                   <Link href={item.url}>
-                    {item.icon && <IconComponent size={20} />}
+                    {item.icon && <IconComponent className="size-5 shrink-0" />}
                     <span className="ml-1 text-sm font-medium">
                       {item.title}
                     </span>

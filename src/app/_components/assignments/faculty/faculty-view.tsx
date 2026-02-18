@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SubmissionStatus } from "@/app/generated/prisma/client";
+import { SubmissionStatus } from "@/app/generated/prisma/enums";
 import { AssignmentById, StudentProgress } from "@/lib/types/assignment-tyes";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
 

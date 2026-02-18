@@ -24,7 +24,7 @@ import {
   useSidebar,
 } from "@/app/_components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { Settings01Icon, UnfoldMoreIcon } from "hugeicons-react";
+import { ChevronsUpDown, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 
@@ -65,10 +65,7 @@ const NavUser = memo(function NavUser({
                   {user.email}
                 </span>
               </div>
-              <UnfoldMoreIcon
-                type="sharp"
-                className="ml-auto size-4 group-data-[collapsible=icon]:hidden"
-              />
+              <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -97,7 +94,7 @@ const NavUser = memo(function NavUser({
             <DropdownMenuGroup>
               <a href="/settings">
                 <DropdownMenuItem>
-                  <Settings01Icon />
+                  <Settings className="size-4" />
                   Settings
                 </DropdownMenuItem>
               </a>

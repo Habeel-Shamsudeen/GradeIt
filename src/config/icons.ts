@@ -1,30 +1,30 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import {
-  HugeiconsIcon,
-  UserAccountIcon,
-  SchoolIcon,
-  CalculatorIcon,
-  Atom01Icon,
-  TestTube01Icon,
-  Chemistry01Icon,
-  UniversityIcon,
-  LibrariesIcon,
-  Notebook01Icon,
-} from "hugeicons-react";
+  UserCircle,
+  School,
+  Calculator,
+  Atom,
+  TestTube,
+  FlaskConical,
+  GraduationCap,
+  Library,
+  BookOpen,
+} from "lucide-react";
 
-const iconComponentMap: Record<string, HugeiconsIcon> = {
-  CalculatorIcon: CalculatorIcon as HugeiconsIcon,
-  Atom01Icon: Atom01Icon as HugeiconsIcon,
-  TestTubeIcon: TestTube01Icon as HugeiconsIcon,
-  Chemistry01Icon: Chemistry01Icon as HugeiconsIcon,
-  SchoolIcon: SchoolIcon as HugeiconsIcon,
-  UniversityIcon: UniversityIcon as HugeiconsIcon,
-  LibraryIcon: LibrariesIcon as HugeiconsIcon,
-  NotebookIcon: Notebook01Icon as HugeiconsIcon,
-  UserAccountIcon: UserAccountIcon as HugeiconsIcon,
+const iconComponentMap: Record<string, LucideIcon> = {
+  CalculatorIcon: Calculator,
+  Atom01Icon: Atom,
+  TestTubeIcon: TestTube,
+  Chemistry01Icon: FlaskConical,
+  SchoolIcon: School,
+  UniversityIcon: GraduationCap,
+  LibraryIcon: Library,
+  NotebookIcon: BookOpen,
+  UserAccountIcon: UserCircle,
 };
 
-export const getIconComponent = (iconName: string): HugeiconsIcon => {
-  return iconComponentMap[iconName];
+export const getIconComponent = (iconName: string): LucideIcon => {
+  return iconComponentMap[iconName] ?? UserCircle;
 };

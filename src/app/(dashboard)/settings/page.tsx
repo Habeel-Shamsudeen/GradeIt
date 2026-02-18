@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/_components/ui/tabs-modified";
-import { UserAccountIcon } from "hugeicons-react";
+import { UserCircle } from "lucide-react";
 import { Suspense } from "react";
 import { SettingsFormSkeleton } from "./profile/Skeleton";
 // import DeleteAccount from './profile/DeleteAccount';
@@ -28,7 +28,7 @@ export default async function Settings() {
             value="profile"
             className="text-main-600 border-b-2 border-transparent data-[state=active]:border-main-700 data-[state=active]:text-main-700"
           >
-            <UserAccountIcon className="h-5 w-5" />
+            <UserCircle className="h-5 w-5" />
             Profile
           </TabsTrigger>
         </TabsList>

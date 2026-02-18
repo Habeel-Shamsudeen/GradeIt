@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/_components/ui/dialog-modified";
-import { Rocket01Icon } from "hugeicons-react";
+import { Rocket } from "lucide-react";
 import OnboardingInitiator from "./initiator";
 import { useState } from "react";
 
@@ -30,7 +30,7 @@ export default function OnboardingPopup() {
       >
         <DialogHeader>
           <DialogTitle>
-            <Rocket01Icon className="mx-auto h-12 w-12 text-primary" />
+            <Rocket className="mx-auto h-12 w-12 text-primary" />
           </DialogTitle>
         </DialogHeader>
         <OnboardingInitiator onClose={handleCloseDialog} />
