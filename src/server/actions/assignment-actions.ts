@@ -10,6 +10,7 @@ import {
   type AssignmentUpdateSchema,
 } from "@/lib/validators/schema";
 import { revalidatePath } from "next/cache";
+import { getClassbyCode } from "./class-actions";
 import { getClassIdFromCode } from "./utility-actions";
 import { Role, SubmissionStatus } from "@/app/generated/prisma/client";
 import { GradingTableHeaderResponse } from "@/lib/types/assignment-tyes";
@@ -381,6 +382,39 @@ export const getAssignments = async (
     };
   } catch (error) {
     return { status: "failed", message: error };
+  }
+};
+
+const SIDEBAR_ASSIGNMENTS_LIMIT = 10;
+
+export const getAssignmentsByClassCode = async (classCode: string) => {
+  const session = await auth();
+  if (!session?.user) {
+    return { status: "failed" as const, assignments: [], className: null };
+  }
+  try {
+    const classResult = await getClassbyCode(classCode);
+    if (classResult.status !== "success" || !classResult.classroom) {
+      return { status: "failed" as const, assignments: [], className: null };
+    }
+    const result = await getAssignments(
+      classResult.classroom.id,
+      session.user.role ?? null,
+    );
+    if (result.status !== "success") {
+      return { status: "failed" as const, assignments: [], className: null };
+    }
+    const list = (result.assignments ?? [])
+      .slice(0, SIDEBAR_ASSIGNMENTS_LIMIT)
+      .map((a) => ({ id: a.id, title: a.title }));
+    return {
+      status: "success" as const,
+      assignments: list,
+      className: classResult.classroom.name,
+    };
+  } catch (error) {
+    console.error("Error fetching assignments by class code:", error);
+    return { status: "failed" as const, assignments: [], className: null };
   }
 };
 

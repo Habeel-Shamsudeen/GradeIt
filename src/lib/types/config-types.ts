@@ -3,6 +3,7 @@ export interface NavGroupInterface {
   url: string;
   icon: string;
   isActive: boolean;
+  items?: { title: string; url: string }[];
 }
 
 export interface WebhookPayload {

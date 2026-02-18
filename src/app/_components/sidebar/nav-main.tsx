@@ -17,7 +17,7 @@ import {
 import { getIconComponent } from "@/config/icons";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function NavMain({
@@ -37,11 +37,20 @@ export function NavMain({
   label?: string;
 }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [activeItem, setActiveItem] = useState<string>(pathname);
 
+  const currentUrl =
+    pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+
   useEffect(() => {
-    setActiveItem(pathname);
-  }, [pathname]);
+    setActiveItem(currentUrl);
+  }, [currentUrl]);
+
+  const isClassActive = (itemUrl: string) => {
+    const base = itemUrl.split("?")[0];
+    return pathname === base || pathname.startsWith(`${base}/`);
+  };
 
   return (
     <>
@@ -57,12 +66,15 @@ export function NavMain({
             return item.items?.length ? (
               <Collapsible
                 key={item.title}
-                defaultOpen
+                defaultOpen={isClassActive(item.url)}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title}>
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      isActive={isClassActive(item.url)}
+                    >
                       {item.icon && (
                         <IconComponent className="size-5 shrink-0" />
                       )}
@@ -79,7 +91,7 @@ export function NavMain({
                           <SidebarMenuButton
                             asChild
                             tooltip={subItem.title}
-                            isActive={activeItem === subItem.url}
+                            isActive={currentUrl === subItem.url}
                             onClick={() => setActiveItem(subItem.url)}
                           >
                             <Link href={subItem.url}>
@@ -98,7 +110,7 @@ export function NavMain({
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   asChild
-                  isActive={activeItem === item.url}
+                  isActive={pathname === item.url}
                   tooltip={item.title}
                   onClick={() => setActiveItem(item.url)}
                 >

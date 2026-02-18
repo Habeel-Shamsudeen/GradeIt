@@ -7,12 +7,14 @@ interface useCodeRunnerParams {
   language: string;
   questionId: string;
   input?: string;
+  onSubmitComplete?: (passed: boolean) => void;
 }
 export function useCodeRunner({
   code,
   language,
   questionId,
   input,
+  onSubmitComplete,
 }: useCodeRunnerParams) {
   const [isRunning, setIsRunning] = useState(false);
   const [codeStatus, setCodeStatus] = useState<string>("");
@@ -145,8 +147,10 @@ export function useCodeRunner({
           submissionData.status === "LLM_EVALUATION_FAILED"
         ) {
           completed = true;
+          const passed = submissionData.status === "EVALUATION_COMPLETE";
+          onSubmitComplete?.(passed);
 
-          if (submissionData.status === "EVALUATION_COMPLETE") {
+          if (passed) {
             setCodeStatus("All tests passed successfully!");
             toast.success("Your solution passed all test cases");
           } else {

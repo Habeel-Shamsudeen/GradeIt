@@ -45,6 +45,22 @@ export function CombinedTesting({
   const [isExpanded, setIsExpanded] = useState(true);
   const filteredResults = results.filter((result) => !result.hidden);
 
+  const hasRunning = filteredResults.some((r) => r?.status === "running");
+  const passedCount = filteredResults.filter(
+    (r) => r?.status === "passed",
+  ).length;
+  const failedCount = filteredResults.filter(
+    (r) => r?.status === "failed",
+  ).length;
+  const total = filteredResults.length;
+  const summaryText = hasRunning
+    ? "Running…"
+    : total > 0
+      ? failedCount > 0
+        ? `${passedCount}/${total} passed`
+        : `${total}/${total} passed`
+      : null;
+
   return (
     <div className="border-t border-border bg-background flex flex-col min-h-0 shrink-0">
       <div className="flex justify-between items-center border-b border-border bg-background px-4 py-3 shrink-0">
@@ -55,6 +71,11 @@ export function CombinedTesting({
           aria-expanded={isExpanded}
         >
           <h3>Test Results</h3>
+          {!isExpanded && summaryText && (
+            <span className="text-xs font-normal text-muted-foreground">
+              {summaryText}
+            </span>
+          )}
           {isExpanded ? (
             <ChevronUp className="h-4 w-4 text-muted-foreground" />
           ) : (

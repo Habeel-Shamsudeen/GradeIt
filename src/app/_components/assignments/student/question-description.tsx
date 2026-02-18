@@ -5,15 +5,23 @@ import { Question } from "@/lib/types/assignment-tyes";
 
 interface QuestionDescriptionProps {
   question: Question;
+  hideTitle?: boolean;
 }
 
-export function QuestionDescription({ question }: QuestionDescriptionProps) {
+export function QuestionDescription({
+  question,
+  hideTitle = false,
+}: QuestionDescriptionProps) {
   return (
     <div className="prose prose-slate max-w-none">
-      <div className="flex items-center justify-between">
-        <h1 className="m-0 text-2xl font-medium">{question.title}</h1>
-      </div>
-      <Separator className="my-4" />
+      {!hideTitle && (
+        <>
+          <div className="flex items-center justify-between">
+            <h1 className="m-0 text-2xl font-medium">{question.title}</h1>
+          </div>
+          <Separator className="my-4" />
+        </>
+      )}
 
       <div className="[&>h2]:text-lg [&>h2]:font-medium [&>p]:text-muted-foreground [&>pre]:bg-muted [&>pre]:p-4 [&>pre]:rounded-lg">
         <div dangerouslySetInnerHTML={{ __html: question.description }} />

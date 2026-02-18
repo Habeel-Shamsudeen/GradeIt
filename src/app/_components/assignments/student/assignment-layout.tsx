@@ -3,8 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Maximize2, Minimize2, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/app/_components/ui/resizable";
 import { QuestionDescription } from "./question-description";
 import { ScoringWeightDistribution } from "./scoring-weight-distribution";
 import { QuestionNav } from "./question-nav";
@@ -29,7 +34,6 @@ export function AssignmentLayout({
   classCode,
 }: AssignmentLayoutProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isEditorFullscreen, setIsEditorFullscreen] = useState(false);
   const [code, setCode] = useState("");
   const [customInput, setCustomInput] = useState("");
@@ -48,6 +52,7 @@ export function AssignmentLayout({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isEditorFullscreen, exitEditorFullscreen]);
+
   const currentQuestion = assignment.questions[currentQuestionIndex];
   const { isRunning, codeStatus, testResults, runCode, submitCode } =
     useCodeRunner({
@@ -59,123 +64,102 @@ export function AssignmentLayout({
 
   const showFullscreenAlert = assignment.fullScreenEnforcement && !isFullscreen;
 
+  const leftPanelContent = (
+    <>
+      <div className="flex items-center justify-between overflow-x-auto border-b border-border px-4 py-2">
+        <QuestionNav
+          questions={assignment.questions}
+          currentIndex={currentQuestionIndex}
+          onSelect={setCurrentQuestionIndex}
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 border-border"
+          onClick={() =>
+            (window.location.href = `/classes/${classCode}/${assignment.id}/submissions`)
+          }
+        >
+          <FileText className="h-4 w-4" />
+          <span>Submissions</span>
+        </Button>
+      </div>
+
+      <div className="flex-1 min-h-0 overflow-y-auto p-6">
+        <QuestionDescription question={currentQuestion} />
+        {assignment.metrics !== undefined &&
+          assignment.testCaseWeight !== undefined &&
+          assignment.metricsWeight !== undefined && (
+            <ScoringWeightDistribution
+              testCaseWeight={assignment.testCaseWeight}
+              metricsWeight={assignment.metricsWeight}
+              metrics={assignment.metrics}
+            />
+          )}
+      </div>
+    </>
+  );
+
+  const rightPanelContent = !isEditorFullscreen && (
+    <>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <CodeEditor
+          code={code}
+          onChange={setCode}
+          language={currentQuestion.language}
+          onRun={runCode}
+          onSubmit={submitCode}
+          isRunning={isRunning}
+          disableCopyPaste={assignment.copyPastePrevention}
+          onFullscreenToggle={() => setIsEditorFullscreen(true)}
+          isFullscreen={false}
+        />
+      </div>
+      <div className="shrink-0 border-t border-border">
+        <CombinedTesting
+          results={testResults}
+          customInput={customInput}
+          onCustomInputChange={setCustomInput}
+          onRunCode={runCode}
+          isRunning={isRunning}
+          codeStatus={codeStatus}
+        />
+      </div>
+    </>
+  );
+
   return (
     <>
       {showFullscreenAlert && <FullscreenAlert />}
-      <div className="flex h-[calc(100vh-5rem)] overflow-hidden">
-        {/* Left Panel */}
-        <motion.div
-          initial={false}
-          animate={{
-            width: isDescriptionExpanded ? "100%" : "40%",
-          }}
-          transition={{ duration: 0.2 }}
-          className="relative flex h-full flex-col border-r border-border"
-        >
-          <div className="flex items-center justify-between overflow-x-auto border-b border-border px-4 py-2">
-            <QuestionNav
-              questions={assignment.questions}
-              currentIndex={currentQuestionIndex}
-              onSelect={setCurrentQuestionIndex}
-            />
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 border-border"
-                onClick={() =>
-                  (window.location.href = `/classes/${classCode}/${assignment.id}/submissions`)
-                }
-              >
-                <FileText className="h-4 w-4" />
-                <span>Submissions</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                className="h-8 w-8 rounded-full"
-              >
-                {isDescriptionExpanded ? (
-                  <Minimize2 className="h-4 w-4" />
-                ) : (
-                  <Maximize2 className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-6">
-            <QuestionDescription question={currentQuestion} />
-            {assignment.metrics !== undefined &&
-              assignment.testCaseWeight !== undefined &&
-              assignment.metricsWeight !== undefined && (
-                <ScoringWeightDistribution
-                  testCaseWeight={assignment.testCaseWeight}
-                  metricsWeight={assignment.metricsWeight}
-                  metrics={assignment.metrics}
-                />
-              )}
-          </div>
-
-          <AnimatePresence>
-            {!isDescriptionExpanded && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute -right-6 top-1/2 z-10"
-              >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsDescriptionExpanded(true)}
-                  className="h-12 w-12 rounded-full bg-background shadow-md hover:shadow-xl hover:bg-muted transition"
-                >
-                  <ChevronRight className="h-4 w-4 text-foreground" />
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* Right Panel */}
-        <AnimatePresence>
-          {!isDescriptionExpanded && !isEditorFullscreen && (
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: "60%" }}
-              exit={{ width: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex h-full flex-col bg-background min-h-0"
+      <div className="flex h-[calc(100vh-5rem)] w-full min-w-0 flex-1 overflow-hidden">
+        {!isEditorFullscreen && (
+          <ResizablePanelGroup
+            id="assignment-panels"
+            orientation="horizontal"
+            className="h-full min-h-0 w-full min-w-0"
+            style={{ minWidth: 0 }}
+          >
+            <ResizablePanel
+              id="problem"
+              defaultSize="40%"
+              minSize="25%"
+              maxSize="75%"
+              className="relative flex flex-col border-r border-border min-w-0"
             >
-              <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-                <CodeEditor
-                  code={code}
-                  onChange={setCode}
-                  language={currentQuestion.language}
-                  onRun={runCode}
-                  onSubmit={submitCode}
-                  isRunning={isRunning}
-                  disableCopyPaste={assignment.copyPastePrevention}
-                  onFullscreenToggle={() => setIsEditorFullscreen(true)}
-                  isFullscreen={false}
-                />
-              </div>
-
-              <div className="shrink-0 border-t border-border">
-                <CombinedTesting
-                  results={testResults}
-                  customInput={customInput}
-                  onCustomInputChange={setCustomInput}
-                  onRunCode={runCode}
-                  isRunning={isRunning}
-                  codeStatus={codeStatus}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {leftPanelContent}
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel
+              id="editor"
+              defaultSize="60%"
+              minSize="25%"
+              maxSize="75%"
+              className="flex flex-col bg-background min-h-0 min-w-0"
+            >
+              {rightPanelContent}
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        )}
       </div>
 
       {/* Fullscreen code editor overlay */}

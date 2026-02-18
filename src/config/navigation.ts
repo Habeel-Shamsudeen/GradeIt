@@ -21,6 +21,14 @@ export const getNavigationConfig = cache(
           url: `/classes/${classroom.code}`,
           icon: iconMap[classroom.code] || "UserAccountIcon",
           isActive: false,
+          items: [
+            { title: "Assignments", url: `/classes/${classroom.code}` },
+            { title: "People", url: `/classes/${classroom.code}?tab=people` },
+            {
+              title: "Settings",
+              url: `/classes/${classroom.code}?tab=settings`,
+            },
+          ],
         })),
       };
     } catch (error) {
