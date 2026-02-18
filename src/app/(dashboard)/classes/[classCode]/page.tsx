@@ -17,28 +17,44 @@ import {
 import { getUserRole } from "@/server/actions/user-actions";
 import { getAssignments } from "@/server/actions/assignment-actions";
 
-export const metadata: Metadata = {
-  title: "Class Details | gradeIT",
-  description: "View and manage assignments for this class",
+type ClassPageProps = {
+  params: Promise<{ classCode: string }>;
+  searchParams: Promise<{ tab?: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: ClassPageProps): Promise<Metadata> {
+  const { classCode } = await params;
+  const { classroom } = await getClassbyCode(classCode);
+  if (!classroom) {
+    return { title: "Class Not Found | gradeIT" };
+  }
+  return {
+    title: `${classroom.name} | gradeIT`,
+    description: `View and manage assignments for ${classroom.name}`,
+  };
+}
 
 export default async function ClassPage({
   params,
   searchParams,
-}: {
-  params: Promise<{ classCode: string }>;
-  searchParams: Promise<{ tab?: string }>;
-}) {
+}: ClassPageProps) {
   const { classCode } = await params;
   const { tab } = await searchParams;
-  const { classroom } = await getClassbyCode(classCode);
-  const { role } = await getUserRole();
-  const { assignments } = await getAssignments(classroom?.id || "");
-  const { teachers, students } = await getMembersByClassId(classCode);
+  const [{ classroom }, { role }] = await Promise.all([
+    getClassbyCode(classCode),
+    getUserRole(),
+  ]);
 
   if (!classroom) {
     return notFound();
   }
+
+  const [{ assignments }, { teachers, students }] = await Promise.all([
+    getAssignments(classroom.id),
+    getMembersByClassId(classCode),
+  ]);
 
   const validTabs = ["assignments", "people", "settings"];
   const activeTab = tab && validTabs.includes(tab) ? tab : "assignments";

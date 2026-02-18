@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { assignmentSchema, AssignmentSchema } from "@/lib/validators/schema";
@@ -161,7 +162,7 @@ export const getAssignments = async (classroomId: string) => {
   }
 };
 
-export const getAssignmentById = async (assignmentId: string) => {
+export const getAssignmentById = cache(async (assignmentId: string) => {
   const session = await auth();
   if (!session?.user) {
     throw new Error("Unauthorized");
@@ -227,7 +228,7 @@ export const getAssignmentById = async (assignmentId: string) => {
   } catch (error) {
     throw new Error("Failed to get assignment " + error);
   }
-};
+});
 
 export const getAssignmentGradingTableHeader = async (
   assignmentId: string,

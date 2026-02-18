@@ -18,12 +18,13 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const sessionData = await auth();
-  const { navGroups } = await getNavigationConfig();
-  let isoOnboarded = false;
-  if (sessionData?.user) {
-    isoOnboarded = await isUserOnboarded(sessionData.user.id);
-  }
+  const [sessionData, { navGroups }] = await Promise.all([
+    auth(),
+    getNavigationConfig(),
+  ]);
+  const isoOnboarded = sessionData?.user
+    ? await isUserOnboarded(sessionData.user.id)
+    : false;
 
   return (
     <>

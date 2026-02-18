@@ -102,6 +102,7 @@ export function Carousel({
                 src={images[currentIndex].src}
                 width={images[currentIndex].width}
                 height={images[currentIndex].height}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                 alt={images[currentIndex].alt}
                 className="h-full w-full object-cover"
                 priority={currentIndex === 0}
@@ -112,6 +113,7 @@ export function Carousel({
               src={images[currentIndex].src}
               width={images[currentIndex].width}
               height={images[currentIndex].height}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               alt={images[currentIndex].alt}
               className="h-full w-full object-cover"
               priority={currentIndex === 0}
