@@ -28,6 +28,8 @@ export interface Assignment {
   title: string;
   description?: string;
   dueDate: Date | null;
+  startDate: Date | null;
+  allowLateSubmission: boolean;
   createdAt: Date;
   questionCount: number;
   submissionCount: number;

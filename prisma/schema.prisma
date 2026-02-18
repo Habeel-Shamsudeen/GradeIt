@@ -99,7 +99,7 @@ model Assignment {
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   questions   Question[]
   DueDate     DateTime? 
-  startDate   DateTime? 
+  startDate   DateTime @default(now())
   metrics AssignmentMetric[]
   submissions Submission[]
   copyPastePrevention   Boolean @default(false)

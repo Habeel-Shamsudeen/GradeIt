@@ -51,10 +51,19 @@ export default async function ClassPage({
     return notFound();
   }
 
-  const [{ assignments }, { teachers, students }] = await Promise.all([
-    getAssignments(classroom.id),
+  const [assignmentsResult, { teachers, students }] = await Promise.all([
+    getAssignments(classroom.id, role ?? undefined),
     getMembersByClassId(classCode),
   ]);
+
+  const assignments =
+    assignmentsResult.status === "success"
+      ? (assignmentsResult.assignments ?? [])
+      : [];
+  const upcomingAssignments =
+    assignmentsResult.status === "success"
+      ? (assignmentsResult.upcomingAssignments ?? [])
+      : [];
 
   const validTabs = ["assignments", "people", "settings"];
   const activeTab = tab && validTabs.includes(tab) ? tab : "assignments";
@@ -74,7 +83,8 @@ export default async function ClassPage({
             <AssignmentList
               classCode={classCode}
               role={role || "STUDENT"}
-              assignments={assignments || []}
+              assignments={assignments}
+              upcomingAssignments={upcomingAssignments}
             />
           </TabsContent>
 

@@ -15,47 +15,129 @@ import {
   ExistingMetric,
   type EvaluationMetric,
 } from "./evaluation-metrics";
-import { createAssignment } from "@/server/actions/assignment-actions";
-import { Question } from "@/lib/types/assignment-tyes";
+import {
+  createAssignment,
+  updateAssignment,
+} from "@/server/actions/assignment-actions";
+import { AssignmentById, Question } from "@/lib/types/assignment-tyes";
 import { toast } from "sonner";
 import { Switch } from "../../ui/switch";
+
+function toDateTimeLocal(d: Date | null): string {
+  if (!d) return "";
+  const date = new Date(d);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const h = String(date.getHours()).padStart(2, "0");
+  const min = String(date.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${day}T${h}:${min}`;
+}
+
+function mapAssignmentToFormState(data: AssignmentById) {
+  const questions: Question[] = data.questions.map((q, i) => ({
+    id: String((q as { id?: string }).id ?? i + 1),
+    title: q.title,
+    description: q.description,
+    language: q.language,
+    testCases: (
+      q as {
+        testCases?: {
+          id: string;
+          input: string;
+          expectedOutput: string;
+          hidden: boolean;
+        }[];
+      }
+    ).testCases?.map((tc, j) => ({
+      id: tc?.id ?? String(j + 1),
+      input: tc.input,
+      expectedOutput: tc.expectedOutput,
+      hidden: tc.hidden,
+    })) ?? [{ id: "1", input: "", expectedOutput: "", hidden: false }],
+  }));
+  return {
+    title: data.title,
+    description: data.description ?? "",
+    dueDate: toDateTimeLocal(data.dueDate),
+    startDate: toDateTimeLocal(data.startDate ?? null),
+    allowLateSubmission: data.allowLateSubmission ?? true,
+    copyPastePrevention: data.copyPastePrevention ?? false,
+    fullScreenEnforcement: data.fullScreenEnforcement ?? false,
+    metrics: data.metrics ?? [],
+    testCaseWeight: data.testCaseWeight ?? 100,
+    metricsWeight: data.metricsWeight ?? 0,
+    questions:
+      questions.length > 0
+        ? questions
+        : [
+            {
+              id: "1",
+              title: "",
+              description: "",
+              language: "Python",
+              testCases: [
+                { id: "1", input: "", expectedOutput: "", hidden: false },
+              ],
+            },
+          ],
+  };
+}
+
+const defaultQuestions: Question[] = [
+  {
+    id: "1",
+    title: "",
+    description: "",
+    language: "Python",
+    testCases: [{ id: "1", input: "", expectedOutput: "", hidden: false }],
+  },
+];
 
 interface CreateAssignmentFormProps {
   classCode: string;
   existingMetrics: ExistingMetric[];
+  mode?: "create" | "edit";
+  assignmentId?: string;
+  initialData?: AssignmentById;
 }
 
 export function CreateAssignmentForm({
   classCode,
   existingMetrics,
+  mode = "create",
+  assignmentId,
+  initialData,
 }: CreateAssignmentFormProps) {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [copyPastePrevention, setCopypasteprevention] =
-    useState<boolean>(false);
-  const [fullScreenEnforcement, setFullScreenEnforcement] =
-    useState<boolean>(false);
-  const [metrics, setMetrics] = useState<EvaluationMetric[]>([]);
-  const [testCaseWeight, setTestCaseWeight] = useState(100);
-  const [metricsWeight, setMetricsWeight] = useState(0);
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: "1",
-      title: "",
-      description: "",
-      language: "Python",
-      testCases: [
-        {
-          id: "1",
-          input: "",
-          expectedOutput: "",
-          hidden: false,
-        },
-      ],
-    },
-  ]);
+  const isEdit = mode === "edit" && assignmentId && initialData;
+  const initial = isEdit ? mapAssignmentToFormState(initialData) : null;
+
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [dueDate, setDueDate] = useState(initial?.dueDate ?? "");
+  const [startDate, setStartDate] = useState(initial?.startDate ?? "");
+  const [allowLateSubmission, setAllowLateSubmission] = useState(
+    initial?.allowLateSubmission ?? true,
+  );
+  const [copyPastePrevention, setCopypasteprevention] = useState(
+    initial?.copyPastePrevention ?? false,
+  );
+  const [fullScreenEnforcement, setFullScreenEnforcement] = useState(
+    initial?.fullScreenEnforcement ?? false,
+  );
+  const [metrics, setMetrics] = useState<EvaluationMetric[]>(
+    initial?.metrics ?? [],
+  );
+  const [testCaseWeight, setTestCaseWeight] = useState(
+    initial?.testCaseWeight ?? 100,
+  );
+  const [metricsWeight, setMetricsWeight] = useState(
+    initial?.metricsWeight ?? 0,
+  );
+  const [questions, setQuestions] = useState<Question[]>(
+    initial?.questions ?? defaultQuestions,
+  );
   const [loading, setLoading] = useState(false);
 
   const handleWeightageChange = (
@@ -70,28 +152,52 @@ export function CreateAssignmentForm({
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await createAssignment({
-        title,
-        description,
-        dueDate,
-        classCode,
-        questions,
-        copyPastePrevention,
-        fullScreenEnforcement,
-        testCaseWeight,
-        metricsWeight,
-        metrics,
-      });
-
-      if (response.status === "success") {
-        toast.success("Assignment created successfully!");
-        router.push(`/classes/${classCode}`);
+      if (isEdit && assignmentId) {
+        const response = await updateAssignment({
+          assignmentId,
+          title,
+          description,
+          dueDate,
+          startDate: startDate || undefined,
+          allowLateSubmission,
+          questions,
+          copyPastePrevention,
+          fullScreenEnforcement,
+          testCaseWeight,
+          metricsWeight,
+          metrics,
+        });
+        if (response.status === "success") {
+          toast.success("Assignment updated successfully!");
+          router.push(`/classes/${classCode}/${assignmentId}`);
+        } else {
+          toast.warning(response.message ?? "Failed to update assignment");
+        }
       } else {
-        console.error(response.message);
-        toast.warning("Failed to create assignment");
+        const response = await createAssignment({
+          title,
+          description,
+          dueDate,
+          startDate: startDate || undefined,
+          allowLateSubmission,
+          classCode,
+          questions,
+          copyPastePrevention,
+          fullScreenEnforcement,
+          testCaseWeight,
+          metricsWeight,
+          metrics,
+        });
+        if (response.status === "success") {
+          toast.success("Assignment created successfully!");
+          router.push(`/classes/${classCode}`);
+        } else {
+          console.error(response.message);
+          toast.warning("Failed to create assignment");
+        }
       }
     } catch (error) {
-      console.error("Error creating class:", error);
+      console.error("Error saving assignment:", error);
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
@@ -142,6 +248,36 @@ export function CreateAssignmentForm({
                 className="bg-background border border-border text-foreground"
                 required
               />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="startDate" className="text-foreground">
+                Start Date (optional)
+              </Label>
+              <Input
+                id="startDate"
+                type="datetime-local"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="bg-background border border-border text-foreground"
+              />
+              <p className="text-xs text-muted-foreground">
+                Assignment is hidden from students until this time. Leave empty
+                to make it visible immediately.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Label htmlFor="allowLateSubmission" className="text-foreground">
+                Allow late submission
+              </Label>
+              <Switch
+                checked={allowLateSubmission}
+                onCheckedChange={setAllowLateSubmission}
+              />
+              <span className="text-sm text-muted-foreground">
+                If disabled, assignment is hidden after the due date.
+              </span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -199,7 +335,13 @@ export function CreateAssignmentForm({
           disabled={loading}
           className=" bg-primary-button text-white hover:bg-primary-button-hover disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Creating..." : "Create Assignment"}
+          {loading
+            ? isEdit
+              ? "Saving..."
+              : "Creating..."
+            : isEdit
+              ? "Save changes"
+              : "Create Assignment"}
         </Button>
       </div>
     </form>

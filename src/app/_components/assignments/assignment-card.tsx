@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format } from "date-fns";
-import { Calendar, FileText, Users, Clock } from "lucide-react";
+import { Calendar, FileText, Users, Clock, Lock } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -11,52 +11,79 @@ import {
 } from "@/app/_components/ui/card";
 import { Badge } from "@/app/_components/ui/badge";
 import { Assignment } from "@/lib/types/assignment-tyes";
+import { isAssignmentUpcoming } from "@/lib/assignment-utils";
 
 interface AssignmentCardProps {
   assignment: Assignment;
   classCode: string;
+  /** When true, card is a non-clickable preview for upcoming assignments */
+  isUpcomingPreview?: boolean;
 }
 
-export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
-  const isOverdue = assignment.dueDate && new Date() > assignment.dueDate;
+export function AssignmentCard({
+  assignment,
+  classCode,
+  isUpcomingPreview = false,
+}: AssignmentCardProps) {
+  const upcoming =
+    isUpcomingPreview ||
+    (assignment.startDate != null &&
+      isAssignmentUpcoming({ startDate: assignment.startDate }));
+  const isOverdue =
+    !upcoming && assignment.dueDate && new Date() > assignment.dueDate;
   const isDueSoon =
+    !upcoming &&
     !isOverdue &&
     assignment.dueDate &&
     new Date() >
       new Date(assignment.dueDate.getTime() - 2 * 24 * 60 * 60 * 1000);
 
-  return (
-    <Card className="overflow-hidden rounded-2xl border border-border bg-card transition-all hover:shadow-md">
-      <Link href={`/classes/${classCode}/${assignment.id}`} className="block">
-        <CardHeader className="pb-2">
-          <div className="flex items-start justify-between gap-4">
-            <h3 className="text-lg font-medium text-foreground">
-              {assignment.title}
-            </h3>
-            {isOverdue ? (
-              <Badge variant="destructive">Overdue</Badge>
-            ) : isDueSoon ? (
-              <Badge className="bg-muted text-foreground hover:bg-muted/70">
-                Due Soon
-              </Badge>
-            ) : (
-              <Badge
-                variant="outline"
-                className="border-border text-muted-foreground"
-              >
-                Active
-              </Badge>
-            )}
+  const cardContent = (
+    <>
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="text-lg font-medium text-foreground">
+            {assignment.title}
+          </h3>
+          {upcoming ? (
+            <Badge
+              variant="outline"
+              className="border-amber-500/50 text-amber-600 dark:text-amber-400"
+            >
+              Upcoming
+            </Badge>
+          ) : isOverdue ? (
+            <Badge variant="destructive">Overdue</Badge>
+          ) : isDueSoon ? (
+            <Badge className="bg-muted text-foreground hover:bg-muted/70">
+              Due Soon
+            </Badge>
+          ) : (
+            <Badge
+              variant="outline"
+              className="border-border text-muted-foreground"
+            >
+              Active
+            </Badge>
+          )}
+        </div>
+      </CardHeader>
+
+      <CardContent className="pb-2">
+        <p className="line-clamp-2 text-sm text-muted-foreground">
+          {assignment.description}
+        </p>
+      </CardContent>
+
+      <CardFooter className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs text-muted-foreground">
+        {upcoming && assignment.startDate ? (
+          <div className="flex items-center gap-1">
+            <Lock className="h-3.5 w-3.5" />
+            <span>
+              Starts: {format(assignment.startDate, "MMM d, yyyy 'at' h:mm a")}
+            </span>
           </div>
-        </CardHeader>
-
-        <CardContent className="pb-2">
-          <p className="line-clamp-2 text-sm text-muted-foreground">
-            {assignment.description}
-          </p>
-        </CardContent>
-
-        <CardFooter className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs text-muted-foreground">
+        ) : (
           <div className="flex items-center gap-1">
             <Calendar className="h-3.5 w-3.5" />
             <span>
@@ -66,25 +93,45 @@ export function AssignmentCard({ assignment, classCode }: AssignmentCardProps) {
                 : "No due date"}
             </span>
           </div>
-          <div className="flex items-center gap-1">
-            <FileText className="h-3.5 w-3.5" />
-            <span>
-              {assignment.questionCount} question
-              {assignment.questionCount !== 1 ? "s" : ""}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Users className="h-3.5 w-3.5" />
-            <span>
-              {assignment.submissionCount} submission
-              {assignment.submissionCount !== 1 ? "s" : ""}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" />
-            <span>Created {format(assignment.createdAt, "MMM d, yyyy")}</span>
-          </div>
-        </CardFooter>
+        )}
+        {!isUpcomingPreview && (
+          <>
+            <div className="flex items-center gap-1">
+              <FileText className="h-3.5 w-3.5" />
+              <span>
+                {assignment.questionCount} question
+                {assignment.questionCount !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Users className="h-3.5 w-3.5" />
+              <span>
+                {assignment.submissionCount} submission
+                {assignment.submissionCount !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5" />
+              <span>Created {format(assignment.createdAt, "MMM d, yyyy")}</span>
+            </div>
+          </>
+        )}
+      </CardFooter>
+    </>
+  );
+
+  if (isUpcomingPreview) {
+    return (
+      <Card className="overflow-hidden rounded-2xl border border-border border-dashed bg-card/60 transition-all">
+        <div className="block cursor-default opacity-90">{cardContent}</div>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="overflow-hidden rounded-2xl border border-border bg-card transition-all hover:shadow-md">
+      <Link href={`/classes/${classCode}/${assignment.id}`} className="block">
+        {cardContent}
       </Link>
     </Card>
   );
