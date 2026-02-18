@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Maximize2, Minimize2, FileText } from "lucide-react";
@@ -30,9 +30,24 @@ export function AssignmentLayout({
 }: AssignmentLayoutProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isEditorFullscreen, setIsEditorFullscreen] = useState(false);
   const [code, setCode] = useState("");
   const [customInput, setCustomInput] = useState("");
   const { isFullscreen } = useFullScreen();
+
+  const exitEditorFullscreen = useCallback(
+    () => setIsEditorFullscreen(false),
+    [],
+  );
+
+  useEffect(() => {
+    if (!isEditorFullscreen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") exitEditorFullscreen();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isEditorFullscreen, exitEditorFullscreen]);
   const currentQuestion = assignment.questions[currentQuestionIndex];
   const { isRunning, codeStatus, testResults, runCode, submitCode } =
     useCodeRunner({
@@ -126,25 +141,29 @@ export function AssignmentLayout({
 
         {/* Right Panel */}
         <AnimatePresence>
-          {!isDescriptionExpanded && (
+          {!isDescriptionExpanded && !isEditorFullscreen && (
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: "60%" }}
               exit={{ width: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex h-full flex-col bg-background"
+              className="flex h-full flex-col bg-background min-h-0"
             >
-              <CodeEditor
-                code={code}
-                onChange={setCode}
-                language={currentQuestion.language}
-                onRun={runCode}
-                onSubmit={submitCode}
-                isRunning={isRunning}
-                disableCopyPaste={assignment.copyPastePrevention}
-              />
+              <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                <CodeEditor
+                  code={code}
+                  onChange={setCode}
+                  language={currentQuestion.language}
+                  onRun={runCode}
+                  onSubmit={submitCode}
+                  isRunning={isRunning}
+                  disableCopyPaste={assignment.copyPastePrevention}
+                  onFullscreenToggle={() => setIsEditorFullscreen(true)}
+                  isFullscreen={false}
+                />
+              </div>
 
-              <div className="border-t border-border">
+              <div className="shrink-0 border-t border-border">
                 <CombinedTesting
                   results={testResults}
                   customInput={customInput}
@@ -158,6 +177,46 @@ export function AssignmentLayout({
           )}
         </AnimatePresence>
       </div>
+
+      {/* Fullscreen code editor overlay */}
+      <AnimatePresence>
+        {isEditorFullscreen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-50 flex flex-col bg-background min-h-0"
+          >
+            <div className="flex h-full flex-col min-h-0">
+              <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                <CodeEditor
+                  code={code}
+                  onChange={setCode}
+                  language={currentQuestion.language}
+                  onRun={runCode}
+                  onSubmit={submitCode}
+                  isRunning={isRunning}
+                  disableCopyPaste={assignment.copyPastePrevention}
+                  onFullscreenToggle={exitEditorFullscreen}
+                  isFullscreen
+                />
+              </div>
+
+              <div className="shrink-0 border-t border-border">
+                <CombinedTesting
+                  results={testResults}
+                  customInput={customInput}
+                  onCustomInputChange={setCustomInput}
+                  onRunCode={runCode}
+                  isRunning={isRunning}
+                  codeStatus={codeStatus}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

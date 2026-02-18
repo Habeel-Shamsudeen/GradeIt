@@ -185,62 +185,67 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
       };
     }
 
-    await prisma.$transaction(async (tx) => {
-      await tx.assignmentMetric.deleteMany({
-        where: { assignmentId },
-      });
-      await tx.question.deleteMany({
-        where: { assignmentId },
-      });
-      await tx.assignment.update({
-        where: { id: assignmentId },
-        data: {
-          title,
-          description: description ?? null,
-          DueDate: dueDate ? new Date(dueDate) : null,
-          startDate: startDate ? new Date(startDate) : undefined,
-          allowLateSubmission: allowLateSubmission ?? true,
-          copyPastePrevention,
-          fullScreenEnforcement,
-          testCaseWeight,
-          metricsWeight,
-        },
-      });
-      await tx.question.createMany({
-        data: questions.map((q) => ({
-          assignmentId,
-          title: q.title,
-          description: q.description,
-          language: q.language,
-        })),
-      });
-      const createdQuestions = await tx.question.findMany({
-        where: { assignmentId },
-        orderBy: { createdAt: "asc" },
-      });
-      for (let i = 0; i < questions.length; i++) {
-        const q = questions[i];
-        const created = createdQuestions[i];
-        if (!created) continue;
-        await tx.testCase.createMany({
-          data: q.testCases.map((tc) => ({
-            questionId: created.id,
-            input: tc.input,
-            expectedOutput: tc.expectedOutput,
-            hidden: tc.hidden,
-          })),
+    await prisma.$transaction(
+      async (tx) => {
+        await tx.assignmentMetric.deleteMany({
+          where: { assignmentId },
         });
-      }
-      if (metrics?.length) {
-        await tx.assignmentMetric.createMany({
-          data: metrics.map((m) => ({
+        await tx.question.deleteMany({
+          where: { assignmentId },
+        });
+        await tx.assignment.update({
+          where: { id: assignmentId },
+          data: {
+            title,
+            description: description ?? null,
+            DueDate: dueDate ? new Date(dueDate) : null,
+            startDate: startDate ? new Date(startDate) : undefined,
+            allowLateSubmission: allowLateSubmission ?? true,
+            copyPastePrevention,
+            fullScreenEnforcement,
+            testCaseWeight,
+            metricsWeight,
+          },
+        });
+        await tx.question.createMany({
+          data: questions.map((q) => ({
             assignmentId,
-            metricId: m.id,
-            weight: m.weight,
+            title: q.title,
+            description: q.description,
+            language: q.language,
           })),
         });
-      }
-    });
+        const createdQuestions = await tx.question.findMany({
+          where: { assignmentId },
+          orderBy: { createdAt: "asc" },
+        });
+        for (let i = 0; i < questions.length; i++) {
+          const q = questions[i];
+          const created = createdQuestions[i];
+          if (!created) continue;
+          await tx.testCase.createMany({
+            data: q.testCases.map((tc) => ({
+              questionId: created.id,
+              input: tc.input,
+              expectedOutput: tc.expectedOutput,
+              hidden: tc.hidden,
+            })),
+          });
+        }
+        if (metrics?.length) {
+          await tx.assignmentMetric.createMany({
+            data: metrics.map((m) => ({
+              assignmentId,
+              metricId: m.id,
+              weight: m.weight,
+            })),
+          });
+        }
+      },
+      {
+        timeout: 30_000, // 30s for large assignments (many questions/test cases)
+      },
+    );
 
     const classCode = assignment.classroom.code;
     revalidatePath(`/classes/${classCode}`);
