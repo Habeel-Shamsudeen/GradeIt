@@ -1,4 +1,4 @@
-import { SubmissionStatus } from "@prisma/client";
+import { SubmissionStatus } from "@/app/generated/prisma/client";
 
 export interface Question {
   id: string;

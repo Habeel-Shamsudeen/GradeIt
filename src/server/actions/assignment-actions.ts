@@ -11,7 +11,7 @@ import {
 } from "@/lib/validators/schema";
 import { revalidatePath } from "next/cache";
 import { getClassIdFromCode } from "./utility-actions";
-import { Role, SubmissionStatus } from "@prisma/client";
+import { Role, SubmissionStatus } from "@/app/generated/prisma/client";
 import { GradingTableHeaderResponse } from "@/lib/types/assignment-tyes";
 import {
   isAssignmentUpcoming,

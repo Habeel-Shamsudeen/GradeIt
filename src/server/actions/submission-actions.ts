@@ -5,7 +5,7 @@ import {
   TestCaseStatus,
   CodeEvaluationStatus,
   SubmissionStatus,
-} from "@prisma/client";
+} from "@/app/generated/prisma/client";
 import {
   evaluateSubmissionMetrics,
   evaluateSubmissionTestCases,

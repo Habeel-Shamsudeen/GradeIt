@@ -20,8 +20,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@prisma/client": ["./prisma/generated/client.ts"]
+      "@/*": ["./src/*"]
     },
     "typeRoots": ["./src/lib/types"]
   },

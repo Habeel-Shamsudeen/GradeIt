@@ -13,7 +13,7 @@ import {
   updateOnboardingStatus,
   updateUserRole,
 } from "@/server/actions/user-actions";
-import { Role } from "@prisma/client";
+import { Role } from "@/app/generated/prisma/client";
 import { useClientSession } from "@/hooks/use-auth-session";
 import { useRouter } from "next/navigation";
 

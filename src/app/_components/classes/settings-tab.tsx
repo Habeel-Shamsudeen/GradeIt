@@ -28,7 +28,7 @@ import {
 import { UserClassroom } from "@/lib/types/class-types";
 import { copyToClipboard } from "@/lib/utils";
 import { toast } from "sonner";
-import { Role } from "@prisma/client";
+import { Role } from "@/app/generated/prisma/client";
 import { deleteClass } from "@/server/actions/class-actions";
 import { redirect, useRouter } from "next/navigation";
 

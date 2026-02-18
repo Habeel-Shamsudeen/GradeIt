@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { AssignmentCard } from "./assignment-card";
 import { Button } from "@/app/_components/ui/button";
-import { Role } from "@prisma/client";
+import { Role } from "@/app/generated/prisma/client";
 import { Assignment } from "@/lib/types/assignment-tyes";
 
 interface AssignmentListProps {
