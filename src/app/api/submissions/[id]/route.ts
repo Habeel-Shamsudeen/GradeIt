@@ -3,15 +3,17 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { mapStatus } from "@/lib/utils";
 
-export async function GET(req: NextRequest, { params }: { params: any }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
-    const submissionId = id;
+    const { id: submissionId } = await params;
     const userId = session.user.id;
 
     const submission = await prisma.codeSubmission.findUnique({

@@ -7,21 +7,31 @@ import { getAssignmentById } from "@/server/actions/assignment-actions";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
 import { StudentProgress } from "@/lib/types/assignment-tyes";
 
-export const metadata: Metadata = {
-  title: "Assignment | gradeIT",
-  description: "Complete your coding assignment",
+type AssignmentPageProps = {
+  params: Promise<{ assignmentId: string; classCode: string }>;
 };
 
-export default async function AssignmentPage({
+export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ assignmentId: string; classCode: string }>;
-}) {
-  const { assignmentId, classCode } = await params;
+}: AssignmentPageProps): Promise<Metadata> {
+  const { assignmentId } = await params;
   const { assignment } = await getAssignmentById(assignmentId);
-  const { role } = await getUserRole();
-  const initialStudentData: StudentProgress[] =
-    await getStudentAssignmentProgress(assignmentId, classCode);
+  if (!assignment) {
+    return { title: "Assignment | gradeIT" };
+  }
+  return {
+    title: `${assignment.title} | gradeIT`,
+    description: assignment.description ?? "Complete your coding assignment",
+  };
+}
+
+export default async function AssignmentPage({ params }: AssignmentPageProps) {
+  const { assignmentId, classCode } = await params;
+  const [{ assignment }, { role }, initialStudentData] = await Promise.all([
+    getAssignmentById(assignmentId),
+    getUserRole(),
+    getStudentAssignmentProgress(assignmentId, classCode),
+  ]);
 
   if (!assignment) {
     notFound();

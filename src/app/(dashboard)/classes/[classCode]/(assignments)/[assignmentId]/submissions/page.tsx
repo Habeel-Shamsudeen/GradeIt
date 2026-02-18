@@ -17,9 +17,9 @@ import {
 } from "@/app/_components/ui/card";
 import { Badge } from "@/app/_components/ui/badge";
 import { cn } from "@/lib/utils";
+import { notFound } from "next/navigation";
 import { getAssignmentById } from "@/server/actions/assignment-actions";
 import { getSubmissions } from "@/server/actions/submission-actions";
-import NotFound from "@/app/not-found";
 import { LanguageIcon } from "@/app/_components/ui/language-icon";
 import { Language } from "@/lib/types/config-types";
 
@@ -34,15 +34,16 @@ export default async function SubmissionsPage({
   params: Promise<{ assignmentId: string; classCode: string }>;
 }) {
   const { assignmentId, classCode } = await params;
-  const { assignment } = await getAssignmentById(assignmentId);
+  const [{ assignment }, { submissions }] = await Promise.all([
+    getAssignmentById(assignmentId),
+    getSubmissions(assignmentId),
+  ]);
+
   if (!assignment) {
-    return NotFound();
+    notFound();
   }
-
-  const { submissions } = await getSubmissions(assignmentId);
-
   if (!submissions) {
-    return NotFound();
+    notFound();
   }
 
   // Group submissions by question

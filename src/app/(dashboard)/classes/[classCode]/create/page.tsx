@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { CreateAssignmentForm } from "@/app/_components/assignments/faculty/create-assignment-form";
 import { PageHeader } from "@/app/_components/page-header";
 import { auth } from "@/lib/auth";
 import { getUserRole } from "@/server/actions/user-actions";
-import Loading from "../../loading";
 import { getUserMetrics } from "@/server/actions/metric-actions";
 
 export const metadata: Metadata = {
@@ -11,18 +11,23 @@ export const metadata: Metadata = {
   description: "Create a new coding assignment for your class",
 };
 
-export default async function CreateAssignmentPage({ params }: any) {
+export default async function CreateAssignmentPage({
+  params,
+}: {
+  params: Promise<{ classCode: string }>;
+}) {
   const { classCode } = await params;
   const session = await auth();
   if (!session?.user) {
-    return <Loading />;
+    redirect("/classes");
   }
-  const { role } = await getUserRole();
+  const [{ role }, { metrics }] = await Promise.all([
+    getUserRole(),
+    getUserMetrics(),
+  ]);
   if (role !== "FACULTY") {
-    return <div>You are not authorized to create assignments</div>;
+    redirect(`/classes/${classCode}`);
   }
-
-  const { metrics } = await getUserMetrics();
 
   return (
     <div className="container mx-auto max-w-4xl p-6">

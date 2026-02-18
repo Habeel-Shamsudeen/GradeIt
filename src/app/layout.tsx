@@ -104,7 +104,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${onest.className} antialiased`}
+      className={`${onest.variable} ${onest.className} antialiased`}
       suppressHydrationWarning
     >
       <head>

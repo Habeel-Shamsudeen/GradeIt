@@ -1,4 +1,4 @@
-import { SubmissionStatus } from "@prisma/client";
+import { SubmissionStatus } from "@/app/generated/prisma/client";
 
 export interface Question {
   id: string;
@@ -28,6 +28,8 @@ export interface Assignment {
   title: string;
   description?: string;
   dueDate: Date | null;
+  startDate: Date | null;
+  allowLateSubmission: boolean;
   createdAt: Date;
   questionCount: number;
   submissionCount: number;

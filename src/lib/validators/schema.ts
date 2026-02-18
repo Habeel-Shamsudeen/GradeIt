@@ -1,9 +1,16 @@
 import { z } from "zod";
 
-export const assignmentSchema = z.object({
+const dateRefinement = (data: { startDate?: string; dueDate?: string }) => {
+  if (!data.startDate || !data.dueDate) return true;
+  return new Date(data.startDate) < new Date(data.dueDate);
+};
+
+const baseAssignmentSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   dueDate: z.string().optional(),
+  startDate: z.string().optional(),
+  allowLateSubmission: z.boolean().default(true),
   classCode: z.string().min(1, "Classroom ID is required"),
   copyPastePrevention: z.boolean(),
   fullScreenEnforcement: z.boolean(),
@@ -35,4 +42,19 @@ export const assignmentSchema = z.object({
   ),
 });
 
+export const assignmentSchema = baseAssignmentSchema.refine(dateRefinement, {
+  message: "Start date must be before due date",
+  path: ["startDate"],
+});
+
 export type AssignmentSchema = z.infer<typeof assignmentSchema>;
+
+export const assignmentUpdateSchema = baseAssignmentSchema
+  .omit({ classCode: true })
+  .extend({ assignmentId: z.string().min(1, "Assignment ID is required") })
+  .refine(dateRefinement, {
+    message: "Start date must be before due date",
+    path: ["startDate"],
+  });
+
+export type AssignmentUpdateSchema = z.infer<typeof assignmentUpdateSchema>;

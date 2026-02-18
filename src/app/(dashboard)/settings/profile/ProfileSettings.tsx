@@ -17,7 +17,7 @@ import {
 import { updateUserName } from "@/server/actions/user-actions";
 import { getLoginMethod } from "@/server/actions/utility-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loading03Icon } from "hugeicons-react";
+import { Loader2 } from "lucide-react";
 import { User } from "next-auth";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -113,7 +113,7 @@ export default function ProfileSettings({ user }: { user: User | undefined }) {
             >
               {isSubmitting ? (
                 <>
-                  <Loading03Icon className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {buttonText}
                 </>
               ) : (

@@ -1,8 +1,9 @@
 "use server";
 
+import { cache } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Role } from "@prisma/client";
+import { Role } from "@/app/generated/prisma/client";
 
 export const updateUserName = async (name: string) => {
   const session = await auth();
@@ -91,7 +92,7 @@ export const updateUserRole = async (role: Role) => {
   }
 };
 
-export const getUserRole = async () => {
+export const getUserRole = cache(async () => {
   const session = await auth();
 
   if (!session?.user) {
@@ -114,4 +115,4 @@ export const getUserRole = async () => {
     console.error("Error:", error);
     return { status: "failed" };
   }
-};
+});

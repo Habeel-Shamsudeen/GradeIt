@@ -1,4 +1,7 @@
-import { AssignmentMetric, EvaluationMetric } from "@prisma/client";
+import {
+  AssignmentMetric,
+  EvaluationMetric,
+} from "@/app/generated/prisma/client";
 import { groq } from "@ai-sdk/groq";
 import { generateText } from "ai";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SubmissionStatus } from "@prisma/client";
+import { SubmissionStatus } from "@/app/generated/prisma/enums";
 import { AssignmentById, StudentProgress } from "@/lib/types/assignment-tyes";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
 
@@ -61,7 +61,7 @@ export function FacultyView({
 
   return (
     <div className="container mx-auto max-w-7xl p-6">
-      <AssignmentHeader assignment={assignment} />
+      <AssignmentHeader assignment={assignment} classCode={classCode} />
 
       <FacultyStatsCards
         totalStudents={totalStudents}

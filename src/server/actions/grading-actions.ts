@@ -6,7 +6,7 @@ import {
   TestCaseStatus,
   CodeEvaluationStatus,
   SubmissionStatus,
-} from "@prisma/client";
+} from "@/app/generated/prisma/client";
 import { evaluateCodeWithLLM } from "@/lib/services/code-evaluation-llm-service";
 import { updateSubmissionStatus } from "./submission-actions";
 import { revalidatePath } from "next/cache";

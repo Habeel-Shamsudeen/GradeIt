@@ -1,4 +1,4 @@
-import { Moon02Icon, Sun01Icon } from "hugeicons-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -29,9 +29,9 @@ export default function ThemeToggleBar({
         aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
       >
         {theme === "light" ? (
-          <Moon02Icon className="h-5 w-5" color={"#969696"} />
+          <Moon className="h-5 w-5 text-[#969696]" />
         ) : (
-          <Sun01Icon className="h-5 w-5" color={"#969696"} />
+          <Sun className="h-5 w-5 text-[#969696]" />
         )}
       </Button>
     );
@@ -52,11 +52,11 @@ export default function ThemeToggleBar({
             aria-label={`Switch to ${mode} mode`}
           >
             {mode === "light" ? (
-              <Sun01Icon
+              <Sun
                 className={`mr-1 h-3 w-3 ${theme === "light" ? "animate-spin-slow" : ""}`}
               />
             ) : (
-              <Moon02Icon
+              <Moon
                 className={`mr-1 h-3 w-3 ${theme === "dark" ? "animate-pulse" : ""}`}
               />
             )}

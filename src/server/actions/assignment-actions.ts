@@ -1,12 +1,22 @@
 "use server";
 
+import { cache } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { assignmentSchema, AssignmentSchema } from "@/lib/validators/schema";
+import {
+  assignmentSchema,
+  assignmentUpdateSchema,
+  AssignmentSchema,
+  type AssignmentUpdateSchema,
+} from "@/lib/validators/schema";
 import { revalidatePath } from "next/cache";
 import { getClassIdFromCode } from "./utility-actions";
-import { SubmissionStatus } from "@prisma/client";
+import { Role, SubmissionStatus } from "@/app/generated/prisma/client";
 import { GradingTableHeaderResponse } from "@/lib/types/assignment-tyes";
+import {
+  isAssignmentUpcoming,
+  isAssignmentVisibleToStudent,
+} from "@/lib/assignment-utils";
 
 export const createAssignment = async (formData: AssignmentSchema) => {
   const session = await auth();
@@ -41,6 +51,8 @@ export const createAssignment = async (formData: AssignmentSchema) => {
       title,
       description,
       dueDate,
+      startDate,
+      allowLateSubmission,
       classCode,
       questions,
       metrics,
@@ -59,6 +71,8 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         title,
         description: description ?? null,
         DueDate: dueDate ? new Date(dueDate) : null,
+        startDate: startDate ? new Date(startDate) : undefined,
+        allowLateSubmission: allowLateSubmission ?? true,
         classroomId,
         copyPastePrevention,
         fullScreenEnforcement,
@@ -117,7 +131,200 @@ export const createAssignment = async (formData: AssignmentSchema) => {
   }
 };
 
-export const getAssignments = async (classroomId: string) => {
+export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  try {
+    const faculty = await prisma.user.findFirst({
+      where: { id: session.user.id, role: "FACULTY" },
+    });
+    if (!faculty) {
+      return { status: "error", message: "Unauthorized" };
+    }
+
+    const validation = assignmentUpdateSchema.safeParse(formData);
+    if (!validation.success) {
+      return {
+        status: "error",
+        message: "Invalid input data",
+        errors: validation.error.format(),
+      };
+    }
+
+    const {
+      assignmentId,
+      title,
+      description,
+      dueDate,
+      startDate,
+      allowLateSubmission,
+      questions,
+      metrics,
+      copyPastePrevention,
+      fullScreenEnforcement,
+      testCaseWeight,
+      metricsWeight,
+    } = validation.data;
+
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: { classroom: true },
+    });
+    if (!assignment) {
+      return { status: "error", message: "Assignment not found" };
+    }
+    if (assignment.classroom.facultyId !== session.user.id) {
+      return { status: "error", message: "Unauthorized" };
+    }
+    if (assignment.startDate && new Date() >= new Date(assignment.startDate)) {
+      return {
+        status: "error",
+        message: "Editing is not allowed after the assignment has started.",
+      };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.assignmentMetric.deleteMany({
+        where: { assignmentId },
+      });
+      await tx.question.deleteMany({
+        where: { assignmentId },
+      });
+      await tx.assignment.update({
+        where: { id: assignmentId },
+        data: {
+          title,
+          description: description ?? null,
+          DueDate: dueDate ? new Date(dueDate) : null,
+          startDate: startDate ? new Date(startDate) : undefined,
+          allowLateSubmission: allowLateSubmission ?? true,
+          copyPastePrevention,
+          fullScreenEnforcement,
+          testCaseWeight,
+          metricsWeight,
+        },
+      });
+      await tx.question.createMany({
+        data: questions.map((q) => ({
+          assignmentId,
+          title: q.title,
+          description: q.description,
+          language: q.language,
+        })),
+      });
+      const createdQuestions = await tx.question.findMany({
+        where: { assignmentId },
+        orderBy: { createdAt: "asc" },
+      });
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i];
+        const created = createdQuestions[i];
+        if (!created) continue;
+        await tx.testCase.createMany({
+          data: q.testCases.map((tc) => ({
+            questionId: created.id,
+            input: tc.input,
+            expectedOutput: tc.expectedOutput,
+            hidden: tc.hidden,
+          })),
+        });
+      }
+      if (metrics?.length) {
+        await tx.assignmentMetric.createMany({
+          data: metrics.map((m) => ({
+            assignmentId,
+            metricId: m.id,
+            weight: m.weight,
+          })),
+        });
+      }
+    });
+
+    const classCode = assignment.classroom.code;
+    revalidatePath(`/classes/${classCode}`);
+    revalidatePath(`/classes/${classCode}/${assignmentId}`);
+    revalidatePath(`/classes/${classCode}/${assignmentId}/edit`);
+    return { status: "success" };
+  } catch (error) {
+    console.error("Failed to update assignment", error);
+    return {
+      status: "error",
+      message:
+        error instanceof Error ? error.message : "Failed to update assignment",
+    };
+  }
+};
+
+export const deleteAssignment = async (assignmentId: string) => {
+  const session = await auth();
+  if (!session?.user) {
+    return { status: "error", message: "Unauthorized" };
+  }
+  try {
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: { classroom: true },
+    });
+    if (!assignment) {
+      return { status: "error", message: "Assignment not found" };
+    }
+    if (assignment.classroom.facultyId !== session.user.id) {
+      return { status: "error", message: "Unauthorized" };
+    }
+    await prisma.assignment.delete({
+      where: { id: assignmentId },
+    });
+    const classCode = assignment.classroom.code;
+    revalidatePath(`/classes/${classCode}`);
+    revalidatePath(`/classes/${classCode}/${assignmentId}`);
+    return { status: "success" };
+  } catch (error) {
+    console.error("Failed to delete assignment", error);
+    return {
+      status: "error",
+      message:
+        error instanceof Error ? error.message : "Failed to delete assignment",
+    };
+  }
+};
+
+function formatAssignmentFromPrisma(assignment: {
+  id: string;
+  title: string;
+  description: string | null;
+  DueDate: Date | null;
+  startDate: Date | null;
+  allowLateSubmission: boolean;
+  createdAt: Date;
+  copyPastePrevention: boolean;
+  fullScreenEnforcement: boolean;
+  questions: unknown[];
+  submissions: { codeSubmission: unknown[] }[];
+}) {
+  return {
+    id: assignment.id,
+    title: assignment.title,
+    description: assignment.description ?? undefined,
+    dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
+    startDate: assignment.startDate ? new Date(assignment.startDate) : null,
+    allowLateSubmission: assignment.allowLateSubmission,
+    questionCount: assignment.questions.length,
+    submissionCount: assignment.submissions.reduce(
+      (acc, submission) => acc + submission.codeSubmission.length,
+      0,
+    ),
+    createdAt: new Date(assignment.createdAt),
+    copyPastePrevention: assignment.copyPastePrevention,
+    fullScreenEnforcement: assignment.fullScreenEnforcement,
+  };
+}
+
+export const getAssignments = async (
+  classroomId: string,
+  role?: Role | null,
+) => {
   const session = await auth();
   if (!session?.user) {
     throw new Error("Unauthorized");
@@ -140,28 +347,39 @@ export const getAssignments = async (classroomId: string) => {
       },
     });
 
-    const formattedAssignments = assignments.map((assignment) => ({
-      id: assignment.id,
-      title: assignment.title,
-      description: assignment.description ?? undefined,
-      dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
-      questionCount: assignment.questions.length,
-      submissionCount: assignment.submissions.reduce(
-        (acc, submission) => acc + submission.codeSubmission.length,
-        0,
-      ),
-      createdAt: new Date(assignment.createdAt),
-      copyPastePrevention: assignment.copyPastePrevention,
-      fullScreenEnforcement: assignment.fullScreenEnforcement,
-    }));
+    const formatted = assignments.map((a) => formatAssignmentFromPrisma(a));
+    const effectiveRole = role ?? session.user.role ?? "STUDENT";
 
-    return { status: "success", assignments: formattedAssignments };
+    if (effectiveRole === "STUDENT") {
+      const now = new Date();
+      const visible = formatted.filter((a) =>
+        isAssignmentVisibleToStudent({
+          startDate: a.startDate,
+          dueDate: a.dueDate,
+          allowLateSubmission: a.allowLateSubmission,
+        }),
+      );
+      const upcoming = formatted.filter((a) =>
+        isAssignmentUpcoming({ startDate: a.startDate }, now),
+      );
+      return {
+        status: "success" as const,
+        assignments: visible,
+        upcomingAssignments: upcoming,
+      };
+    }
+
+    return {
+      status: "success" as const,
+      assignments: formatted,
+      upcomingAssignments: [],
+    };
   } catch (error) {
     return { status: "failed", message: error };
   }
 };
 
-export const getAssignmentById = async (assignmentId: string) => {
+export const getAssignmentById = cache(async (assignmentId: string) => {
   const session = await auth();
   if (!session?.user) {
     throw new Error("Unauthorized");
@@ -193,6 +411,17 @@ export const getAssignmentById = async (assignmentId: string) => {
       return { status: "error", message: "Assignment not found" };
     }
 
+    if (session.user.role === "STUDENT") {
+      const visible = isAssignmentVisibleToStudent({
+        startDate: assignment.startDate,
+        dueDate: assignment.DueDate,
+        allowLateSubmission: assignment.allowLateSubmission,
+      });
+      if (!visible) {
+        return { status: "error", message: "Assignment not found" };
+      }
+    }
+
     const metrics: {
       id: string;
       name: string;
@@ -205,11 +434,18 @@ export const getAssignmentById = async (assignmentId: string) => {
       weight: am.weight,
     }));
 
+    const dueDate = assignment.DueDate ? new Date(assignment.DueDate) : null;
+    const startDate = assignment.startDate
+      ? new Date(assignment.startDate)
+      : null;
+
     const formattedAssignment = {
       id: assignment.id,
       title: assignment.title,
       description: assignment.description ?? undefined,
-      dueDate: assignment.DueDate ? new Date(assignment.DueDate) : null,
+      dueDate,
+      startDate,
+      allowLateSubmission: assignment.allowLateSubmission,
       questionCount: assignment.questions.length,
       submissionCount: assignment.submissions.reduce(
         (acc, submission) => acc + submission.codeSubmission.length,
@@ -227,7 +463,7 @@ export const getAssignmentById = async (assignmentId: string) => {
   } catch (error) {
     throw new Error("Failed to get assignment " + error);
   }
-};
+});
 
 export const getAssignmentGradingTableHeader = async (
   assignmentId: string,
