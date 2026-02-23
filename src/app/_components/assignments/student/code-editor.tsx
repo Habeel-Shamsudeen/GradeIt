@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
-import { Play, Send } from "lucide-react";
+import { Play, Send, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useTheme } from "next-themes";
@@ -27,6 +27,8 @@ interface CodeEditorProps {
   onSubmit: () => void;
   isRunning: boolean;
   disableCopyPaste: boolean;
+  onFullscreenToggle?: () => void;
+  isFullscreen?: boolean;
 }
 
 export function CodeEditor({
@@ -37,6 +39,8 @@ export function CodeEditor({
   onSubmit,
   isRunning,
   disableCopyPaste,
+  onFullscreenToggle,
+  isFullscreen = false,
 }: CodeEditorProps) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const codeRef = useRef<string>(code);
@@ -94,7 +98,23 @@ export function CodeEditor({
           </SelectContent>
         </Select>
 
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          {onFullscreenToggle && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onFullscreenToggle}
+              className="h-8 w-8 shrink-0 border-border bg-muted text-foreground hover:bg-muted/70"
+              title={isFullscreen ? "Exit full screen" : "Full screen"}
+              aria-label={isFullscreen ? "Exit full screen" : "Full screen"}
+            >
+              {isFullscreen ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={onRun}

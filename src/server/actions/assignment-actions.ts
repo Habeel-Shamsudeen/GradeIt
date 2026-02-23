@@ -10,6 +10,7 @@ import {
   type AssignmentUpdateSchema,
 } from "@/lib/validators/schema";
 import { revalidatePath } from "next/cache";
+import { getClassbyCode } from "./class-actions";
 import { getClassIdFromCode } from "./utility-actions";
 import { Role, SubmissionStatus } from "@/app/generated/prisma/client";
 import { GradingTableHeaderResponse } from "@/lib/types/assignment-tyes";
@@ -185,62 +186,67 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
       };
     }
 
-    await prisma.$transaction(async (tx) => {
-      await tx.assignmentMetric.deleteMany({
-        where: { assignmentId },
-      });
-      await tx.question.deleteMany({
-        where: { assignmentId },
-      });
-      await tx.assignment.update({
-        where: { id: assignmentId },
-        data: {
-          title,
-          description: description ?? null,
-          DueDate: dueDate ? new Date(dueDate) : null,
-          startDate: startDate ? new Date(startDate) : undefined,
-          allowLateSubmission: allowLateSubmission ?? true,
-          copyPastePrevention,
-          fullScreenEnforcement,
-          testCaseWeight,
-          metricsWeight,
-        },
-      });
-      await tx.question.createMany({
-        data: questions.map((q) => ({
-          assignmentId,
-          title: q.title,
-          description: q.description,
-          language: q.language,
-        })),
-      });
-      const createdQuestions = await tx.question.findMany({
-        where: { assignmentId },
-        orderBy: { createdAt: "asc" },
-      });
-      for (let i = 0; i < questions.length; i++) {
-        const q = questions[i];
-        const created = createdQuestions[i];
-        if (!created) continue;
-        await tx.testCase.createMany({
-          data: q.testCases.map((tc) => ({
-            questionId: created.id,
-            input: tc.input,
-            expectedOutput: tc.expectedOutput,
-            hidden: tc.hidden,
-          })),
+    await prisma.$transaction(
+      async (tx) => {
+        await tx.assignmentMetric.deleteMany({
+          where: { assignmentId },
         });
-      }
-      if (metrics?.length) {
-        await tx.assignmentMetric.createMany({
-          data: metrics.map((m) => ({
+        await tx.question.deleteMany({
+          where: { assignmentId },
+        });
+        await tx.assignment.update({
+          where: { id: assignmentId },
+          data: {
+            title,
+            description: description ?? null,
+            DueDate: dueDate ? new Date(dueDate) : null,
+            startDate: startDate ? new Date(startDate) : undefined,
+            allowLateSubmission: allowLateSubmission ?? true,
+            copyPastePrevention,
+            fullScreenEnforcement,
+            testCaseWeight,
+            metricsWeight,
+          },
+        });
+        await tx.question.createMany({
+          data: questions.map((q) => ({
             assignmentId,
-            metricId: m.id,
-            weight: m.weight,
+            title: q.title,
+            description: q.description,
+            language: q.language,
           })),
         });
-      }
-    });
+        const createdQuestions = await tx.question.findMany({
+          where: { assignmentId },
+          orderBy: { createdAt: "asc" },
+        });
+        for (let i = 0; i < questions.length; i++) {
+          const q = questions[i];
+          const created = createdQuestions[i];
+          if (!created) continue;
+          await tx.testCase.createMany({
+            data: q.testCases.map((tc) => ({
+              questionId: created.id,
+              input: tc.input,
+              expectedOutput: tc.expectedOutput,
+              hidden: tc.hidden,
+            })),
+          });
+        }
+        if (metrics?.length) {
+          await tx.assignmentMetric.createMany({
+            data: metrics.map((m) => ({
+              assignmentId,
+              metricId: m.id,
+              weight: m.weight,
+            })),
+          });
+        }
+      },
+      {
+        timeout: 30_000, // 30s for large assignments (many questions/test cases)
+      },
+    );
 
     const classCode = assignment.classroom.code;
     revalidatePath(`/classes/${classCode}`);
@@ -376,6 +382,39 @@ export const getAssignments = async (
     };
   } catch (error) {
     return { status: "failed", message: error };
+  }
+};
+
+const SIDEBAR_ASSIGNMENTS_LIMIT = 10;
+
+export const getAssignmentsByClassCode = async (classCode: string) => {
+  const session = await auth();
+  if (!session?.user) {
+    return { status: "failed" as const, assignments: [], className: null };
+  }
+  try {
+    const classResult = await getClassbyCode(classCode);
+    if (classResult.status !== "success" || !classResult.classroom) {
+      return { status: "failed" as const, assignments: [], className: null };
+    }
+    const result = await getAssignments(
+      classResult.classroom.id,
+      session.user.role ?? null,
+    );
+    if (result.status !== "success") {
+      return { status: "failed" as const, assignments: [], className: null };
+    }
+    const list = (result.assignments ?? [])
+      .slice(0, SIDEBAR_ASSIGNMENTS_LIMIT)
+      .map((a) => ({ id: a.id, title: a.title }));
+    return {
+      status: "success" as const,
+      assignments: list,
+      className: classResult.classroom.name,
+    };
+  } catch (error) {
+    console.error("Error fetching assignments by class code:", error);
+    return { status: "failed" as const, assignments: [], className: null };
   }
 };
 

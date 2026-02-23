@@ -1,6 +1,7 @@
 "use client";
 
 import { NavMain } from "@/app/_components/sidebar/nav-main";
+import { SidebarAssignments } from "@/app/_components/sidebar/sidebar-assignments";
 import { NavUser } from "@/app/_components/sidebar/nav-user";
 import { ModeToggle } from "@/app/_components/sidebar/theme-toggle-btn";
 import BlurFade from "@/app/_components/ui/blur-fade";
@@ -74,6 +75,7 @@ export function AppSidebar({ navGroups, ...props }: AppSidebarProps) {
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={navGroups} label="Classes" />
+          <SidebarAssignments />
         </SidebarContent>
         <SidebarFooter className="flex flex-col gap-2">
           {userProfile && (
