@@ -45,27 +45,64 @@ export function QuestionForm({
   const questionMetrics = question.questionMetrics ?? [];
   const testCaseWeight = question.testCaseWeight ?? 100;
   const metricsWeight = question.metricsWeight ?? 0;
+  const questionType = question.type ?? "CODING";
+  const content = (question.content ?? {}) as {
+    starterCode?: string;
+    buggyCode?: string;
+    hints?: string[];
+  };
 
   const addMetric = (metricId: string) => {
     if (questionMetrics.some((m) => m.id === metricId)) return;
     const found = existingMetrics.find((m) => m.id === metricId);
     if (!found) return;
+    if (questionMetrics.length === 0) {
+      updateField("questionMetrics", [
+        {
+          id: found.id,
+          name: found.name,
+          description: found.description,
+          weight: 100,
+        },
+      ]);
+      return;
+    }
+
+    if (questionMetrics.length === 1 && questionMetrics[0].weight === 100) {
+      updateField("questionMetrics", [
+        { ...questionMetrics[0], weight: 50 },
+        {
+          id: found.id,
+          name: found.name,
+          description: found.description,
+          weight: 50,
+        },
+      ]);
+      return;
+    }
+
+    const currentTotal = questionMetrics.reduce((acc, metric) => {
+      return acc + (metric.weight ?? 0);
+    }, 0);
+    const remaining = Math.max(0, 100 - currentTotal);
     updateField("questionMetrics", [
       ...questionMetrics,
       {
         id: found.id,
         name: found.name,
         description: found.description,
-        weight: 0,
+        weight: remaining,
       },
     ]);
   };
 
   const removeMetric = (metricId: string) => {
-    updateField(
-      "questionMetrics",
-      questionMetrics.filter((m) => m.id !== metricId),
-    );
+    const nextMetrics = questionMetrics.filter((m) => m.id !== metricId);
+    if (nextMetrics.length === 1) {
+      updateField("questionMetrics", [{ ...nextMetrics[0], weight: 100 }]);
+      return;
+    }
+    updateField("questionMetrics", nextMetrics);
   };
 
   const updateMetricWeight = (metricId: string, weight: number) => {
@@ -138,6 +175,55 @@ export function QuestionForm({
             </SelectContent>
           </Select>
         </div>
+
+        {(questionType === "CODE_DEBUG" || questionType === "CODE_FILL") && (
+          <>
+            <div className="grid gap-2">
+              <Label className="text-foreground">
+                {questionType === "CODE_DEBUG" ? "Buggy Code" : "Starter Code"}
+              </Label>
+              <Textarea
+                value={
+                  questionType === "CODE_DEBUG"
+                    ? (content.buggyCode ?? "")
+                    : (content.starterCode ?? "")
+                }
+                onChange={(e) =>
+                  updateField("content", {
+                    ...content,
+                    [questionType === "CODE_DEBUG"
+                      ? "buggyCode"
+                      : "starterCode"]: e.target.value,
+                  })
+                }
+                placeholder={
+                  questionType === "CODE_DEBUG"
+                    ? "Paste code with intentional bugs..."
+                    : "Paste starter template code with blanks/todos..."
+                }
+                className="min-h-40 resize-y bg-background border border-border font-mono text-sm text-foreground"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label className="text-foreground">Hints (optional)</Label>
+              <Textarea
+                value={(content.hints ?? []).join("\n")}
+                onChange={(e) =>
+                  updateField("content", {
+                    ...content,
+                    hints: e.target.value
+                      .split("\n")
+                      .map((hint) => hint.trim())
+                      .filter(Boolean),
+                  })
+                }
+                placeholder="One hint per line"
+                className="min-h-24 resize-y bg-background border border-border text-foreground"
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <Separator className="my-6 bg-border" />

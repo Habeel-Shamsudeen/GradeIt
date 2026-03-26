@@ -1,6 +1,6 @@
 # GradeIT - Online Code Evaluation & Grading System
 
-GradeIT is an automated online coding platform designed for college-level programming lab assignments. It simplifies grading by automatically executing student submissions, checking correctness against test cases, and providing instant feedback.
+GradeIT is an automated assessment platform for technical classrooms. It supports coding and non-coding question types, auto/manual/AI-assisted evaluation flows, and weighted per-question grading with section-based assignment authoring.
 
 🔗 [Live Demo](https://gradeit.habeel.live/)
 
@@ -22,7 +22,7 @@ GradeIT is an automated online coding platform designed for college-level progra
 ### 🏫 **Faculty Features**
 
 - **Classroom Management** - Create and manage virtual classrooms with unique codes
-- **Assignment Creation** - Build multi-question assignments with detailed problem statements
+- **Assignment Creation** - Build section-based assignments with mixed question types
 - **Live Student Monitoring** - Real-time tracking of student progress and activity
 - **Analytics Dashboard** - Comprehensive student progress tracking with export capabilities
 - **Submission Review** - Detailed view of student submissions with test case results
@@ -36,6 +36,7 @@ GradeIT is an automated online coding platform designed for college-level progra
 - **Submission History** - View all previous submissions with detailed feedback
 - **Real-time Status Updates** - Live updates on code execution and grading status
 - **Restriction Notifications** - Clear feedback when attempting restricted actions
+- **Mixed Question Attempt Flow** - Attempt MCQ/Match/Fill/Open-ended/Coding questions in one assignment with answer auto-save
 
 ### 🔒 **Security & Proctoring**
 
@@ -188,7 +189,7 @@ Follow the same steps as in Option A for creating and populating your **`.env`**
 
 ## Project Overview
 
-GradeIT is a classroom management and coding assignment platform with two primary roles:
+GradeIT is a classroom management and assessment platform with two primary roles:
 
 1.  **Faculty (Teachers)**
 2.  **Students**
@@ -208,7 +209,7 @@ GradeIT is a classroom management and coding assignment platform with two primar
 
 #### Assignment Page
 
-- Displays questions & assignment configuration/settings
+- Displays questions, sections, and assignment configuration/settings
 - Shows students’ progress (submission history, marks, etc.)
 - Live monitoring of student activity
 - Analytics & insights
@@ -226,11 +227,21 @@ GradeIT is a classroom management and coding assignment platform with two primar
 
 #### Assignment Page
 
-- Displays questions & instructions
-- Integrated code editor (LeetCode-style)
-- Option to run custom test cases or submit code for evaluation
+- Displays section-wise mixed question sets and instructions
+- Integrated code editor for coding questions
+- Type-aware answer interfaces for MCQ/match/fill/open-ended/block/case-study
+- Option to run custom test cases or submit code for coding questions
 - Submission history
 - Analytics
+
+---
+
+## Scoring Model (Current)
+
+- **Per-question points**: every question has its own `points` value.
+- **Coding-only scoring config**: only coding question types use `testCaseWeight`, `metricsWeight`, and `questionMetrics`.
+- **Non-coding scoring**: MCQ/match/fill are auto-scored; open-ended/case-study/chain/block can be AI-assisted or manual.
+- **Final score rollup**: submission `finalScore` is computed as weighted average by question points.
 
 ---
 

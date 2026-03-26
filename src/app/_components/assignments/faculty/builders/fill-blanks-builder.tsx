@@ -35,19 +35,33 @@ export function FillBlanksBuilder({
 
   const addBlank = () => {
     const id = `blank_${content.blanks.length + 1}`;
-    updateContent({ blanks: [...content.blanks, { id, hint: "" }] });
-    updateAnswerKey({
-      answers: [
-        ...answerKey.answers,
-        { blankId: id, acceptedValues: [""], caseSensitive: false },
-      ],
+    onChange({
+      ...question,
+      content: {
+        ...content,
+        blanks: [...content.blanks, { id, hint: "" }],
+      },
+      answerKey: {
+        ...answerKey,
+        answers: [
+          ...answerKey.answers,
+          { blankId: id, acceptedValues: [""], caseSensitive: false },
+        ],
+      },
     });
   };
 
   const removeBlank = (id: string) => {
-    updateContent({ blanks: content.blanks.filter((b) => b.id !== id) });
-    updateAnswerKey({
-      answers: answerKey.answers.filter((a) => a.blankId !== id),
+    onChange({
+      ...question,
+      content: {
+        ...content,
+        blanks: content.blanks.filter((b) => b.id !== id),
+      },
+      answerKey: {
+        ...answerKey,
+        answers: answerKey.answers.filter((a) => a.blankId !== id),
+      },
     });
   };
 
