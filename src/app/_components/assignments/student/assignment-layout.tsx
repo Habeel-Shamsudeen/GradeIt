@@ -70,6 +70,29 @@ export function AssignmentLayout({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isEditorFullscreen, exitEditorFullscreen]);
 
+  useEffect(() => {
+    const hydrateAnswers = async () => {
+      try {
+        const res = await fetch(`/api/answers?assignmentId=${assignment.id}`);
+        if (!res.ok) return;
+        const data = (await res.json()) as {
+          answers?: { questionId: string; response: unknown }[];
+        };
+        if (!data.answers?.length) return;
+        setAnswerValues((prev) => {
+          const next = { ...prev };
+          for (const ans of data.answers!) {
+            next[ans.questionId] = ans.response;
+          }
+          return next;
+        });
+      } catch (error) {
+        console.error("Failed to hydrate saved answers:", error);
+      }
+    };
+    hydrateAnswers();
+  }, [assignment.id]);
+
   const { isRunning, codeStatus, testResults, runCode, submitCode } =
     useCodeRunner({
       code,
@@ -158,15 +181,7 @@ export function AssignmentLayout({
         {isCoding ? (
           <>
             <QuestionDescription question={currentQuestion} />
-            {assignment.metrics !== undefined &&
-              assignment.testCaseWeight !== undefined &&
-              assignment.metricsWeight !== undefined && (
-                <ScoringWeightDistribution
-                  testCaseWeight={assignment.testCaseWeight}
-                  metricsWeight={assignment.metricsWeight}
-                  metrics={assignment.metrics}
-                />
-              )}
+            <ScoringWeightDistribution questions={assignment.questions} />
           </>
         ) : Renderer ? (
           <>

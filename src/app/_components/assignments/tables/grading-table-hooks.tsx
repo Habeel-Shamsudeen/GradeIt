@@ -95,6 +95,14 @@ export function useGradingTableSorting({
         bValue =
           b.overallSubmission?.metricScores.find((m) => m.metricId === metricId)
             ?.score || 0;
+      } else if (sortConfig.key.startsWith("question_")) {
+        const questionId = sortConfig.key.replace("question_", "");
+        aValue =
+          a.submissions.find((s: any) => s.questionId === questionId)
+            ?.totalScore ?? 0;
+        bValue =
+          b.submissions.find((s: any) => s.questionId === questionId)
+            ?.totalScore ?? 0;
       }
 
       if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;

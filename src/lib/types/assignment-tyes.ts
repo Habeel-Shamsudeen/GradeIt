@@ -47,6 +47,9 @@ export interface Question {
   language?: string | null;
   order?: number;
   points?: number;
+  testCaseWeight?: number;
+  metricsWeight?: number;
+  questionMetrics?: EvaluationMetric[];
   content?: Record<string, unknown> | null;
   answerKey?: Record<string, unknown> | null;
   sectionId?: string | null;
@@ -227,7 +230,9 @@ export interface GradingTableStudent {
 
 export interface GradingTableSubmission {
   id: string;
+  kind?: "code" | "answer";
   studentId: string;
+  questionId?: string;
   testCaseScore: number;
   metricScores: GradingTableMetricScore[];
   totalScore: number;

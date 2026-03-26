@@ -108,6 +108,7 @@ export function SubmissionDetailsDialog({
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-20">#</TableHead>
+                    <TableHead>Type</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Submitted</TableHead>
                     <TableHead>Test Cases</TableHead>
@@ -121,7 +122,7 @@ export function SubmissionDetailsDialog({
                   {student.submissions.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={4 + metrics.length}
+                        colSpan={5 + metrics.length}
                         className="text-center py-8 text-muted-foreground"
                       >
                         No submissions found
@@ -132,6 +133,11 @@ export function SubmissionDetailsDialog({
                       <TableRow key={submission.id}>
                         <TableCell className="font-medium">
                           {index + 1}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {submission.kind === "answer" ? "Answer" : "Code"}
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           <StatusBadge status={submission.status} />
@@ -151,16 +157,20 @@ export function SubmissionDetailsDialog({
                           )}
                         </TableCell>
                         <TableCell>
-                          <EditableScore
-                            value={submission.testCaseScore || 0}
-                            onChange={(newScore) =>
-                              onScoreChange?.(
-                                submission.id,
-                                "testCases",
-                                newScore,
-                              )
-                            }
-                          />
+                          {submission.kind === "code" ? (
+                            <EditableScore
+                              value={submission.testCaseScore || 0}
+                              onChange={(newScore) =>
+                                onScoreChange?.(
+                                  submission.id,
+                                  "testCases",
+                                  newScore,
+                                )
+                              }
+                            />
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
                         </TableCell>
                         {metrics.map((metric) => {
                           const metricScore = submission.metricScores?.find(
@@ -168,16 +178,20 @@ export function SubmissionDetailsDialog({
                           );
                           return (
                             <TableCell key={metric.id}>
-                              <EditableScore
-                                value={metricScore?.score || 0}
-                                onChange={(newScore) =>
-                                  onScoreChange?.(
-                                    submission.id,
-                                    metric.id,
-                                    newScore,
-                                  )
-                                }
-                              />
+                              {submission.kind === "code" ? (
+                                <EditableScore
+                                  value={metricScore?.score || 0}
+                                  onChange={(newScore) =>
+                                    onScoreChange?.(
+                                      submission.id,
+                                      metric.id,
+                                      newScore,
+                                    )
+                                  }
+                                />
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
                             </TableCell>
                           );
                         })}

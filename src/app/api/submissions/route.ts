@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { LANGUAGE_ID_MAP } from "@/config/constants";
 // import { pollJudge0Submissions } from "@/server/actions/submission-actions";
 import { WebhookPayload } from "@/lib/types/config-types";
+import { isCodingType } from "@/lib/services/evaluation/evaluation-dispatcher";
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
       where: { id: questionId },
       include: {
         testCases: true,
+        questionMetrics: true,
         assignment: true,
       },
     });
@@ -38,6 +40,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Question not found" },
         { status: 404 },
+      );
+    }
+
+    if (!isCodingType(question.type)) {
+      return NextResponse.json(
+        {
+          error:
+            "This question type does not support code submissions. Use /api/answers for non-coding questions.",
+        },
+        { status: 400 },
       );
     }
 
@@ -91,22 +103,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const assignment = await prisma.assignment.findUnique({
-      where: { id: question.assignmentId },
-      include: {
-        metrics: {
-          include: {
-            metric: true,
-          },
-        },
-      },
-    });
-
-    if (assignment?.metrics.length) {
+    if (question.questionMetrics.length) {
       await prisma.submissionMetricResult.createMany({
-        data: assignment.metrics.map((assignmentMetric) => ({
+        data: question.questionMetrics.map((questionMetric) => ({
           codeSubmissionId: codeSubmission.id,
-          metricId: assignmentMetric.metricId,
+          metricId: questionMetric.metricId,
           score: 0,
           feedback: "Evaluation pending...",
         })),

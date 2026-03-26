@@ -75,9 +75,7 @@ export async function POST(req: NextRequest) {
       },
       update: {
         response,
-        evaluationStatus: submit
-          ? AnswerEvaluationStatus.PENDING
-          : AnswerEvaluationStatus.PENDING,
+        evaluationStatus: submit ? AnswerEvaluationStatus.PENDING : undefined,
       },
       create: {
         submissionId: submission.id,

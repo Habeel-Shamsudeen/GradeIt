@@ -42,16 +42,28 @@ export default async function SubmissionDetailPage({
   }>;
 }) {
   const { assignmentId, classCode, submissionId } = await params;
-  const { submission } = await getSubmissionsById(submissionId);
+  const [codeResult, listResult] = await Promise.all([
+    getSubmissionsById(submissionId),
+    getSubmissions(assignmentId),
+  ]);
+  const codeSubmission = codeResult.submission;
+  const answerSubmission = listResult.submissions?.find(
+    (s: any) => s.id === submissionId && s.kind === "answer",
+  );
+  const submission = (codeSubmission ?? answerSubmission) as any;
 
   if (!submission) {
     notFound();
   }
 
-  const totalTestCases = submission.testCaseResults.length;
-  const passedTestCases = submission.testCaseResults.filter(
-    (tc) => tc.status === "PASSED",
-  ).length;
+  const isAnswer = submission.kind === "answer";
+
+  const totalTestCases = isAnswer ? 0 : submission.testCaseResults.length;
+  const passedTestCases = isAnswer
+    ? 0
+    : submission.testCaseResults.filter(
+        (tc: { status: string }) => tc.status === "PASSED",
+      ).length;
   const passRate =
     totalTestCases > 0 ? (passedTestCases / totalTestCases) * 100 : 0;
 
@@ -82,7 +94,9 @@ export default async function SubmissionDetailPage({
         <div className="lg:col-span-2">
           <Card className="rounded-2xl border-border">
             <CardHeader>
-              <CardTitle>Submitted Code</CardTitle>
+              <CardTitle>
+                {isAnswer ? "Submitted Answer" : "Submitted Code"}
+              </CardTitle>
               <CardDescription>
                 Submitted on {new Date(submission.submittedAt).toLocaleString()}
               </CardDescription>
@@ -90,114 +104,128 @@ export default async function SubmissionDetailPage({
             <CardContent>
               <div className="rounded-lg bg-muted p-4">
                 <pre className="overflow-x-auto text-sm text-muted-foreground">
-                  <code>{submission.code}</code>
+                  <code>
+                    {isAnswer
+                      ? JSON.stringify(
+                          (submission as any).response ?? {},
+                          null,
+                          2,
+                        )
+                      : submission.code}
+                  </code>
                 </pre>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="mt-6 rounded-2xl border-border">
-            <CardHeader>
-              <CardTitle>Test Results</CardTitle>
-              <CardDescription>
-                {passedTestCases} of {totalTestCases} test cases passed (
-                {Math.round(passRate)}%)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {submission.testCaseResults.map((result, index) => (
-                  <div
-                    key={result.id}
-                    className="rounded-lg border border-border p-4"
-                  >
-                    <div className="mb-2 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={cn(
-                            "flex h-6 w-6 items-center justify-center rounded-full",
-                            result.status === "PASSED" &&
-                              "bg-status-passed text-status-passed-foreground",
-                            result.status === "FAILED" &&
-                              "bg-destructive/10 text-destructive",
-                            result.status === "PENDING" &&
-                              "bg-status-pending text-status-pending-foreground",
-                          )}
-                        >
-                          {result.status === "PASSED" && (
-                            <CheckCircle2 className="h-4 w-4" />
-                          )}
-                          {result.status === "FAILED" && (
-                            <XCircle className="h-4 w-4" />
-                          )}
-                          {result.status === "PENDING" && (
-                            <Clock className="h-4 w-4" />
-                          )}
-                        </div>
-                        <p className="font-medium text-foreground">
-                          Test Case {index + 1}
-                        </p>
-                      </div>
-                      <Badge
-                        className={cn(
-                          result.status === "PASSED" &&
-                            "bg-status-passed text-status-passed-foreground",
-                          result.status === "FAILED" &&
-                            "bg-destructive hover:bg-destructive/90",
-                          result.status === "PENDING" &&
-                            "bg-status-pending text-status-pending-foreground",
-                        )}
+          {!isAnswer && (
+            <Card className="mt-6 rounded-2xl border-border">
+              <CardHeader>
+                <CardTitle>Test Results</CardTitle>
+                <CardDescription>
+                  {passedTestCases} of {totalTestCases} test cases passed (
+                  {Math.round(passRate)}%)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {submission.testCaseResults.map(
+                    (result: any, index: number) => (
+                      <div
+                        key={result.id}
+                        className="rounded-lg border border-border p-4"
                       >
-                        {result.status}
-                      </Badge>
-                    </div>
-
-                    {result.executionTime && (
-                      <p className="mb-2 text-xs text-muted-foreground">
-                        Execution Time: {result.executionTime}ms
-                      </p>
-                    )}
-
-                    <div className="space-y-2 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Input:</p>
-                        <pre className="mt-1 rounded bg-muted p-2 text-xs">
-                          {result.testCase.input}
-                        </pre>
-                      </div>
-
-                      <div>
-                        <p className="text-muted-foreground">
-                          Expected Output:
-                        </p>
-                        <pre className="mt-1 rounded bg-muted p-2 text-xs">
-                          {result.testCase.expectedOutput}
-                        </pre>
-                      </div>
-
-                      {result.actualOutput && (
-                        <div>
-                          <p className="text-muted-foreground">Your Output:</p>
-                          <pre className="mt-1 rounded bg-muted p-2 text-xs">
-                            {result.actualOutput}
-                          </pre>
+                        <div className="mb-2 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={cn(
+                                "flex h-6 w-6 items-center justify-center rounded-full",
+                                result.status === "PASSED" &&
+                                  "bg-status-passed text-status-passed-foreground",
+                                result.status === "FAILED" &&
+                                  "bg-destructive/10 text-destructive",
+                                result.status === "PENDING" &&
+                                  "bg-status-pending text-status-pending-foreground",
+                              )}
+                            >
+                              {result.status === "PASSED" && (
+                                <CheckCircle2 className="h-4 w-4" />
+                              )}
+                              {result.status === "FAILED" && (
+                                <XCircle className="h-4 w-4" />
+                              )}
+                              {result.status === "PENDING" && (
+                                <Clock className="h-4 w-4" />
+                              )}
+                            </div>
+                            <p className="font-medium text-foreground">
+                              Test Case {index + 1}
+                            </p>
+                          </div>
+                          <Badge
+                            className={cn(
+                              result.status === "PASSED" &&
+                                "bg-status-passed text-status-passed-foreground",
+                              result.status === "FAILED" &&
+                                "bg-destructive hover:bg-destructive/90",
+                              result.status === "PENDING" &&
+                                "bg-status-pending text-status-pending-foreground",
+                            )}
+                          >
+                            {result.status}
+                          </Badge>
                         </div>
-                      )}
 
-                      {result.errorMessage && (
-                        <div>
-                          <p className="text-destructive">Error:</p>
-                          <pre className="mt-1 rounded bg-destructive/10 p-2 text-xs text-destructive">
-                            {result.errorMessage}
-                          </pre>
+                        {result.executionTime && (
+                          <p className="mb-2 text-xs text-muted-foreground">
+                            Execution Time: {result.executionTime}ms
+                          </p>
+                        )}
+
+                        <div className="space-y-2 text-sm">
+                          <div>
+                            <p className="text-muted-foreground">Input:</p>
+                            <pre className="mt-1 rounded bg-muted p-2 text-xs">
+                              {result.testCase.input}
+                            </pre>
+                          </div>
+
+                          <div>
+                            <p className="text-muted-foreground">
+                              Expected Output:
+                            </p>
+                            <pre className="mt-1 rounded bg-muted p-2 text-xs">
+                              {result.testCase.expectedOutput}
+                            </pre>
+                          </div>
+
+                          {result.actualOutput && (
+                            <div>
+                              <p className="text-muted-foreground">
+                                Your Output:
+                              </p>
+                              <pre className="mt-1 rounded bg-muted p-2 text-xs">
+                                {result.actualOutput}
+                              </pre>
+                            </div>
+                          )}
+
+                          {result.errorMessage && (
+                            <div>
+                              <p className="text-destructive">Error:</p>
+                              <pre className="mt-1 rounded bg-destructive/10 p-2 text-xs text-destructive">
+                                {result.errorMessage}
+                              </pre>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                      </div>
+                    ),
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div>
@@ -208,7 +236,7 @@ export default async function SubmissionDetailPage({
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Status test D</p>
+                  <p className="text-sm text-muted-foreground">Status</p>
                   <div className="mt-1 flex items-center gap-2">
                     <div
                       className={cn(
@@ -249,15 +277,17 @@ export default async function SubmissionDetailPage({
                   </p>
                 </div>
 
-                <div>
-                  <p className="text-sm text-muted-foreground">Language</p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <LanguageIcon
-                      size={16}
-                      language={submission.language as Language}
-                    />
+                {!isAnswer && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Language</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <LanguageIcon
+                        size={16}
+                        language={submission.language as Language}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {submission.status !== "IN_PROGRESS" && (
                   <>
@@ -278,22 +308,24 @@ export default async function SubmissionDetailPage({
                       </div>
                     )}
 
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Test Cases
-                      </p>
-                      <div className="mt-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium text-foreground">
-                            {passedTestCases}/{totalTestCases} Passed
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {Math.round(passRate)}%
-                          </p>
+                    {!isAnswer && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Test Cases
+                        </p>
+                        <div className="mt-1">
+                          <div className="flex items-center justify-between">
+                            <p className="font-medium text-foreground">
+                              {passedTestCases}/{totalTestCases} Passed
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {Math.round(passRate)}%
+                            </p>
+                          </div>
+                          <Progress value={passRate} className="mt-1 h-2" />
                         </div>
-                        <Progress value={passRate} className="mt-1 h-2" />
                       </div>
-                    </div>
+                    )}
                   </>
                 )}
               </div>

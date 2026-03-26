@@ -18,6 +18,16 @@ const baseCodingFields = {
   description: z.string().min(1, "Question description is required"),
   language: z.string().min(1, "Programming language is required"),
   points: z.number().min(0).default(100),
+  testCaseWeight: z.number().min(0).max(100).default(100),
+  metricsWeight: z.number().min(0).max(100).default(0),
+  questionMetrics: z
+    .array(
+      z.object({
+        id: z.string().min(1, "Metric ID is required"),
+        weight: z.number().min(0).max(100),
+      }),
+    )
+    .optional(),
   order: z.number().default(0),
   sectionId: z.string().optional(),
   content: z
@@ -49,7 +59,7 @@ const codeFillQuestionSchema = z.object({
 const mcqQuestionSchema = z.object({
   type: z.literal("MCQ"),
   title: z.string().min(1, "Question title is required"),
-  description: z.string().min(1, "Question description is required"),
+  description: z.string().default(""),
   points: z.number().min(0).default(100),
   order: z.number().default(0),
   sectionId: z.string().optional(),
@@ -75,7 +85,7 @@ const mcqQuestionSchema = z.object({
 const matchQuestionSchema = z.object({
   type: z.literal("MATCH_FOLLOWING"),
   title: z.string().min(1, "Question title is required"),
-  description: z.string().min(1, "Question description is required"),
+  description: z.string().default(""),
   points: z.number().min(0).default(100),
   order: z.number().default(0),
   sectionId: z.string().optional(),
@@ -101,7 +111,7 @@ const matchQuestionSchema = z.object({
 const fillBlanksQuestionSchema = z.object({
   type: z.literal("FILL_BLANKS"),
   title: z.string().min(1, "Question title is required"),
-  description: z.string().min(1, "Question description is required"),
+  description: z.string().default(""),
   points: z.number().min(0).default(100),
   order: z.number().default(0),
   sectionId: z.string().optional(),
@@ -126,7 +136,7 @@ const fillBlanksQuestionSchema = z.object({
 const openEndedQuestionSchema = z.object({
   type: z.literal("OPEN_ENDED"),
   title: z.string().min(1, "Question title is required"),
-  description: z.string().min(1, "Question description is required"),
+  description: z.string().default(""),
   points: z.number().min(0).default(100),
   order: z.number().default(0),
   sectionId: z.string().optional(),
@@ -146,7 +156,7 @@ const openEndedQuestionSchema = z.object({
 const caseStudyQuestionSchema = z.object({
   type: z.literal("CASE_STUDY"),
   title: z.string().min(1, "Question title is required"),
-  description: z.string().min(1, "Question description is required"),
+  description: z.string().default(""),
   points: z.number().min(0).default(100),
   order: z.number().default(0),
   sectionId: z.string().optional(),
@@ -160,7 +170,7 @@ const caseStudyQuestionSchema = z.object({
 const chainQuestionSchema = z.object({
   type: z.literal("CHAIN_QUESTION"),
   title: z.string().min(1, "Question title is required"),
-  description: z.string().min(1, "Question description is required"),
+  description: z.string().default(""),
   points: z.number().min(0).default(100),
   order: z.number().default(0),
   sectionId: z.string().optional(),
@@ -174,7 +184,7 @@ const chainQuestionSchema = z.object({
 const blockDiagramQuestionSchema = z.object({
   type: z.literal("BLOCK_DIAGRAM"),
   title: z.string().min(1, "Question title is required"),
-  description: z.string().min(1, "Question description is required"),
+  description: z.string().default(""),
   points: z.number().min(0).default(100),
   order: z.number().default(0),
   sectionId: z.string().optional(),

@@ -256,6 +256,11 @@ export async function getSubmissions(assignmentId: string) {
             testCaseResults: true,
           },
         },
+        answers: {
+          include: {
+            question: true,
+          },
+        },
       },
     });
 
@@ -266,9 +271,10 @@ export async function getSubmissions(assignmentId: string) {
       };
     }
 
-    const formattedSubmissions = submission.codeSubmission.map(
+    const formattedCodeSubmissions = submission.codeSubmission.map(
       (codeSubmission) => ({
         id: codeSubmission.id,
+        kind: "code" as const,
         studentId: submission.studentId,
         questionId: codeSubmission.questionId,
         questionTitle: codeSubmission.question.title,
@@ -284,7 +290,28 @@ export async function getSubmissions(assignmentId: string) {
             : undefined,
       }),
     );
-    return { status: "success", submissions: formattedSubmissions };
+    const formattedAnswers = submission.answers.map((answer) => ({
+      id: answer.id,
+      kind: "answer" as const,
+      studentId: submission.studentId,
+      questionId: answer.questionId,
+      questionTitle: answer.question.title,
+      submittedAt: answer.updatedAt,
+      status: submission.status,
+      score: answer.score,
+      response: answer.response,
+      feedback: answer.feedback,
+      evaluationStatus:
+        session.user.role === "FACULTY" ? answer.evaluationStatus : undefined,
+      questionType: answer.question.type,
+    }));
+    return {
+      status: "success",
+      submissions: [...formattedCodeSubmissions, ...formattedAnswers].sort(
+        (a, b) =>
+          new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime(),
+      ),
+    };
   } catch (error) {
     throw new Error("Failed to get submissions " + error);
   }
@@ -410,13 +437,11 @@ export async function getStudentAssignmentProgress(
 
     // Best coding submission per question
     const bestCodingSubmissions = codingQuestions.map((q) => {
-      const subs =
-        studentSubmission?.codeSubmission.filter(
-          (cs) =>
-            cs.questionId === q.id &&
-            cs.codeEvaluationStatus ===
-              CodeEvaluationStatus.EVALUATION_COMPLETE,
-        ) || [];
+      const subs = (studentSubmission?.codeSubmission ?? []).filter(
+        (cs) =>
+          cs.questionId === q.id &&
+          cs.codeEvaluationStatus === CodeEvaluationStatus.EVALUATION_COMPLETE,
+      );
       return subs.sort((a, b) => (b.score || 0) - (a.score || 0))[0];
     });
 
@@ -443,6 +468,31 @@ export async function getStudentAssignmentProgress(
       ...(studentSubmission?.answers.map((a) => a.updatedAt.getTime()) ?? []),
     ];
 
+    const combinedSubmissions = [
+      ...bestCodingSubmissions
+        .filter((cs) => cs !== undefined)
+        .map((cs) => ({
+          id: cs.id,
+          kind: "code",
+          questionId: cs.questionId,
+          score: cs.score || 0,
+          testCaseScore: cs.testCaseScore || 0,
+          metricResults: cs.metricResults || [],
+          codeEvaluationStatus: cs.codeEvaluationStatus,
+          createdAt: cs.createdAt,
+        })),
+      ...(studentSubmission?.answers ?? []).map((a) => ({
+        id: a.id,
+        kind: "answer",
+        questionId: a.questionId,
+        score: a.score || 0,
+        testCaseScore: 0,
+        metricResults: [],
+        codeEvaluationStatus: a.evaluationStatus,
+        createdAt: a.updatedAt,
+      })),
+    ];
+
     return {
       id: student.id,
       name: student.name,
@@ -455,7 +505,7 @@ export async function getStudentAssignmentProgress(
           : null,
       score,
       questionsCompleted,
-      submissions: bestCodingSubmissions.filter((cs) => cs !== undefined) || [],
+      submissions: combinedSubmissions,
     };
   });
 

@@ -11,11 +11,16 @@ export const DEFAULT_QUESTION_BY_TYPE: Record<
 > = {
   CODING: () => ({
     type: "CODING",
+    points: 100,
+    testCaseWeight: 100,
+    metricsWeight: 0,
+    questionMetrics: [],
     language: "Python",
     testCases: [{ id: "1", input: "", expectedOutput: "", hidden: false }],
   }),
   MCQ: () => ({
     type: "MCQ",
+    points: 100,
     content: {
       options: [
         { id: "a", text: "", image: null },
@@ -28,6 +33,7 @@ export const DEFAULT_QUESTION_BY_TYPE: Record<
   }),
   MATCH_FOLLOWING: () => ({
     type: "MATCH_FOLLOWING",
+    points: 100,
     content: {
       leftItems: [
         { id: "l1", text: "" },
@@ -42,6 +48,7 @@ export const DEFAULT_QUESTION_BY_TYPE: Record<
   }),
   FILL_BLANKS: () => ({
     type: "FILL_BLANKS",
+    points: 100,
     content: {
       text: "",
       blanks: [{ id: "blank_1", hint: "" }],
@@ -55,6 +62,7 @@ export const DEFAULT_QUESTION_BY_TYPE: Record<
   }),
   OPEN_ENDED: () => ({
     type: "OPEN_ENDED",
+    points: 100,
     content: {
       prompt: "",
       minWords: 0,
@@ -65,16 +73,19 @@ export const DEFAULT_QUESTION_BY_TYPE: Record<
   }),
   CASE_STUDY: () => ({
     type: "CASE_STUDY",
+    points: 100,
     content: { caseText: "", attachments: [] },
     answerKey: {},
   }),
   CHAIN_QUESTION: () => ({
     type: "CHAIN_QUESTION",
+    points: 100,
     content: { dependsOn: "", context: "" },
     answerKey: {},
   }),
   BLOCK_DIAGRAM: () => ({
     type: "BLOCK_DIAGRAM",
+    points: 100,
     content: { instructions: "", initialNodes: [], initialEdges: [] },
     answerKey: {
       expectedNodes: [],
@@ -84,12 +95,20 @@ export const DEFAULT_QUESTION_BY_TYPE: Record<
   }),
   CODE_DEBUG: () => ({
     type: "CODE_DEBUG",
+    points: 100,
+    testCaseWeight: 100,
+    metricsWeight: 0,
+    questionMetrics: [],
     language: "Python",
     content: { buggyCode: "", hints: [] },
     testCases: [{ id: "1", input: "", expectedOutput: "", hidden: false }],
   }),
   CODE_FILL: () => ({
     type: "CODE_FILL",
+    points: 100,
+    testCaseWeight: 100,
+    metricsWeight: 0,
+    questionMetrics: [],
     language: "Python",
     content: { starterCode: "", hints: [] },
     testCases: [{ id: "1", input: "", expectedOutput: "", hidden: false }],

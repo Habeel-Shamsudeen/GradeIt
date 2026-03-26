@@ -167,6 +167,7 @@ model EvaluationMetric {
   createdAt   DateTime @default(now())
 
   assignments AssignmentMetric[]
+  questionMetrics QuestionMetric[]
   results     SubmissionMetricResult[]
 }
 
@@ -184,13 +185,28 @@ model Question {
   content          Json?
   answerKey        Json?
   points           Float        @default(100)
+  testCaseWeight   Float        @default(100.0)
+  metricsWeight    Float        @default(0.0)
   parentQuestionId String?
   parentQuestion   Question?    @relation("SubQuestions", fields: [parentQuestionId], references: [id])
   subQuestions     Question[]   @relation("SubQuestions")
   testCases        TestCase[]
+  questionMetrics  QuestionMetric[]
   codeSubmission   CodeSubmission[]
   answers          Answer[]
   createdAt        DateTime     @default(now())
+}
+
+model QuestionMetric {
+  id         String           @id @default(uuid())
+  questionId String
+  question   Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  metricId   String
+  metric     EvaluationMetric @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  weight     Float
+  createdAt  DateTime         @default(now())
+
+  @@unique([questionId, metricId])
 }
 
 model TestCase {

@@ -118,6 +118,14 @@ export const createAssignment = async (formData: AssignmentSchema) => {
                 isCoding && "language" in question ? question.language : null,
               order: "order" in question ? (question.order ?? idx) : idx,
               points: "points" in question ? (question.points ?? 100) : 100,
+              testCaseWeight:
+                isCoding && "testCaseWeight" in question
+                  ? (question.testCaseWeight ?? 100)
+                  : 100,
+              metricsWeight:
+                isCoding && "metricsWeight" in question
+                  ? (question.metricsWeight ?? 0)
+                  : 0,
               content:
                 "content" in question
                   ? ((question.content as any) ?? undefined)
@@ -136,6 +144,17 @@ export const createAssignment = async (formData: AssignmentSchema) => {
                       })),
                     }
                   : undefined,
+              questionMetrics:
+                isCoding &&
+                "questionMetrics" in question &&
+                question.questionMetrics?.length
+                  ? {
+                      create: question.questionMetrics.map((metric) => ({
+                        metricId: metric.id,
+                        weight: metric.weight,
+                      })),
+                    }
+                  : undefined,
             };
           }),
         },
@@ -148,26 +167,43 @@ export const createAssignment = async (formData: AssignmentSchema) => {
         where: { assignmentId: assignment.id },
         orderBy: { order: "asc" },
       });
+      const sectionIdByInputId = new Map<string, string>();
+      sections.forEach((section, index) => {
+        const sid = createdSections[index]?.id;
+        if (sid && section.id) {
+          sectionIdByInputId.set(section.id, sid);
+        }
+      });
+
       const createdQuestions = await prisma.question.findMany({
         where: { assignmentId: assignment.id },
         orderBy: { order: "asc" },
       });
 
-      let qIdx = 0;
-      for (let sIdx = 0; sIdx < sections.length; sIdx++) {
-        const sectionQuestionCount = sections[sIdx].questions.length;
-        const section = createdSections[sIdx];
-        if (!section) continue;
-        for (
-          let j = 0;
-          j < sectionQuestionCount && qIdx < createdQuestions.length;
-          j++, qIdx++
-        ) {
-          await prisma.question.update({
-            where: { id: createdQuestions[qIdx].id },
-            data: { sectionId: section.id },
-          });
-        }
+      const sortedInputQuestions = questions
+        .map((question, idx) => ({
+          question,
+          order: "order" in question ? (question.order ?? idx) : idx,
+        }))
+        .sort((a, b) => a.order - b.order);
+
+      for (
+        let questionIndex = 0;
+        questionIndex < sortedInputQuestions.length;
+        questionIndex++
+      ) {
+        const created = createdQuestions[questionIndex];
+        if (!created) continue;
+        const inputQuestion = sortedInputQuestions[questionIndex].question;
+        const mappedSectionId =
+          "sectionId" in inputQuestion && inputQuestion.sectionId
+            ? (sectionIdByInputId.get(inputQuestion.sectionId) ?? null)
+            : null;
+
+        await prisma.question.update({
+          where: { id: created.id },
+          data: { sectionId: mappedSectionId },
+        });
       }
     }
 
@@ -229,7 +265,7 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
       startDate,
       allowLateSubmission,
       questions,
-      sections: _sections,
+      sections,
       metrics,
       copyPastePrevention,
       fullScreenEnforcement,
@@ -277,18 +313,51 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
           },
         });
 
+        const createdSections = sections?.length
+          ? await Promise.all(
+              sections.map((section) =>
+                tx.section.create({
+                  data: {
+                    assignmentId,
+                    title: section.title,
+                    description: section.description ?? null,
+                    order: section.order,
+                  },
+                }),
+              ),
+            )
+          : [];
+
+        const sectionIdByInputId = new Map<string, string>();
+        sections?.forEach((section, index) => {
+          const sid = createdSections[index]?.id;
+          if (sid && section.id) {
+            sectionIdByInputId.set(section.id, sid);
+          }
+        });
+
         await tx.question.createMany({
           data: questions.map((q, idx) => {
             const qType = ("type" in q ? q.type : "CODING") as QuestionType;
             const isCoding = CODING_TYPES.includes(qType);
             return {
               assignmentId,
+              sectionId:
+                "sectionId" in q && q.sectionId
+                  ? (sectionIdByInputId.get(q.sectionId) ?? null)
+                  : null,
               type: qType,
               title: q.title,
               description: q.description,
               language: isCoding && "language" in q ? q.language : null,
               order: "order" in q ? (q.order ?? idx) : idx,
               points: "points" in q ? (q.points ?? 100) : 100,
+              testCaseWeight:
+                isCoding && "testCaseWeight" in q
+                  ? (q.testCaseWeight ?? 100)
+                  : 100,
+              metricsWeight:
+                isCoding && "metricsWeight" in q ? (q.metricsWeight ?? 0) : 0,
               content:
                 "content" in q ? ((q.content as any) ?? undefined) : undefined,
               answerKey:
@@ -301,11 +370,18 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
 
         const createdQuestions = await tx.question.findMany({
           where: { assignmentId },
-          orderBy: { createdAt: "asc" },
+          orderBy: { order: "asc" },
         });
 
-        for (let i = 0; i < questions.length; i++) {
-          const q = questions[i];
+        const sortedInputQuestions = questions
+          .map((q, idx) => ({
+            q,
+            order: "order" in q ? (q.order ?? idx) : idx,
+          }))
+          .sort((a, b) => a.order - b.order);
+
+        for (let i = 0; i < sortedInputQuestions.length; i++) {
+          const q = sortedInputQuestions[i].q;
           const created = createdQuestions[i];
           if (!created) continue;
           const qType = ("type" in q ? q.type : "CODING") as string;
@@ -318,6 +394,15 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
                 hidden: tc.hidden,
               })),
             });
+            if ("questionMetrics" in q && q.questionMetrics?.length) {
+              await tx.questionMetric.createMany({
+                data: q.questionMetrics.map((m) => ({
+                  questionId: created.id,
+                  metricId: m.id,
+                  weight: m.weight,
+                })),
+              });
+            }
           }
         }
 
@@ -333,6 +418,13 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
       },
       { timeout: 30_000 },
     );
+    await prisma.submission.updateMany({
+      where: { assignmentId },
+      data: {
+        finalScore: 0,
+        status: SubmissionStatus.NOT_STARTED,
+      },
+    });
 
     const classCode = assignment.classroom.code;
     revalidatePath(`/classes/${classCode}`);
@@ -517,6 +609,11 @@ export const getAssignmentById = cache(async (assignmentId: string) => {
           include: {
             testCases: true,
             codeSubmission: true,
+            questionMetrics: {
+              include: {
+                metric: true,
+              },
+            },
           },
           orderBy: { order: "asc" },
         },
@@ -526,6 +623,11 @@ export const getAssignmentById = cache(async (assignmentId: string) => {
               include: {
                 testCases: true,
                 codeSubmission: true,
+                questionMetrics: {
+                  include: {
+                    metric: true,
+                  },
+                },
               },
               orderBy: { order: "asc" },
             },
@@ -624,11 +726,10 @@ export const getAssignmentGradingTableHeader = async (
     const assignment = await prisma.assignment.findUnique({
       where: { id: assignmentId },
       include: {
-        metrics: {
-          include: {
-            metric: true,
-          },
+        questions: {
+          orderBy: { order: "asc" },
         },
+        metrics: { include: { metric: true } },
       },
     });
 
@@ -650,19 +751,9 @@ export const getAssignmentGradingTableHeader = async (
         sortable: true,
         width: "200px",
       },
-      ...(assignment.testCaseWeight > 0
-        ? [
-            {
-              key: "testCases",
-              label: `Test Cases (${assignment.testCaseWeight}%)`,
-              sortable: true,
-              width: "120px",
-            },
-          ]
-        : []),
-      ...assignment.metrics.map((assignmentMetric) => ({
-        key: `metric_${assignmentMetric.metric.id}`,
-        label: `${assignmentMetric.metric.name} (${assignmentMetric.weight * (assignment.metricsWeight / 100)}%)`,
+      ...assignment.questions.map((question, index) => ({
+        key: `question_${question.id}`,
+        label: `Q${index + 1} (${question.points}pts)`,
         sortable: true,
         width: "120px",
       })),

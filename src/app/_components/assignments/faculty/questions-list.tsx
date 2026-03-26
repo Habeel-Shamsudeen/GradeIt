@@ -14,6 +14,8 @@ import {
   Box,
   Bug,
   FileCode,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -57,11 +59,15 @@ const QUESTION_TYPE_ICONS: Record<QuestionType, typeof Code> = {
 
 interface QuestionsListProps {
   questions: Question[];
+  sections: { id: string; title: string }[];
+  existingMetrics: { id: string; name: string; description?: string | null }[];
   onQuestionsChange: (questions: Question[]) => void;
 }
 
 export function QuestionsList({
   questions,
+  sections,
+  existingMetrics,
   onQuestionsChange,
 }: QuestionsListProps) {
   const questionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -90,6 +96,7 @@ export function QuestionsList({
       id: `${Date.now()}`,
       title: "",
       description: "",
+      sectionId: sections[0]?.id ?? null,
       ...defaults,
     };
     lastAddedQuestionId.current = newQuestion.id;
@@ -107,6 +114,14 @@ export function QuestionsList({
     const newQuestions = [...questions];
     newQuestions[index] = updatedQuestion;
     onQuestionsChange(newQuestions);
+  };
+
+  const moveQuestion = (index: number, direction: -1 | 1) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= questions.length) return;
+    const next = [...questions];
+    [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+    onQuestionsChange(next);
   };
 
   const changeQuestionType = (index: number, newType: QuestionType) => {
@@ -213,10 +228,36 @@ export function QuestionsList({
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Remove question</span>
                       </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveQuestion(index, -1);
+                        }}
+                        className="mr-1 h-8 w-8 rounded-full p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+                      >
+                        <ArrowUp className="h-4 w-4" />
+                        <span className="sr-only">Move up</span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveQuestion(index, 1);
+                        }}
+                        className="mr-2 h-8 w-8 rounded-full p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+                      >
+                        <ArrowDown className="h-4 w-4" />
+                        <span className="sr-only">Move down</span>
+                      </Button>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-6">
-                    <div className="mb-4">
+                    <div className="mb-4 flex flex-wrap gap-3">
                       <Select
                         value={qType}
                         onValueChange={(val) =>
@@ -239,11 +280,33 @@ export function QuestionsList({
                           ))}
                         </SelectContent>
                       </Select>
+                      <Select
+                        value={question.sectionId ?? "none"}
+                        onValueChange={(val) =>
+                          updateQuestion(index, {
+                            ...question,
+                            sectionId: val === "none" ? null : val,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="w-48 bg-background border-border text-sm">
+                          <SelectValue placeholder="Select section" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No Section</SelectItem>
+                          {sections.map((section) => (
+                            <SelectItem key={section.id} value={section.id}>
+                              {section.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {isCoding ? (
                       <QuestionForm
                         question={question}
+                        existingMetrics={existingMetrics}
                         onChange={(updatedQuestion) =>
                           updateQuestion(index, updatedQuestion)
                         }
@@ -282,7 +345,23 @@ export function QuestionsList({
                               }
                               placeholder="Provide instructions for this question..."
                               className="flex min-h-20 w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground resize-y"
-                              required
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <label className="text-sm font-medium text-foreground">
+                              Question Points
+                            </label>
+                            <input
+                              type="number"
+                              min={0}
+                              value={question.points ?? 100}
+                              onChange={(e) =>
+                                updateQuestion(index, {
+                                  ...question,
+                                  points: Number(e.target.value) || 0,
+                                })
+                              }
+                              className="flex h-10 w-40 rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground"
                             />
                           </div>
                         </div>
@@ -294,6 +373,7 @@ export function QuestionsList({
                     ) : (
                       <QuestionForm
                         question={question}
+                        existingMetrics={existingMetrics}
                         onChange={(updatedQuestion) =>
                           updateQuestion(index, updatedQuestion)
                         }

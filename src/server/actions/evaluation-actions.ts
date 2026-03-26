@@ -66,6 +66,7 @@ export async function evaluateAnswerById(answerId: string) {
         feedback: "Evaluation failed. Manual review may be required.",
       },
     });
+    await updateSubmissionStatus(answer.submissionId);
     throw error;
   }
 }

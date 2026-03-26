@@ -1,7 +1,4 @@
-import {
-  AssignmentMetric,
-  EvaluationMetric,
-} from "@/app/generated/prisma/client";
+import { EvaluationMetric } from "@/app/generated/prisma/client";
 import { groq } from "@ai-sdk/groq";
 import { generateText } from "ai";
 
@@ -10,7 +7,11 @@ interface CodeEvaluationRequest {
   language: string;
   questionTitle: string;
   questionDescription: string;
-  metrics: (AssignmentMetric & { metric: EvaluationMetric })[];
+  metrics: {
+    metricId: string;
+    weight: number;
+    metric: EvaluationMetric;
+  }[];
 }
 
 interface MetricEvaluationResult {
