@@ -5,7 +5,7 @@ import { FacultyView } from "@/app/_components/assignments/faculty/faculty-view"
 import { getUserRole } from "@/server/actions/user-actions";
 import { getAssignmentById } from "@/server/actions/assignment-actions";
 import { getStudentAssignmentProgress } from "@/server/actions/submission-actions";
-import { StudentProgress } from "@/lib/types/assignment-tyes";
+import type { AssignmentById } from "@/lib/types/assignment-tyes";
 
 type AssignmentPageProps = {
   params: Promise<{ assignmentId: string; classCode: string }>;
@@ -37,15 +37,19 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
     notFound();
   }
 
+  const typedAssignment = assignment as unknown as AssignmentById;
+
   if (role === "FACULTY") {
     return (
       <FacultyView
-        assignment={assignment}
+        assignment={typedAssignment}
         classCode={classCode}
         initialStudents={initialStudentData}
       />
     );
   }
 
-  return <AssignmentLayout assignment={assignment} classCode={classCode} />;
+  return (
+    <AssignmentLayout assignment={typedAssignment} classCode={classCode} />
+  );
 }

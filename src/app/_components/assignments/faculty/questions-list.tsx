@@ -2,7 +2,19 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Code } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Code,
+  ListChecks,
+  Link2,
+  Type,
+  FileText,
+  GitBranch,
+  Box,
+  Bug,
+  FileCode,
+} from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {
   Accordion,
@@ -10,8 +22,38 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/app/_components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/_components/ui/select";
 import { QuestionForm } from "./question-form";
-import { Question } from "@/lib/types/assignment-tyes";
+import {
+  Question,
+  QuestionType,
+  QUESTION_TYPE_LABELS,
+} from "@/lib/types/assignment-tyes";
+import {
+  getQuestionBuilder,
+  isCodingBuilderType,
+  DEFAULT_QUESTION_BY_TYPE,
+} from "./builders";
+import { Badge } from "@/app/_components/ui/badge";
+
+const QUESTION_TYPE_ICONS: Record<QuestionType, typeof Code> = {
+  CODING: Code,
+  MCQ: ListChecks,
+  MATCH_FOLLOWING: Link2,
+  FILL_BLANKS: Type,
+  OPEN_ENDED: FileText,
+  CASE_STUDY: FileText,
+  CHAIN_QUESTION: GitBranch,
+  BLOCK_DIAGRAM: Box,
+  CODE_DEBUG: Bug,
+  CODE_FILL: FileCode,
+};
 
 interface QuestionsListProps {
   questions: Question[];
@@ -42,20 +84,13 @@ export function QuestionsList({
     }
   }, [questions]);
 
-  const addQuestion = () => {
+  const addQuestion = (type: QuestionType = "CODING") => {
+    const defaults = DEFAULT_QUESTION_BY_TYPE[type]();
     const newQuestion: Question = {
-      id: `${questions.length + 1}`,
+      id: `${Date.now()}`,
       title: "",
       description: "",
-      language: "Python",
-      testCases: [
-        {
-          id: "1",
-          input: "",
-          expectedOutput: "",
-          hidden: false,
-        },
-      ],
+      ...defaults,
     };
     lastAddedQuestionId.current = newQuestion.id;
     setOpenAccordion(newQuestion.id);
@@ -73,78 +108,203 @@ export function QuestionsList({
     newQuestions[index] = updatedQuestion;
     onQuestionsChange(newQuestions);
   };
+
+  const changeQuestionType = (index: number, newType: QuestionType) => {
+    const q = questions[index];
+    const defaults = DEFAULT_QUESTION_BY_TYPE[newType]();
+    updateQuestion(index, {
+      ...q,
+      ...defaults,
+      id: q.id,
+      title: q.title,
+      description: q.description,
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium text-foreground">Questions</h2>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={addQuestion}
-          className="gap-1 border border-border"
-        >
-          <Plus className="h-4 w-4" />
-          Add Question
-        </Button>
+        <div className="flex items-center gap-2">
+          <Select onValueChange={(val) => addQuestion(val as QuestionType)}>
+            <SelectTrigger className="w-48 border-border">
+              <SelectValue placeholder="Add question..." />
+            </SelectTrigger>
+            <SelectContent>
+              {(
+                Object.entries(QUESTION_TYPE_LABELS) as [QuestionType, string][]
+              ).map(([type, label]) => {
+                const Icon = QUESTION_TYPE_ICONS[type];
+                return (
+                  <SelectItem key={type} value={type}>
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4" />
+                      {label}
+                    </div>
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => addQuestion("CODING")}
+            className="gap-1 border border-border"
+          >
+            <Plus className="h-4 w-4" />
+            Coding Q
+          </Button>
+        </div>
       </div>
 
       <AnimatePresence>
-        {questions.map((question, index) => (
-          <motion.div
-            key={question.id}
-            ref={(el) => {
-              questionRefs.current[question.id] = el;
-            }}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Accordion
-              type="single"
-              collapsible
-              value={openAccordion}
-              onValueChange={setOpenAccordion}
+        {questions.map((question, index) => {
+          const qType = (question.type ?? "CODING") as QuestionType;
+          const Icon = QUESTION_TYPE_ICONS[qType] ?? Code;
+          const isCoding = isCodingBuilderType(qType);
+          const Builder = !isCoding ? getQuestionBuilder(qType) : null;
+
+          return (
+            <motion.div
+              key={question.id}
+              ref={(el) => {
+                questionRefs.current[question.id] = el;
+              }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
             >
-              <AccordionItem
-                value={question.id}
-                className="rounded-2xl border border-border bg-background"
+              <Accordion
+                type="single"
+                collapsible
+                value={openAccordion}
+                onValueChange={setOpenAccordion}
               >
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  <div className="flex flex-1 items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Code className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium text-foreground">
-                        {question.title || `Question ${index + 1}`}
-                      </span>
+                <AccordionItem
+                  value={question.id}
+                  className="rounded-2xl border border-border bg-background"
+                >
+                  <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                    <div className="flex flex-1 items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-foreground">
+                          {question.title || `Question ${index + 1}`}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] px-1.5 py-0"
+                        >
+                          {QUESTION_TYPE_LABELS[qType]}
+                        </Badge>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeQuestion(index);
+                        }}
+                        className="mr-2 h-8 w-8 rounded-full p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Remove question</span>
+                      </Button>
                     </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeQuestion(index);
-                      }}
-                      className="mr-2 h-8 w-8 rounded-full p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Remove question</span>
-                    </Button>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6">
-                  <QuestionForm
-                    question={question}
-                    onChange={(updatedQuestion) =>
-                      updateQuestion(index, updatedQuestion)
-                    }
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </motion.div>
-        ))}
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-6">
+                    <div className="mb-4">
+                      <Select
+                        value={qType}
+                        onValueChange={(val) =>
+                          changeQuestionType(index, val as QuestionType)
+                        }
+                      >
+                        <SelectTrigger className="w-48 bg-background border-border text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(
+                            Object.entries(QUESTION_TYPE_LABELS) as [
+                              QuestionType,
+                              string,
+                            ][]
+                          ).map(([type, label]) => (
+                            <SelectItem key={type} value={type}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {isCoding ? (
+                      <QuestionForm
+                        question={question}
+                        onChange={(updatedQuestion) =>
+                          updateQuestion(index, updatedQuestion)
+                        }
+                      />
+                    ) : Builder ? (
+                      <div className="space-y-4">
+                        <div className="grid gap-4">
+                          <div className="grid gap-2">
+                            <label className="text-sm font-medium text-foreground">
+                              Question Title
+                            </label>
+                            <input
+                              value={question.title}
+                              onChange={(e) =>
+                                updateQuestion(index, {
+                                  ...question,
+                                  title: e.target.value,
+                                })
+                              }
+                              placeholder="e.g., Select the correct answer"
+                              className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground"
+                              required
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <label className="text-sm font-medium text-foreground">
+                              Description
+                            </label>
+                            <textarea
+                              value={question.description}
+                              onChange={(e) =>
+                                updateQuestion(index, {
+                                  ...question,
+                                  description: e.target.value,
+                                })
+                              }
+                              placeholder="Provide instructions for this question..."
+                              className="flex min-h-20 w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground resize-y"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <Builder
+                          question={question}
+                          onChange={(q) => updateQuestion(index, q)}
+                        />
+                      </div>
+                    ) : (
+                      <QuestionForm
+                        question={question}
+                        onChange={(updatedQuestion) =>
+                          updateQuestion(index, updatedQuestion)
+                        }
+                      />
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
     </div>
   );

@@ -12,7 +12,11 @@ import {
 import { revalidatePath } from "next/cache";
 import { getClassbyCode } from "./class-actions";
 import { getClassIdFromCode } from "./utility-actions";
-import { Role, SubmissionStatus } from "@/app/generated/prisma/client";
+import {
+  Role,
+  SubmissionStatus,
+  QuestionType,
+} from "@/app/generated/prisma/client";
 import { GradingTableHeaderResponse } from "@/lib/types/assignment-tyes";
 import {
   isAssignmentUpcoming,
@@ -56,6 +60,7 @@ export const createAssignment = async (formData: AssignmentSchema) => {
       allowLateSubmission,
       classCode,
       questions,
+      sections,
       metrics,
       copyPastePrevention,
       fullScreenEnforcement,
@@ -67,6 +72,9 @@ export const createAssignment = async (formData: AssignmentSchema) => {
     if (!classroomId) {
       return { status: "error", message: "Classroom not found" };
     }
+
+    const CODING_TYPES: string[] = ["CODING", "CODE_DEBUG", "CODE_FILL"];
+
     const assignment = await prisma.assignment.create({
       data: {
         title,
@@ -87,22 +95,81 @@ export const createAssignment = async (formData: AssignmentSchema) => {
               })),
             }
           : undefined,
-        questions: {
-          create: questions.map((question) => ({
-            title: question.title,
-            description: question.description,
-            language: question.language,
-            testCases: {
-              create: question.testCases.map((testCase) => ({
-                input: testCase.input,
-                expectedOutput: testCase.expectedOutput,
-                hidden: testCase.hidden,
+        sections: sections
+          ? {
+              create: sections.map((section) => ({
+                title: section.title,
+                description: section.description,
+                order: section.order,
               })),
-            },
-          })),
+            }
+          : undefined,
+        questions: {
+          create: questions.map((question, idx) => {
+            const qType = (
+              "type" in question ? question.type : "CODING"
+            ) as QuestionType;
+            const isCoding = CODING_TYPES.includes(qType);
+            return {
+              type: qType,
+              title: question.title,
+              description: question.description,
+              language:
+                isCoding && "language" in question ? question.language : null,
+              order: "order" in question ? (question.order ?? idx) : idx,
+              points: "points" in question ? (question.points ?? 100) : 100,
+              content:
+                "content" in question
+                  ? ((question.content as any) ?? undefined)
+                  : undefined,
+              answerKey:
+                "answerKey" in question
+                  ? ((question.answerKey as any) ?? undefined)
+                  : undefined,
+              testCases:
+                isCoding && "testCases" in question
+                  ? {
+                      create: question.testCases.map((testCase) => ({
+                        input: testCase.input,
+                        expectedOutput: testCase.expectedOutput,
+                        hidden: testCase.hidden,
+                      })),
+                    }
+                  : undefined,
+            };
+          }),
         },
       },
     });
+
+    // Link questions to sections if sections were created
+    if (sections?.length) {
+      const createdSections = await prisma.section.findMany({
+        where: { assignmentId: assignment.id },
+        orderBy: { order: "asc" },
+      });
+      const createdQuestions = await prisma.question.findMany({
+        where: { assignmentId: assignment.id },
+        orderBy: { order: "asc" },
+      });
+
+      let qIdx = 0;
+      for (let sIdx = 0; sIdx < sections.length; sIdx++) {
+        const sectionQuestionCount = sections[sIdx].questions.length;
+        const section = createdSections[sIdx];
+        if (!section) continue;
+        for (
+          let j = 0;
+          j < sectionQuestionCount && qIdx < createdQuestions.length;
+          j++, qIdx++
+        ) {
+          await prisma.question.update({
+            where: { id: createdQuestions[qIdx].id },
+            data: { sectionId: section.id },
+          });
+        }
+      }
+    }
 
     //create a submission for each student in the class
     const students = await prisma.user.findMany({
@@ -162,6 +229,7 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
       startDate,
       allowLateSubmission,
       questions,
+      sections: _sections,
       metrics,
       copyPastePrevention,
       fullScreenEnforcement,
@@ -186,14 +254,14 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
       };
     }
 
+    const CODING_TYPES: string[] = ["CODING", "CODE_DEBUG", "CODE_FILL"];
+
     await prisma.$transaction(
       async (tx) => {
-        await tx.assignmentMetric.deleteMany({
-          where: { assignmentId },
-        });
-        await tx.question.deleteMany({
-          where: { assignmentId },
-        });
+        await tx.assignmentMetric.deleteMany({ where: { assignmentId } });
+        await tx.section.deleteMany({ where: { assignmentId } });
+        await tx.question.deleteMany({ where: { assignmentId } });
+
         await tx.assignment.update({
           where: { id: assignmentId },
           data: {
@@ -208,31 +276,51 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
             metricsWeight,
           },
         });
+
         await tx.question.createMany({
-          data: questions.map((q) => ({
-            assignmentId,
-            title: q.title,
-            description: q.description,
-            language: q.language,
-          })),
+          data: questions.map((q, idx) => {
+            const qType = ("type" in q ? q.type : "CODING") as QuestionType;
+            const isCoding = CODING_TYPES.includes(qType);
+            return {
+              assignmentId,
+              type: qType,
+              title: q.title,
+              description: q.description,
+              language: isCoding && "language" in q ? q.language : null,
+              order: "order" in q ? (q.order ?? idx) : idx,
+              points: "points" in q ? (q.points ?? 100) : 100,
+              content:
+                "content" in q ? ((q.content as any) ?? undefined) : undefined,
+              answerKey:
+                "answerKey" in q
+                  ? ((q.answerKey as any) ?? undefined)
+                  : undefined,
+            };
+          }),
         });
+
         const createdQuestions = await tx.question.findMany({
           where: { assignmentId },
           orderBy: { createdAt: "asc" },
         });
+
         for (let i = 0; i < questions.length; i++) {
           const q = questions[i];
           const created = createdQuestions[i];
           if (!created) continue;
-          await tx.testCase.createMany({
-            data: q.testCases.map((tc) => ({
-              questionId: created.id,
-              input: tc.input,
-              expectedOutput: tc.expectedOutput,
-              hidden: tc.hidden,
-            })),
-          });
+          const qType = ("type" in q ? q.type : "CODING") as string;
+          if (CODING_TYPES.includes(qType) && "testCases" in q) {
+            await tx.testCase.createMany({
+              data: q.testCases.map((tc) => ({
+                questionId: created.id,
+                input: tc.input,
+                expectedOutput: tc.expectedOutput,
+                hidden: tc.hidden,
+              })),
+            });
+          }
         }
+
         if (metrics?.length) {
           await tx.assignmentMetric.createMany({
             data: metrics.map((m) => ({
@@ -243,9 +331,7 @@ export const updateAssignment = async (formData: AssignmentUpdateSchema) => {
           });
         }
       },
-      {
-        timeout: 30_000, // 30s for large assignments (many questions/test cases)
-      },
+      { timeout: 30_000 },
     );
 
     const classCode = assignment.classroom.code;
@@ -432,10 +518,24 @@ export const getAssignmentById = cache(async (assignmentId: string) => {
             testCases: true,
             codeSubmission: true,
           },
+          orderBy: { order: "asc" },
+        },
+        sections: {
+          include: {
+            questions: {
+              include: {
+                testCases: true,
+                codeSubmission: true,
+              },
+              orderBy: { order: "asc" },
+            },
+          },
+          orderBy: { order: "asc" },
         },
         submissions: {
           include: {
             codeSubmission: true,
+            answers: true,
           },
         },
         metrics: {
@@ -487,11 +587,19 @@ export const getAssignmentById = cache(async (assignmentId: string) => {
       allowLateSubmission: assignment.allowLateSubmission,
       questionCount: assignment.questions.length,
       submissionCount: assignment.submissions.reduce(
-        (acc, submission) => acc + submission.codeSubmission.length,
+        (acc, submission) =>
+          acc + submission.codeSubmission.length + submission.answers.length,
         0,
       ),
       createdAt: new Date(assignment.createdAt),
       questions: assignment.questions,
+      sections: assignment.sections.map((s) => ({
+        id: s.id,
+        title: s.title,
+        description: s.description,
+        order: s.order,
+        questions: s.questions,
+      })),
       copyPastePrevention: assignment.copyPastePrevention,
       fullScreenEnforcement: assignment.fullScreenEnforcement,
       testCaseWeight: assignment.testCaseWeight,

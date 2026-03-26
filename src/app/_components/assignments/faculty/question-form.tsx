@@ -74,7 +74,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
             Programming Language
           </Label>
           <Select
-            value={question.language}
+            value={question.language ?? "Python"}
             onValueChange={(value) => updateField("language", value)}
           >
             <SelectTrigger
@@ -97,11 +97,11 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
       <Separator className="my-6 bg-border" />
 
       <TestCasesList
-        testCases={question.testCases}
+        testCases={question.testCases ?? []}
         onTestCasesChange={(testCases) => updateField("testCases", testCases)}
         questionTitle={question.title}
         questionDescription={question.description}
-        questionLanguage={question.language}
+        questionLanguage={question.language ?? "Python"}
         questionId={question.id}
       />
     </div>

@@ -123,6 +123,7 @@ export async function updateSubmissionStatus(submissionId: string) {
     where: { id: submissionId },
     include: {
       codeSubmission: true,
+      answers: true,
       assignment: {
         include: {
           questions: true,
@@ -131,39 +132,82 @@ export async function updateSubmissionStatus(submissionId: string) {
     },
   });
   if (!submission) {
-    throw new Error("Code submission not found");
+    throw new Error("Submission not found");
   }
-  const questionIds = submission.assignment.questions.map((q) => q.id);
 
-  // get the best submission for each question
-  const bestSubmissions = questionIds.map((questionId) => {
-    const submissions = submission.codeSubmission.filter(
+  const CODING_TYPES = ["CODING", "CODE_DEBUG", "CODE_FILL"];
+  const codingQuestions = submission.assignment.questions.filter((q) =>
+    CODING_TYPES.includes(q.type),
+  );
+  const nonCodingQuestions = submission.assignment.questions.filter(
+    (q) => !CODING_TYPES.includes(q.type),
+  );
+
+  const totalQuestions = submission.assignment.questions.length;
+  const questionScores: {
+    questionId: string;
+    score: number;
+    points: number;
+  }[] = [];
+
+  // Score coding questions (best CodeSubmission per question)
+  for (const q of codingQuestions) {
+    const completedSubs = submission.codeSubmission.filter(
       (cs) =>
-        cs.questionId === questionId &&
+        cs.questionId === q.id &&
         cs.codeEvaluationStatus === CodeEvaluationStatus.EVALUATION_COMPLETE,
     );
-    const bestSubmission = submissions.sort(
+    const best = completedSubs.sort(
       (a, b) => (b.score || 0) - (a.score || 0),
     )[0];
-    return bestSubmission;
-  });
+    if (best) {
+      questionScores.push({
+        questionId: q.id,
+        score: best.score || 0,
+        points: q.points,
+      });
+    }
+  }
 
-  // calculate the final score
+  // Score non-coding questions (Answer records)
+  const TERMINAL_STATUSES = [
+    "AUTO_EVALUATED",
+    "EVALUATION_COMPLETE",
+    "MANUAL_REVIEW_REQUIRED",
+  ];
+  for (const q of nonCodingQuestions) {
+    const answer = submission.answers.find(
+      (a) =>
+        a.questionId === q.id && TERMINAL_STATUSES.includes(a.evaluationStatus),
+    );
+    if (answer) {
+      questionScores.push({
+        questionId: q.id,
+        score: answer.score,
+        points: q.points,
+      });
+    }
+  }
 
-  const validSubmissions = bestSubmissions.filter((cs) => cs !== undefined);
+  if (questionScores.length === totalQuestions && totalQuestions > 0) {
+    const totalPoints = questionScores.reduce((acc, qs) => acc + qs.points, 0);
+    const weightedScore =
+      totalPoints > 0
+        ? questionScores.reduce(
+            (acc, qs) => acc + (qs.score * qs.points) / totalPoints,
+            0,
+          )
+        : questionScores.reduce((acc, qs) => acc + qs.score, 0) /
+          questionScores.length;
 
-  if (validSubmissions.length === questionIds.length) {
-    const finalScore =
-      validSubmissions.reduce((acc, cs) => acc + (cs.score || 0), 0) /
-      validSubmissions.length;
     await prisma.submission.update({
       where: { id: submissionId },
       data: {
         status: SubmissionStatus.COMPLETED,
-        finalScore: finalScore,
+        finalScore: Math.min(100, Math.max(0, weightedScore)),
       },
     });
-  } else if (validSubmissions.length > 0) {
+  } else if (questionScores.length > 0) {
     await prisma.submission.update({
       where: { id: submissionId },
       data: {
@@ -326,7 +370,9 @@ export async function getStudentAssignmentProgress(
 
   const assignment = classroom.assignments[0];
 
-  // 2. Get all submissions for this assignment with metric results
+  const CODING_TYPES = ["CODING", "CODE_DEBUG", "CODE_FILL"];
+
+  // 2. Get all submissions for this assignment with metric results and answers
   const submissions = await prisma.submission.findMany({
     where: {
       assignmentId: assignmentId,
@@ -342,40 +388,61 @@ export async function getStudentAssignmentProgress(
           },
         },
       },
+      answers: true,
     },
   });
 
   // 3. Process student data using database values directly
   const studentsProgress = classroom.students.map((student) => {
-    // Get this student's submission for this assignment
     const studentSubmission = submissions.find(
       (s) => s.studentId === student.id,
     );
 
     const status = studentSubmission?.status || "NOT_STARTED";
-
     const score = studentSubmission?.finalScore || 0;
 
-    // Get the best submission for each question (same logic as updateSubmissionStatus)
-    const questionIds = assignment.questions.map((q) => q.id);
-    const bestSubmissions = questionIds.map((questionId) => {
-      const submissions =
+    const codingQuestions = assignment.questions.filter((q) =>
+      CODING_TYPES.includes(q.type),
+    );
+    const nonCodingQuestions = assignment.questions.filter(
+      (q) => !CODING_TYPES.includes(q.type),
+    );
+
+    // Best coding submission per question
+    const bestCodingSubmissions = codingQuestions.map((q) => {
+      const subs =
         studentSubmission?.codeSubmission.filter(
           (cs) =>
-            cs.questionId === questionId &&
+            cs.questionId === q.id &&
             cs.codeEvaluationStatus ===
               CodeEvaluationStatus.EVALUATION_COMPLETE,
         ) || [];
-      const bestSubmission = submissions.sort(
-        (a, b) => (b.score || 0) - (a.score || 0),
-      )[0];
-      return bestSubmission;
+      return subs.sort((a, b) => (b.score || 0) - (a.score || 0))[0];
     });
 
-    // Count questions completed (has completed evaluation)
-    const questionsCompleted = bestSubmissions.filter(
-      (cs) => cs !== undefined,
-    ).length;
+    // Evaluated answers for non-coding questions
+    const TERMINAL = [
+      "AUTO_EVALUATED",
+      "EVALUATION_COMPLETE",
+      "MANUAL_REVIEW_REQUIRED",
+    ];
+    const evaluatedAnswers = nonCodingQuestions.filter((q) =>
+      studentSubmission?.answers.some(
+        (a) => a.questionId === q.id && TERMINAL.includes(a.evaluationStatus),
+      ),
+    );
+
+    const questionsCompleted =
+      bestCodingSubmissions.filter((cs) => cs !== undefined).length +
+      evaluatedAnswers.length;
+
+    const allTimestamps = [
+      ...(studentSubmission?.codeSubmission.map((cs) =>
+        cs.createdAt.getTime(),
+      ) ?? []),
+      ...(studentSubmission?.answers.map((a) => a.updatedAt.getTime()) ?? []),
+    ];
+
     return {
       id: student.id,
       name: student.name,
@@ -383,19 +450,12 @@ export async function getStudentAssignmentProgress(
       avatar: student.image || "",
       status,
       submittedAt:
-        studentSubmission?.codeSubmission &&
-        studentSubmission.codeSubmission.length > 0
-          ? new Date(
-              Math.max(
-                ...studentSubmission.codeSubmission.map((cs) =>
-                  cs.createdAt.getTime(),
-                ),
-              ),
-            ).toISOString()
+        allTimestamps.length > 0
+          ? new Date(Math.max(...allTimestamps)).toISOString()
           : null,
       score,
       questionsCompleted,
-      submissions: bestSubmissions.filter((cs) => cs !== undefined) || [],
+      submissions: bestCodingSubmissions.filter((cs) => cs !== undefined) || [],
     };
   });
 
