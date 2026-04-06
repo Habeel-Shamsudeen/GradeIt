@@ -89,19 +89,17 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
     const codeSubmission = await prisma.codeSubmission.findUnique({
       where: { id: codeSubmissionId },
       include: {
-        question: true,
-        submission: {
+        question: {
           include: {
-            assignment: {
+            questionMetrics: {
               include: {
-                metrics: {
-                  include: {
-                    metric: true,
-                  },
-                },
+                metric: true,
               },
             },
           },
+        },
+        submission: {
+          include: { assignment: true },
         },
       },
     });
@@ -110,15 +108,17 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
       throw new Error(`Code submission ${codeSubmissionId} not found`);
     }
 
-    const { code, language, question, submission } = codeSubmission;
+    const { code, language, question } = codeSubmission;
+
+    const questionMetrics = question.questionMetrics;
 
     // if no metrics, skip LLM evaluation and use only testcase score
-    if (submission.assignment.metrics.length === 0) {
+    if (questionMetrics.length === 0) {
       // When no metrics exist, final score is just the testcase score
       const finalScore = calculateFinalScore(
         codeSubmission.testCaseScore || 0,
         0, // No metrics score
-        submission.assignment.testCaseWeight || 100, // Use full weight for test cases
+        question.testCaseWeight || 100, // Use full weight for test cases
         0, // No metrics weight
       );
 
@@ -141,12 +141,10 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
         language,
         questionTitle: question.title,
         questionDescription: question.description,
-        metrics: submission.assignment.metrics,
+        metrics: questionMetrics,
       });
 
-      const validMetricIds = new Set(
-        submission.assignment.metrics.map((m) => m.metricId),
-      );
+      const validMetricIds = new Set(questionMetrics.map((m) => m.metricId));
       const invalidMetrics = evaluations.filter(
         (e) => !validMetricIds.has(e.metricId),
       );
@@ -180,16 +178,10 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
         ),
       );
 
-      const MetricWeightage = await prisma.assignmentMetric.findMany({
-        where: {
-          assignmentId: submission.assignmentId,
-        },
-      });
-
       const totalMetricScore = evaluations.reduce((acc, metric) => {
         const weight =
-          MetricWeightage?.find((m) => m.metricId === metric.metricId)
-            ?.weight || 0;
+          questionMetrics.find((m) => m.metricId === metric.metricId)?.weight ||
+          0;
         return acc + (metric.score * weight) / 100; // Convert weight percentage to decimal
       }, 0);
 
@@ -197,8 +189,8 @@ export async function evaluateSubmissionMetrics(codeSubmissionId: string) {
       const finalScore = calculateFinalScore(
         codeSubmission.testCaseScore || 0,
         totalMetricScore,
-        submission.assignment.testCaseWeight ?? 100,
-        submission.assignment.metricsWeight ?? 0,
+        question.testCaseWeight ?? 100,
+        question.metricsWeight ?? 0,
       );
 
       await prisma.codeSubmission.update({
@@ -298,21 +290,18 @@ export const updateStudentScore = async (
       },
     });
 
-    // Recalculate the final score for the code submission
-    const assignment = await prisma.assignment.findFirst({
-      where: {
-        submissions: {
-          some: {
-            id: codeSubmission.submissionId,
+    const codeSubmissionWithQuestion = await prisma.codeSubmission.findUnique({
+      where: { id: codeSubmission.id },
+      include: {
+        question: {
+          include: {
+            questionMetrics: true,
           },
         },
       },
-      include: {
-        metrics: true,
-      },
     });
 
-    if (assignment) {
+    if (codeSubmissionWithQuestion) {
       // Get all metric results for this code submission
       const metricResults = await prisma.submissionMetricResult.findMany({
         where: {
@@ -322,10 +311,11 @@ export const updateStudentScore = async (
 
       // Calculate new metric score
       const totalMetricScore = metricResults.reduce((acc, result) => {
-        const assignmentMetric = assignment.metrics.find(
-          (m) => m.metricId === result.metricId,
-        );
-        const weight = assignmentMetric?.weight || 0;
+        const questionMetric =
+          codeSubmissionWithQuestion.question.questionMetrics.find(
+            (m) => m.metricId === result.metricId,
+          );
+        const weight = questionMetric?.weight || 0;
         return acc + (result.score * weight) / 100;
       }, 0);
 
@@ -333,8 +323,8 @@ export const updateStudentScore = async (
       const finalScore = calculateFinalScore(
         codeSubmission.testCaseScore || 0,
         totalMetricScore,
-        assignment.testCaseWeight ?? 100,
-        assignment.metricsWeight ?? 0,
+        codeSubmissionWithQuestion.question.testCaseWeight ?? 100,
+        codeSubmissionWithQuestion.question.metricsWeight ?? 0,
       );
 
       // Update code submission score
@@ -349,7 +339,7 @@ export const updateStudentScore = async (
       // Update submission final score
       await updateSubmissionStatus(codeSubmission.submissionId);
 
-      revalidatePath(`/assignments/${assignment.id}/grading`);
+      revalidatePath(`/classes`);
     }
 
     return { success: true };

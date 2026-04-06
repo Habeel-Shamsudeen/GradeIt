@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import { getAssignmentById } from "@/server/actions/assignment-actions";
 import { getUserRole } from "@/server/actions/user-actions";
 import { getUserMetrics } from "@/server/actions/metric-actions";
+import type { AssignmentById } from "@/lib/types/assignment-tyes";
 
 type EditAssignmentPageProps = {
   params: Promise<{ classCode: string; assignmentId: string }>;
@@ -82,7 +83,7 @@ export default async function EditAssignmentPage({
           existingMetrics={metrics ?? []}
           mode="edit"
           assignmentId={assignmentId}
-          initialData={assignment}
+          initialData={assignment as unknown as AssignmentById}
         />
       </div>
     </div>

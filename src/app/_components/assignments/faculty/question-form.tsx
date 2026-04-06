@@ -15,18 +15,101 @@ import { LANGUAGE_ID_MAP } from "@/config/constants";
 import { LanguageIcon } from "../../ui/language-icon";
 import { Language } from "@/lib/types/config-types";
 import { TestCasesList } from "./test-cases-list";
+import { Button } from "@/app/_components/ui/button";
+import { Trash2 } from "lucide-react";
+
+interface ExistingMetric {
+  id: string;
+  name: string;
+  description?: string | null;
+}
 
 interface QuestionFormProps {
   question: Question;
   onChange: (question: Question) => void;
+  existingMetrics?: ExistingMetric[];
 }
 
-export function QuestionForm({ question, onChange }: QuestionFormProps) {
+export function QuestionForm({
+  question,
+  onChange,
+  existingMetrics = [],
+}: QuestionFormProps) {
   const updateField = (field: keyof Question, value: any) => {
     onChange({
       ...question,
       [field]: value,
     });
+  };
+
+  const questionMetrics = question.questionMetrics ?? [];
+  const testCaseWeight = question.testCaseWeight ?? 100;
+  const metricsWeight = question.metricsWeight ?? 0;
+  const questionType = question.type ?? "CODING";
+  const content = (question.content ?? {}) as {
+    starterCode?: string;
+    buggyCode?: string;
+    hints?: string[];
+  };
+
+  const addMetric = (metricId: string) => {
+    if (questionMetrics.some((m) => m.id === metricId)) return;
+    const found = existingMetrics.find((m) => m.id === metricId);
+    if (!found) return;
+    if (questionMetrics.length === 0) {
+      updateField("questionMetrics", [
+        {
+          id: found.id,
+          name: found.name,
+          description: found.description,
+          weight: 100,
+        },
+      ]);
+      return;
+    }
+
+    if (questionMetrics.length === 1 && questionMetrics[0].weight === 100) {
+      updateField("questionMetrics", [
+        { ...questionMetrics[0], weight: 50 },
+        {
+          id: found.id,
+          name: found.name,
+          description: found.description,
+          weight: 50,
+        },
+      ]);
+      return;
+    }
+
+    const currentTotal = questionMetrics.reduce((acc, metric) => {
+      return acc + (metric.weight ?? 0);
+    }, 0);
+    const remaining = Math.max(0, 100 - currentTotal);
+    updateField("questionMetrics", [
+      ...questionMetrics,
+      {
+        id: found.id,
+        name: found.name,
+        description: found.description,
+        weight: remaining,
+      },
+    ]);
+  };
+
+  const removeMetric = (metricId: string) => {
+    const nextMetrics = questionMetrics.filter((m) => m.id !== metricId);
+    if (nextMetrics.length === 1) {
+      updateField("questionMetrics", [{ ...nextMetrics[0], weight: 100 }]);
+      return;
+    }
+    updateField("questionMetrics", nextMetrics);
+  };
+
+  const updateMetricWeight = (metricId: string, weight: number) => {
+    updateField(
+      "questionMetrics",
+      questionMetrics.map((m) => (m.id === metricId ? { ...m, weight } : m)),
+    );
   };
 
   return (
@@ -74,7 +157,7 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
             Programming Language
           </Label>
           <Select
-            value={question.language}
+            value={question.language ?? "Python"}
             onValueChange={(value) => updateField("language", value)}
           >
             <SelectTrigger
@@ -92,16 +175,162 @@ export function QuestionForm({ question, onChange }: QuestionFormProps) {
             </SelectContent>
           </Select>
         </div>
+
+        {(questionType === "CODE_DEBUG" || questionType === "CODE_FILL") && (
+          <>
+            <div className="grid gap-2">
+              <Label className="text-foreground">
+                {questionType === "CODE_DEBUG" ? "Buggy Code" : "Starter Code"}
+              </Label>
+              <Textarea
+                value={
+                  questionType === "CODE_DEBUG"
+                    ? (content.buggyCode ?? "")
+                    : (content.starterCode ?? "")
+                }
+                onChange={(e) =>
+                  updateField("content", {
+                    ...content,
+                    [questionType === "CODE_DEBUG"
+                      ? "buggyCode"
+                      : "starterCode"]: e.target.value,
+                  })
+                }
+                placeholder={
+                  questionType === "CODE_DEBUG"
+                    ? "Paste code with intentional bugs..."
+                    : "Paste starter template code with blanks/todos..."
+                }
+                className="min-h-40 resize-y bg-background border border-border font-mono text-sm text-foreground"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label className="text-foreground">Hints (optional)</Label>
+              <Textarea
+                value={(content.hints ?? []).join("\n")}
+                onChange={(e) =>
+                  updateField("content", {
+                    ...content,
+                    hints: e.target.value
+                      .split("\n")
+                      .map((hint) => hint.trim())
+                      .filter(Boolean),
+                  })
+                }
+                placeholder="One hint per line"
+                className="min-h-24 resize-y bg-background border border-border text-foreground"
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <Separator className="my-6 bg-border" />
 
+      <div className="space-y-4 rounded-xl border border-border bg-muted/20 p-4">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-semibold text-foreground">
+            Coding Scoring Configuration
+          </h4>
+          <p className="text-xs text-muted-foreground">
+            This applies only to this coding question
+          </p>
+        </div>
+
+        <div className="grid gap-3">
+          <Label className="text-sm">Test Cases vs Metrics</Label>
+          <Input
+            type="range"
+            min={0}
+            max={100}
+            step={5}
+            value={testCaseWeight}
+            onChange={(e) => {
+              const tc = Number(e.target.value);
+              onChange({
+                ...question,
+                testCaseWeight: tc,
+                metricsWeight: 100 - tc,
+              });
+            }}
+          />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>Test Cases: {testCaseWeight}%</span>
+            <span>Metrics: {metricsWeight}%</span>
+          </div>
+        </div>
+
+        <div className="grid gap-3">
+          <Label className="text-sm">Question Points</Label>
+          <Input
+            type="number"
+            min={0}
+            value={question.points ?? 100}
+            onChange={(e) => updateField("points", Number(e.target.value) || 0)}
+            className="max-w-32 bg-background"
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <Label className="text-sm">Evaluation Metrics</Label>
+          <Select onValueChange={addMetric}>
+            <SelectTrigger className="bg-background">
+              <SelectValue placeholder="Add a metric" />
+            </SelectTrigger>
+            <SelectContent>
+              {existingMetrics
+                .filter((m) => !questionMetrics.some((qm) => qm.id === m.id))
+                .map((metric) => (
+                  <SelectItem key={metric.id} value={metric.id}>
+                    {metric.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+
+          {questionMetrics.map((metric) => (
+            <div
+              key={metric.id}
+              className="flex items-center gap-2 rounded-md border border-border bg-background p-2"
+            >
+              <span className="flex-1 text-sm">{metric.name}</span>
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                value={metric.weight}
+                onChange={(e) =>
+                  updateMetricWeight(metric.id, Number(e.target.value) || 0)
+                }
+                className="w-20 bg-background"
+              />
+              <span className="text-xs text-muted-foreground">%</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => removeMetric(metric.id)}
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          {questionMetrics.length === 0 && (
+            <p className="text-xs text-muted-foreground">
+              No metrics selected. Scoring will use test cases only.
+            </p>
+          )}
+        </div>
+      </div>
+
       <TestCasesList
-        testCases={question.testCases}
+        testCases={question.testCases ?? []}
         onTestCasesChange={(testCases) => updateField("testCases", testCases)}
         questionTitle={question.title}
         questionDescription={question.description}
-        questionLanguage={question.language}
+        questionLanguage={question.language ?? "Python"}
         questionId={question.id}
       />
     </div>

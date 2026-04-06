@@ -140,15 +140,19 @@ export default async function SubmissionsPage({
                                 submission.submittedAt,
                               ).toLocaleString()}
                             </p>
-                            <Badge
-                              variant="outline"
-                              className="border-border text-muted-foreground"
-                            >
-                              <LanguageIcon
-                                size={12}
-                                language={submission.language as Language}
-                              />
-                            </Badge>
+                            {submission.kind === "code" ? (
+                              <Badge
+                                variant="outline"
+                                className="border-border text-muted-foreground"
+                              >
+                                <LanguageIcon
+                                  size={12}
+                                  language={submission.language as Language}
+                                />
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline">Answer</Badge>
+                            )}
                           </div>
 
                           {submission.status !== "IN_PROGRESS" && (
@@ -156,15 +160,19 @@ export default async function SubmissionsPage({
                               {submission.score !== null && (
                                 <span>Score: {submission.score}%</span>
                               )}
-                              <span>
-                                {
-                                  submission.testCaseResults.filter(
-                                    (tc) => tc.status === "PASSED",
-                                  ).length
-                                }
-                                /{submission.testCaseResults.length} tests
-                                passed
-                              </span>
+                              {submission.kind === "code" ? (
+                                <span>
+                                  {
+                                    submission.testCaseResults.filter(
+                                      (tc) => tc.status === "PASSED",
+                                    ).length
+                                  }
+                                  /{submission.testCaseResults.length} tests
+                                  passed
+                                </span>
+                              ) : (
+                                <span>Type: {submission.questionType}</span>
+                              )}
                             </div>
                           )}
                         </div>

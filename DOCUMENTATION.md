@@ -15,7 +15,7 @@
 
 ## Overview
 
-**GradeIT** is a comprehensive automated online coding platform designed specifically for college-level programming lab assignments. It revolutionizes the traditional manual grading process by providing an intelligent, scalable solution that automates code execution, testing, and evaluation while maintaining academic integrity.
+**GradeIT** is a comprehensive automated assessment platform designed for technical classrooms. It supports mixed question types, type-aware evaluation pipelines, and scalable grading while maintaining academic integrity.
 
 ### Core Value Proposition
 
@@ -51,15 +51,20 @@
 
 #### 3. **Advanced Evaluation System**
 
-- **Dual-Mode Scoring**:
-  - **Test Case Evaluation** (Default 60% weight): Automated correctness checking
-  - **Metrics-Based Evaluation** (Default 40% weight): AI-powered code quality assessment
-- **Custom Evaluation Metrics**: Faculty can define custom metrics like:
+- **Per-Question Scoring Model**:
+  - **Coding Questions** (`CODING`, `CODE_DEBUG`, `CODE_FILL`):
+    - Test-case evaluation + optional metrics blend
+    - Configured by `testCaseWeight`, `metricsWeight`, `questionMetrics` per question
+  - **Objective Non-Coding Questions** (`MCQ`, `MATCH_FOLLOWING`, `FILL_BLANKS`):
+    - Deterministic auto-evaluation against answer key
+  - **Subjective Questions** (`OPEN_ENDED`, `CASE_STUDY`, `CHAIN_QUESTION`, `BLOCK_DIAGRAM`):
+    - AI-assisted or manual evaluation with rubric/feedback
+- **Custom Evaluation Metrics**: Faculty can define reusable metrics like:
   - Code Quality & Readability
   - Performance Optimization
   - Best Practices Adherence
   - Algorithm Efficiency
-- **Weighted Scoring**: Configurable weight distribution between test cases and metrics
+- **Weighted Scoring Rollup**: Assignment final score is weighted by per-question points
 - **LLM-Powered Analysis**: Intelligent code review using Groq's Llama model for qualitative assessment
 
 ### 👩‍🏫 Faculty Features
@@ -73,14 +78,17 @@
 
 #### 2. **Assignment Creation & Configuration**
 
-- **Multi-Question Assignments**: Build comprehensive programming assignments
+- **Mixed-Type Assignments**: Build assignments with coding and non-coding question types
+- **Section-Based Authoring**: Organize questions into ordered sections
 - **Rich Problem Statements**: Markdown support for detailed descriptions
 - **Flexible Deadlines**: Start date, due date, and late submission policies
 - **Proctoring Options**:
   - Copy-paste prevention
   - Fullscreen enforcement
   - Activity monitoring
-- **Scoring Configuration**: Adjust test case vs metrics weights per assignment
+- **Scoring Configuration**:
+  - Per-question points for all question types
+  - Coding-only test/metrics slider and metric selection per coding question
 
 #### 3. **Real-Time Monitoring & Analytics**
 
@@ -265,7 +273,7 @@ Response: {
 
 #### `/api/submissions` (POST)
 
-Submit code for grading
+Submit code for grading (coding question types only)
 
 ```typescript
 Request: {
@@ -279,6 +287,24 @@ Request: {
 Response: {
   success: boolean;
   message: string;
+}
+```
+
+#### `/api/answers` (POST/GET)
+
+Save/fetch non-coding answers.
+
+```typescript
+POST Request: {
+  questionId: string;
+  response: Record<string, unknown>;
+  submit?: boolean; // if true, queue evaluation
+}
+POST Response: {
+  answerId: string;
+  submissionId: string;
+  saved: boolean;
+  submitted: boolean;
 }
 ```
 
@@ -339,8 +365,9 @@ Server actions provide type-safe data mutations:
 
 - Belongs to Classroom
 - Contains multiple Questions
+- Supports optional ordered Sections
 - Configurable proctoring settings
-- Weighted scoring system
+- Legacy assignment-level weights remain for backward compatibility
 
 #### Submission Model
 
@@ -354,16 +381,21 @@ Server actions provide type-safe data mutations:
 - **TestCase**: Input-output pairs with visibility control
 - **TestCaseResult**: Execution results with Judge0 tokens
 - **EvaluationMetric**: Custom quality metrics
+- **QuestionMetric**: Per-question metric weights for coding questions
 - **SubmissionMetricResult**: AI evaluation scores
+- **Answer**: Non-coding responses, score, feedback, evaluation status
 
 ### Relationships
 
 ```
 User ←→ Classroom (Many-to-Many)
 Classroom → Assignment (One-to-Many)
+Assignment → Section (One-to-Many)
 Assignment → Question (One-to-Many)
+Section → Question (One-to-Many, optional)
 Question → TestCase (One-to-Many)
 Student → Submission → CodeSubmission (One-to-Many)
+Student → Submission → Answer (One-to-Many)
 CodeSubmission → TestCaseResult (One-to-Many)
 CodeSubmission → SubmissionMetricResult (One-to-Many)
 ```
@@ -541,5 +573,5 @@ docker-compose exec app npx prisma migrate deploy
 
 ---
 
-_Last Updated: January 2025_
-_Version: 1.0.0_
+_Last Updated: March 2026_
+_Version: 1.1.0_

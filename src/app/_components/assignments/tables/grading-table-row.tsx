@@ -110,6 +110,22 @@ export function GradingTableRow({
           );
         }
 
+        if (column.key.startsWith("question_")) {
+          const questionId = column.key.replace("question_", "");
+          const submission = student.submissions.find(
+            (s: any) => s.questionId === questionId,
+          );
+          return (
+            <TableCell key={column.key}>
+              <div className="font-medium">
+                {submission
+                  ? `${(submission.totalScore ?? 0).toFixed(1)}%`
+                  : "-"}
+              </div>
+            </TableCell>
+          );
+        }
+
         if (column.key === "overallScore") {
           return (
             <TableCell key={column.key}>

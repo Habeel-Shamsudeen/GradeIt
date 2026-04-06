@@ -193,30 +193,26 @@ export function transformStudentDataForGrading(
 ): GradingTableData {
   const transformedStudents: GradingTableStudent[] = students.map((student) => {
     const numberOfSubmissions = student.submissions?.length || 0;
-
-    let avgScore = 0;
-    if (numberOfSubmissions > 0) {
-      avgScore = student.score;
-    } else {
-      avgScore =
-        student.submissions
-          .map((submission) => submission.score)
-          .reduce((acc, curr) => acc + curr, 0) / numberOfSubmissions;
-    }
+    const avgScore = numberOfSubmissions > 0 ? student.score : 0;
 
     const avgTestCaseScore =
-      student.submissions?.reduce((acc, curr) => acc + curr.testCaseScore, 0) /
-        numberOfSubmissions || 0;
+      numberOfSubmissions > 0
+        ? (student.submissions?.reduce(
+            (acc, curr) => acc + (curr.testCaseScore ?? 0),
+            0,
+          ) ?? 0) / numberOfSubmissions
+        : 0;
 
     const metricScores = assignmentData.metrics.map((metric) => {
       const metricResult =
-        student.submissions?.reduce(
-          (acc, curr) =>
-            acc +
-            curr.metricResults.find((mr: any) => mr.metricId === metric.id)
-              ?.score,
-          0,
-        ) / numberOfSubmissions || 0;
+        numberOfSubmissions > 0
+          ? (student.submissions?.reduce((acc, curr) => {
+              const score =
+                curr.metricResults?.find((mr: any) => mr.metricId === metric.id)
+                  ?.score ?? 0;
+              return acc + score;
+            }, 0) ?? 0) / numberOfSubmissions
+          : 0;
       return {
         metricId: metric.id,
         metricName: metric.name,
@@ -238,9 +234,16 @@ export function transformStudentDataForGrading(
     const submissions: GradingTableSubmission[] = student.submissions.map(
       (submission) => ({
         id: submission.id,
+        kind: submission.kind,
         studentId: student.id,
+        questionId: submission.questionId,
         testCaseScore: submission.testCaseScore,
-        metricScores: submission.metricResults,
+        metricScores: (submission.metricResults ?? []).map((mr: any) => ({
+          metricId: mr.metricId,
+          metricName: mr.metric?.name ?? mr.metricName ?? "Metric",
+          score: mr.score,
+          weight: mr.weight ?? 0,
+        })),
         totalScore: submission.score,
         status: submission.codeEvaluationStatus,
         submittedAt: submission.createdAt || undefined,

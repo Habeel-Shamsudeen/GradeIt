@@ -1,11 +1,69 @@
 import { SubmissionStatus } from "@/app/generated/prisma/client";
 
+export type QuestionType =
+  | "CODING"
+  | "MCQ"
+  | "MATCH_FOLLOWING"
+  | "FILL_BLANKS"
+  | "OPEN_ENDED"
+  | "CASE_STUDY"
+  | "CHAIN_QUESTION"
+  | "BLOCK_DIAGRAM"
+  | "CODE_DEBUG"
+  | "CODE_FILL";
+
+export type AnswerEvaluationStatus =
+  | "PENDING"
+  | "AUTO_EVALUATED"
+  | "LLM_EVALUATION_IN_PROGRESS"
+  | "LLM_EVALUATION_FAILED"
+  | "EVALUATION_COMPLETE"
+  | "MANUAL_REVIEW_REQUIRED";
+
+export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
+  CODING: "Coding",
+  MCQ: "Multiple Choice",
+  MATCH_FOLLOWING: "Match the Following",
+  FILL_BLANKS: "Fill in the Blanks",
+  OPEN_ENDED: "Open Ended",
+  CASE_STUDY: "Case Study",
+  CHAIN_QUESTION: "Chain Question",
+  BLOCK_DIAGRAM: "Block Diagram",
+  CODE_DEBUG: "Code Debugging",
+  CODE_FILL: "Code Fill",
+};
+
+export const CODING_QUESTION_TYPES: QuestionType[] = [
+  "CODING",
+  "CODE_DEBUG",
+  "CODE_FILL",
+];
+
 export interface Question {
   id: string;
+  type?: QuestionType;
   title: string;
   description: string;
-  language: string;
-  testCases: TestCase[];
+  language?: string | null;
+  order?: number;
+  points?: number;
+  testCaseWeight?: number;
+  metricsWeight?: number;
+  questionMetrics?: EvaluationMetric[];
+  content?: Record<string, unknown> | null;
+  answerKey?: Record<string, unknown> | null;
+  sectionId?: string | null;
+  parentQuestionId?: string | null;
+  subQuestions?: Question[];
+  testCases?: TestCase[];
+}
+
+export interface Section {
+  id: string;
+  title: string;
+  description?: string;
+  order: number;
+  questions: Question[];
 }
 
 export interface TestCase {
@@ -42,9 +100,94 @@ export interface Assignment {
 
 export interface AssignmentById extends Assignment {
   questions: Question[];
+  sections?: Section[];
 }
 
-// Grading Table Header Types
+// -- JSONB content shapes --
+
+export interface MCQContent {
+  options: { id: string; text: string; image?: string | null }[];
+  allowMultiple: boolean;
+  shuffleOptions?: boolean;
+}
+
+export interface MCQAnswerKey {
+  correctOptions: string[];
+  explanation?: string;
+}
+
+export interface MCQResponse {
+  selectedOptions: string[];
+}
+
+export interface MatchContent {
+  leftItems: { id: string; text: string }[];
+  rightItems: { id: string; text: string }[];
+}
+
+export interface MatchAnswerKey {
+  correctPairs: { left: string; right: string | string[] }[];
+  partialCredit?: boolean;
+}
+
+export interface MatchResponse {
+  pairs: { left: string; right: string }[];
+}
+
+export interface FillBlanksContent {
+  text: string;
+  blanks: { id: string; hint?: string }[];
+}
+
+export interface FillBlanksAnswerKey {
+  answers: {
+    blankId: string;
+    acceptedValues: string[];
+    caseSensitive?: boolean;
+  }[];
+  partialCredit?: boolean;
+}
+
+export interface FillBlanksResponse {
+  filledBlanks: { blankId: string; value: string }[];
+}
+
+export interface OpenEndedContent {
+  prompt?: string;
+  minWords?: number;
+  maxWords?: number;
+  attachmentsAllowed?: boolean;
+}
+
+export interface OpenEndedAnswerKey {
+  rubric: string;
+  sampleAnswer?: string;
+  evaluationMethod: "LLM" | "MANUAL";
+}
+
+export interface OpenEndedResponse {
+  text: string;
+}
+
+export interface BlockDiagramContent {
+  instructions: string;
+  initialNodes?: { id: string; label: string; x: number; y: number }[];
+  initialEdges?: { from: string; to: string; label?: string }[];
+}
+
+export interface BlockDiagramAnswerKey {
+  expectedNodes: { id: string; label: string }[];
+  expectedEdges: { from: string; to: string; label?: string }[];
+  evaluationMethod: "LLM" | "MANUAL";
+}
+
+export interface BlockDiagramResponse {
+  nodes: { id: string; label: string; x: number; y: number }[];
+  edges: { from: string; to: string; label?: string }[];
+}
+
+// -- Grading table types --
+
 export interface GradingTableColumn {
   key: string;
   label: string;
@@ -74,7 +217,6 @@ export interface GradingTableHeaderResponse {
   error?: string;
 }
 
-// Grading Table Data Types
 export interface GradingTableStudent {
   id: string;
   name: string;
@@ -88,7 +230,9 @@ export interface GradingTableStudent {
 
 export interface GradingTableSubmission {
   id: string;
+  kind?: "code" | "answer";
   studentId: string;
+  questionId?: string;
   testCaseScore: number;
   metricScores: GradingTableMetricScore[];
   totalScore: number;
@@ -108,7 +252,6 @@ export interface GradingTableData {
   metrics: AssignmentMetricInfo[];
 }
 
-// Student Progress Types (from server actions)
 export interface StudentProgress {
   id: string;
   name: string;
@@ -118,10 +261,9 @@ export interface StudentProgress {
   submittedAt: string | null;
   score: number;
   questionsCompleted: number;
-  submissions: any[]; // CodeSubmission array from Prisma
+  submissions: any[];
 }
 
-// Transform function types
 export interface TransformStudentDataParams {
   studentData: StudentProgress[];
   assignmentData: GradingTableHeaderData;

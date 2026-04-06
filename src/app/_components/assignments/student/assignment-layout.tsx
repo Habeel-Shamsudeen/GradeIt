@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText } from "lucide-react";
+import { FileText, Save, Send, Loader2 } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {
   ResizableHandle,
@@ -13,16 +13,20 @@ import {
 import { QuestionDescription } from "./question-description";
 import { ScoringWeightDistribution } from "./scoring-weight-distribution";
 import { QuestionNav } from "./question-nav";
+import { SectionNav } from "./section-nav";
+import { getQuestionRenderer, isCodingQuestionType } from "./renderers";
 
 const CodeEditor = dynamic(
   () => import("./code-editor").then((mod) => ({ default: mod.CodeEditor })),
   { ssr: false },
 );
-import { AssignmentById } from "@/lib/types/assignment-tyes";
+import { AssignmentById, type QuestionType } from "@/lib/types/assignment-tyes";
 import { FullscreenAlert } from "./fullscreen-alert";
 import { CombinedTesting } from "./combined-testing-component";
 import { useFullScreen } from "@/hooks/use-fullscreen";
 import { useCodeRunner } from "@/hooks/use-code-runner";
+import { useAutoSave } from "@/hooks/use-auto-save";
+import { toast } from "sonner";
 
 interface AssignmentLayoutProps {
   assignment: AssignmentById;
@@ -33,11 +37,24 @@ export function AssignmentLayout({
   assignment,
   classCode,
 }: AssignmentLayoutProps) {
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isEditorFullscreen, setIsEditorFullscreen] = useState(false);
   const [code, setCode] = useState("");
   const [customInput, setCustomInput] = useState("");
+  const [answerValues, setAnswerValues] = useState<Record<string, unknown>>({});
+  const [isSubmittingAnswer, setIsSubmittingAnswer] = useState(false);
   const { isFullscreen } = useFullScreen();
+
+  const hasSections = assignment.sections && assignment.sections.length > 0;
+
+  const currentQuestions = hasSections
+    ? (assignment.sections![currentSectionIndex]?.questions ?? [])
+    : assignment.questions;
+
+  const currentQuestion = currentQuestions[currentQuestionIndex];
+  const questionType = (currentQuestion?.type ?? "CODING") as QuestionType;
+  const isCoding = isCodingQuestionType(questionType);
 
   const exitEditorFullscreen = useCallback(
     () => setIsEditorFullscreen(false),
@@ -53,22 +70,97 @@ export function AssignmentLayout({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isEditorFullscreen, exitEditorFullscreen]);
 
-  const currentQuestion = assignment.questions[currentQuestionIndex];
+  useEffect(() => {
+    const hydrateAnswers = async () => {
+      try {
+        const res = await fetch(`/api/answers?assignmentId=${assignment.id}`);
+        if (!res.ok) return;
+        const data = (await res.json()) as {
+          answers?: { questionId: string; response: unknown }[];
+        };
+        if (!data.answers?.length) return;
+        setAnswerValues((prev) => {
+          const next = { ...prev };
+          for (const ans of data.answers!) {
+            next[ans.questionId] = ans.response;
+          }
+          return next;
+        });
+      } catch (error) {
+        console.error("Failed to hydrate saved answers:", error);
+      }
+    };
+    hydrateAnswers();
+  }, [assignment.id]);
+
   const { isRunning, codeStatus, testResults, runCode, submitCode } =
     useCodeRunner({
       code,
-      language: currentQuestion.language,
-      questionId: currentQuestion.id,
+      language: currentQuestion?.language ?? "Python",
+      questionId: currentQuestion?.id ?? "",
       input: customInput,
     });
 
+  const currentAnswerValue = currentQuestion
+    ? (answerValues[currentQuestion.id] ?? null)
+    : null;
+
+  const { isSaving, lastSaved } = useAutoSave({
+    questionId: currentQuestion?.id ?? "",
+    value: currentAnswerValue,
+    enabled: !isCoding && !!currentQuestion,
+  });
+
+  const handleAnswerChange = (value: unknown) => {
+    if (!currentQuestion) return;
+    setAnswerValues((prev) => ({ ...prev, [currentQuestion.id]: value }));
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (!currentQuestion || !currentAnswerValue) return;
+    setIsSubmittingAnswer(true);
+    try {
+      const res = await fetch("/api/answers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          response: currentAnswerValue,
+          submit: true,
+        }),
+      });
+      if (res.ok) {
+        toast.success("Answer submitted for evaluation");
+      } else {
+        toast.error("Failed to submit answer");
+      }
+    } catch {
+      toast.error("Failed to submit answer");
+    } finally {
+      setIsSubmittingAnswer(false);
+    }
+  };
+
   const showFullscreenAlert = assignment.fullScreenEnforcement && !isFullscreen;
+
+  const Renderer = !isCoding ? getQuestionRenderer(questionType) : null;
 
   const leftPanelContent = (
     <>
+      {hasSections && (
+        <SectionNav
+          sections={assignment.sections!}
+          currentIndex={currentSectionIndex}
+          onSelect={(idx) => {
+            setCurrentSectionIndex(idx);
+            setCurrentQuestionIndex(0);
+          }}
+        />
+      )}
+
       <div className="flex items-center justify-between overflow-x-auto border-b border-border px-4 py-2">
         <QuestionNav
-          questions={assignment.questions}
+          questions={currentQuestions}
           currentIndex={currentQuestionIndex}
           onSelect={setCurrentQuestionIndex}
         />
@@ -86,27 +178,65 @@ export function AssignmentLayout({
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto p-6">
-        <QuestionDescription question={currentQuestion} />
-        {assignment.metrics !== undefined &&
-          assignment.testCaseWeight !== undefined &&
-          assignment.metricsWeight !== undefined && (
-            <ScoringWeightDistribution
-              testCaseWeight={assignment.testCaseWeight}
-              metricsWeight={assignment.metricsWeight}
-              metrics={assignment.metrics}
+        {isCoding ? (
+          <>
+            <QuestionDescription question={currentQuestion} />
+            <ScoringWeightDistribution questions={assignment.questions} />
+          </>
+        ) : Renderer ? (
+          <>
+            <h2 className="mb-4 text-lg font-semibold">
+              {currentQuestion.title}
+            </h2>
+            <Renderer
+              question={currentQuestion}
+              value={currentAnswerValue}
+              onChange={handleAnswerChange}
             />
-          )}
+            <div className="mt-6 flex items-center justify-between">
+              <div className="text-xs text-muted-foreground">
+                {isSaving && (
+                  <span className="flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Saving...
+                  </span>
+                )}
+                {!isSaving && lastSaved && (
+                  <span className="flex items-center gap-1">
+                    <Save className="h-3 w-3" />
+                    Saved {lastSaved.toLocaleTimeString()}
+                  </span>
+                )}
+              </div>
+              <Button
+                size="sm"
+                onClick={handleSubmitAnswer}
+                disabled={isSubmittingAnswer || !currentAnswerValue}
+                className="gap-1.5"
+              >
+                {isSubmittingAnswer ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+                Submit Answer
+              </Button>
+            </div>
+          </>
+        ) : (
+          <QuestionDescription question={currentQuestion} />
+        )}
       </div>
     </>
   );
 
-  const rightPanelContent = !isEditorFullscreen && (
+  const codingRightPanel = !isEditorFullscreen && (
     <>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <CodeEditor
           code={code}
           onChange={setCode}
-          language={currentQuestion.language}
+          language={currentQuestion?.language ?? "Python"}
           onRun={runCode}
           onSubmit={submitCode}
           isRunning={isRunning}
@@ -127,6 +257,18 @@ export function AssignmentLayout({
       </div>
     </>
   );
+
+  // For non-coding questions, use a single-panel layout
+  if (!isCoding) {
+    return (
+      <>
+        {showFullscreenAlert && <FullscreenAlert />}
+        <div className="flex h-[calc(100vh-5rem)] w-full min-w-0 flex-1 overflow-hidden">
+          <div className="flex w-full flex-col">{leftPanelContent}</div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -156,13 +298,12 @@ export function AssignmentLayout({
               maxSize="75%"
               className="flex flex-col bg-background min-h-0 min-w-0"
             >
-              {rightPanelContent}
+              {codingRightPanel}
             </ResizablePanel>
           </ResizablePanelGroup>
         )}
       </div>
 
-      {/* Fullscreen code editor overlay */}
       <AnimatePresence>
         {isEditorFullscreen && (
           <motion.div
@@ -177,7 +318,7 @@ export function AssignmentLayout({
                 <CodeEditor
                   code={code}
                   onChange={setCode}
-                  language={currentQuestion.language}
+                  language={currentQuestion?.language ?? "Python"}
                   onRun={runCode}
                   onSubmit={submitCode}
                   isRunning={isRunning}
@@ -186,7 +327,6 @@ export function AssignmentLayout({
                   isFullscreen
                 />
               </div>
-
               <div className="shrink-0 border-t border-border">
                 <CombinedTesting
                   results={testResults}
